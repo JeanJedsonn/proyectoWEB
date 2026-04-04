@@ -1,5 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', function () {
+    return Inertia::render('Dashboard');
+})->name('dashboard');
