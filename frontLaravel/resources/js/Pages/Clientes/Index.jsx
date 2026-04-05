@@ -1,17 +1,15 @@
 
-//TODO: La tabla no permite seleccionar la cantidad de entradas a mostrar
-
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { Users, UserPlus, Search, Filter, Loader2, ChevronLeft, ChevronRight, Mail, Phone, Copy, Eye, MoreHorizontal } from 'lucide-react';
+import { Users, UserPlus, Search, Filter, Loader2, ChevronLeft, ChevronRight, Mail, Copy, Eye } from 'lucide-react';
 import axios from 'axios';
 
 export default function ClientesIndex() {
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
+    const [perPage] = useState(10);
     const [paginationInfo, setPaginationInfo] = useState({
         current_page: 1,
         last_page: 1,
@@ -163,10 +161,13 @@ export default function ClientesIndex() {
                     </h1>
                     <p className="text-gray-400 text-sm mt-1">Listado de compradores y contactos, vital para el histórico de facturación.</p>
                 </div>
-                <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-indigo-500/20">
+                <Link 
+                    href="/clientes/nuevo"
+                    className="flex-items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg shadow-indigo-500/20 flex"
+                >
                     <UserPlus className="w-4 h-4" />
                     Añadir Nuevo Cliente
-                </button>
+                </Link>
             </header>
 
             {/* Filtros y Búsqueda */}

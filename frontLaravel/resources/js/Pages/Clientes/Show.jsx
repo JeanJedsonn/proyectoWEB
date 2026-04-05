@@ -113,10 +113,13 @@ export default function ClienteShow({ id }) {
                             </div>
                         </div>
                     </div>
-                    <button className="flex items-center gap-2 bg-[#161821] hover:bg-white/5 border border-white/5 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg">
+                    <Link 
+                        href={`/clientes/${cliente.id}/editar`}
+                        className="flex items-center gap-2 bg-[#161821] hover:bg-white/5 border border-white/5 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg"
+                    >
                         <Pencil className="w-4 h-4" />
                         Editar Perfil
-                    </button>
+                    </Link>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

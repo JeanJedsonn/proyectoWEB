@@ -30,6 +30,14 @@ Route::get('/clientes', function () {
     return Inertia::render('Clientes/Index');
 })->name('clientes.index');
 
+Route::get('/clientes/nuevo', function () {
+    return Inertia::render('Clientes/Form');
+})->name('clientes.create');
+
 Route::get('/clientes/{id}', function ($id) {
     return Inertia::render('Clientes/Show', ['id' => $id]);
 })->name('clientes.show');
+
+Route::get('/clientes/{id}/editar', function ($id) {
+    return Inertia::render('Clientes/Form', ['id' => $id]);
+})->name('clientes.edit');
