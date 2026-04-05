@@ -1,3 +1,5 @@
+// punto de arranque de la aplicacion, es llamado desde app.blade.php
+
 import './bootstrap';
 import '../css/app.css';
 
