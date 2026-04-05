@@ -7,36 +7,38 @@ description: Contexto técnico y estado actual del proyecto Gestión de Ventas (
 
 ## 📌 1. Arquitectura y Stack Tecnológico
 
-El proyecto es un sistema de administración / dashboard (CRM de ventas para juegos, cuentas, etc.) construido sobre una arquitectura monolítica moderna.
+El proyecto es un sistema de administración / dashboard (CRM de ventas para juegos, cuentas, etc.) construido sobre una arquitectura moderna.
 
-**Backend (API & Enrutamiento):**
-- **Laravel 13** con PHP 8.3+.
-- **Base de Datos:** SQLite (desarrollo).
-- **Tests:** PestPHP.
+**Backend (Frontend Server & Routing):**
+- **Laravel 10+** (PHP 8.2+) sirviendo la aplicación a través de **Inertia.js**.
+- **Enrutamiento:** Definido en `routes/web.php`.
+
+**Backend Data (API):**
+- **Node.js Server** (corriendo en `localhost:3000`).
+- Provee endpoints para:
+  - Paginación de juegos: `/juegos/juegos_por_pagina/:perPage/num_pagina/:page`
+  - Lectura de un juego: `/juegos/leer_juego/:id`
+  - Formulario (CRUD): `/juegos/form_juego/` (POST para crear, GET/PATCH/DELETE para gestionar por ID).
 
 **Frontend (Vistas y SPA):**
-- **Inertia.js** actuando como puente entre Laravel y React.
-- **React 19** para la construcción de la interfaz.
-- **Tailwind CSS v4** para estilos utilitarios y responsivos.
-- **Zustand** para la gestión del estado global (si aplica).
-- **Vite 8** como empaquetador ultrarrápido (comando `npm run dev` activo).
-- **Lucide React** para iconografía.
+- **React 18/19** e **Inertia.js**.
+- **Tailwind CSS v4** para diseño premium oscuro.
+- **Lucide React** para iconos.
+- **Axios** para comunicación con la API de Node.js.
 
 ## 📁 2. Estructura Principal del Proyecto
 
-- `app/`: Lógica general de negocio de Laravel (Controladores, Modelos, etc.).
-- `routes/web.php`: Rutas principales. Devuelven las vistas de React usando `Inertia::render()`.
-- `resources/js/`: El núcleo visual del sistema.
-  - `Layouts/`: Contenedores principales (ej. `MainLayout.jsx` con sidebar y overlay móvil accesible).
-  - `Pages/`: Mapeo directo a pantallas de la aplicación (ej. `Dashboard`, `Clientes`, `Facturas`, `Juegos`).
-  - `Services/`: Conectores a la API (`api.js`) para peticiones asíncronas vía Axios.
+- `resources/js/Pages/Juegos/`:
+  - `Index.jsx`: Catálogo principal con grid responsivo, búsqueda y paginación.
+  - `Show.jsx`: Vista detallada de un juego basándose en el boceto `read_juego.html` (Métricas de venta y listado de cuentas asignadas).
+  - `Form.jsx`: Formulario dinámico para añadir, editar y eliminar (Zona de Peligro) juegos del catálogo base (boceto `form_juego.html`).
+- `resources/js/Layouts/MainLayout.jsx`: Contenedor principal con sidebar persistente y navegación responsiva.
 
 ## 🛠️ 3. Reglas y Convenciones de Desarrollo
 
-1. **Accesibilidad UI:** Todos los elementos interactivos personalizados deben ser accesibles (ej. usar etiquetas nativas `<button>` en lugar de usar `<div>` con `role="button"`).
-2. **Estética Visual:** Se mantiene un entorno *Dark Theme* con diseño premium (colores corporativos `#0b0d12`, tarjetas translúcidas, animaciones en las transiciones de menús).
-3. **Componentes Funcionales:** Uso estricto de componentes funcionales en React.jsx.
-4. **Evitar Archivos Innecesarios:** Respaldos del proyecto en carpetas específicas o git (se omite de control de versiones directorios como `_boceto`, `.vscode`, `.agents`).
+1. **Accesibilidad UI:** Priorizar el uso de elementos semánticos (ej. `<button>`, `<label htmlFor="...">`).
+2. **Estética Visual:** Tema oscuro (#0b0d12 / #161821), bordes translúcidos (`border-white/5`), y acentos en índigo (`#6366f1`).
+3. **Comunicación de Datos:** Todas las peticiones al catálogo de juegos deben pasar por el servicio de Node.js configurado en `localhost:3000`.
 
 ---
-Este skill puede ser consultado como referencia en cualquier momento para entender cómo debe modificarse o escalarse el proyecto en el futuro.
+*Este skill se actualiza a medida que el proyecto escala. Última actualización: Implementación completa del módulo de Juegos (CRUD).*

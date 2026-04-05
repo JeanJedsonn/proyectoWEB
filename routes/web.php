@@ -24,3 +24,12 @@ Route::get('/juegos/{id}', function ($id) {
 Route::get('/juegos/{id}/editar', function ($id) {
     return Inertia::render('Juegos/Form', ['id' => $id]);
 })->name('juegos.edit');
+
+// Rutas para Clientes
+Route::get('/clientes', function () {
+    return Inertia::render('Clientes/Index');
+})->name('clientes.index');
+
+Route::get('/clientes/{id}', function ($id) {
+    return Inertia::render('Clientes/Show', ['id' => $id]);
+})->name('clientes.show');

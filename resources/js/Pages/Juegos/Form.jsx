@@ -4,7 +4,8 @@ import { Head, Link, router } from '@inertiajs/react';
 import { ArrowLeft, Save, X, Loader2, Gamepad2, Link as LinkIcon, AlertCircle, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
-export default function JuegoForm({ id = null }) {
+export default function JuegoForm({ id = null }) 
+{
     const isEdit = !!id;
     const [loading, setLoading] = useState(isEdit);
     const [saving, setSaving] = useState(false);
