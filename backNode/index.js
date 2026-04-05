@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 const cors = require('cors');
 
 app.use(cors({
-    origin: 'http://psvs_panel.test', // o usa '*' para permitir todos en la fase de desarrollo
+    origin: 'http://frontlaravel.test', // o usa '*' para permitir todos en la fase de desarrollo
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true
 }));

@@ -1,0 +1,38 @@
+# Laravel specifics in frontLaravel
+/frontLaravel/node_modules
+/frontLaravel/vendor
+/frontLaravel/public/build
+/frontLaravel/public/hot
+/frontLaravel/public/storage
+/frontLaravel/storage/*.key
+/frontLaravel/storage/pail
+/frontLaravel/.env
+/frontLaravel/.env.*
+/frontLaravel/.phpunit.cache
+/frontLaravel/.phpunit.result.cache
+/frontLaravel/Homestead.json
+/frontLaravel/Homestead.yaml
+/frontLaravel/auth.json
+
+# Node.js specifics in backNode
+/backNode/node_modules
+/backNode/.env
+/backNode/.env.*
+/backNode/npm-debug.log
+/backNode/yarn-error.log
+
+# Global and common ignores
+.vscode
+.agents
+.idea
+.fleet
+.nova
+.zed
+.phpactor.json
+npm-debug.log
+yarn-error.log
+_boceto
+**/_boceto/
+**/node_modules/
+**/vendor/
+**/.env
