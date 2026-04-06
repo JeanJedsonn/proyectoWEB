@@ -7,38 +7,44 @@ description: Contexto técnico y estado actual del proyecto Gestión de Ventas (
 
 ## 📌 1. Arquitectura y Stack Tecnológico
 
-El proyecto es un sistema de administración / dashboard (CRM de ventas para juegos, cuentas, etc.) construido sobre una arquitectura moderna.
+El proyecto es un sistema de administración / dashboard (CRM de ventas para juegos, cuentas, etc.) construido sobre una arquitectura moderna de monorepositorio.
 
-**Backend (Frontend Server & Routing):**
-- **Laravel 10+** (PHP 8.2+) sirviendo la aplicación a través de **Inertia.js**.
-- **Enrutamiento:** Definido en `routes/web.php`.
+**Estructura del Repositorio:**
+- `/frontLaravel/`: Aplicación principal (Laravel + Inertia + React).
+- `/backNode/`: Servidor de API de datos (Node.js + Express + SQL).
 
-**Backend Data (API):**
-- **Node.js Server** (corriendo en `localhost:3000`).
-- Provee endpoints para:
-  - Paginación de juegos: `/juegos/juegos_por_pagina/:perPage/num_pagina/:page`
-  - Lectura de un juego: `/juegos/leer_juego/:id`
-  - Formulario (CRUD): `/juegos/form_juego/` (POST para crear, GET/PATCH/DELETE para gestionar por ID).
+**Tecnologías Core:**
+- **Backend (Routing/Frontend Server):** Laravel 10+ cargando vistas via **Inertia.js**.
+- **Backend Data (API):** Node.js Server (`localhost:3000`) para persistencia y lógica de negocio.
+- **Frontend:** React 18/19, Tailwind CSS v4, Lucide React icons, Axios.
 
-**Frontend (Vistas y SPA):**
-- **React 18/19** e **Inertia.js**.
-- **Tailwind CSS v4** para diseño premium oscuro.
-- **Lucide React** para iconos.
-- **Axios** para comunicación con la API de Node.js.
+## 📁 2. Módulos Implementados (Estado Actual)
 
-## 📁 2. Estructura Principal del Proyecto
+### 🎮 Módulo de Juegos (Completo)
+- `Index.jsx`: Catálogo en grid responsivo con búsqueda y paginación.
+- `Show.jsx`: Métricas de venta y listado de cuentas asignadas.
+- `Form.jsx`: CRUD completo con zona de peligro y gestión de metadatos.
 
-- `resources/js/Pages/Juegos/`:
-  - `Index.jsx`: Catálogo principal con grid responsivo, búsqueda y paginación.
-  - `Show.jsx`: Vista detallada de un juego basándose en el boceto `read_juego.html` (Métricas de venta y listado de cuentas asignadas).
-  - `Form.jsx`: Formulario dinámico para añadir, editar y eliminar (Zona de Peligro) juegos del catálogo base (boceto `form_juego.html`).
-- `resources/js/Layouts/MainLayout.jsx`: Contenedor principal con sidebar persistente y navegación responsiva.
+### 👥 Módulo de Clientes (Completo)
+- `Index.jsx`: Tablas dinámicas con filtros por origen (Instagram, WhatsApp, etc.).
+- `Show.jsx`: Perfil detallado con historial de compras e interacción social.
+- `Form.jsx`: Creación/Edición con validaciones y campos opcionales (notas, redes).
+
+### 📧 Módulo de Correos (Completo)
+- `Index.jsx`: Bóveda de correos base con iconos por proveedor (Gmail, Outlook).
+- `Show.jsx`: Visualización de credenciales y cuentas de juego dependientes.
+- `Form.jsx`: Gestión de claves, métodos de recuperación y redireccionamiento.
+
+### 🔑 Módulo de Cuenta Juegos (Completo)
+- `Index.jsx`: Inventario de cuentas por plataforma con detección de 2FA.
+- `Show.jsx`: Detalles técnicos, semilla de recuperación, dirección JSON y catálogo de juegos incluidos.
+- `Form.jsx`: Asignación multiselect de juegos, selector de correo matriz y regionalización.
 
 ## 🛠️ 3. Reglas y Convenciones de Desarrollo
 
-1. **Accesibilidad UI:** Priorizar el uso de elementos semánticos (ej. `<button>`, `<label htmlFor="...">`).
-2. **Estética Visual:** Tema oscuro (#0b0d12 / #161821), bordes translúcidos (`border-white/5`), y acentos en índigo (`#6366f1`).
-3. **Comunicación de Datos:** Todas las peticiones al catálogo de juegos deben pasar por el servicio de Node.js configurado en `localhost:3000`.
+1. **Diseño Premium:** Tema ultra-oscuro (`#0b0d12` / `#161821`), bordes `white/5`, y radios de curvatura amplios (`rounded-4xl`).
+2. **Navegación:** Uso de `Link` y `router` de `@inertiajs/react` para mantener el estado de SPA.
+3. **Flujo de Trabajo Git:** Rama `develop` para integración, ramas `Front` y `Back` para desarrollo específico.
 
 ---
-*Este skill se actualiza a medida que el proyecto escala. Última actualización: Implementación completa del módulo de Juegos (CRUD).*
+*Última actualización: Ciclo CRUD completo para Juegos, Clientes, Correos y Cuenta Juegos.*
