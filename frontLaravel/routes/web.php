@@ -41,3 +41,21 @@ Route::get('/clientes/{id}', function ($id) {
 Route::get('/clientes/{id}/editar', function ($id) {
     return Inertia::render('Clientes/Form', ['id' => $id]);
 })->name('clientes.edit');
+
+// Rutas para Correos
+Route::get('/correos', function () {
+    return Inertia::render('Correos/Index');
+})->name('correos.index');
+
+// Formularios para Correos
+Route::get('/correos/nuevo', function () {
+    return Inertia::render('Correos/Form');
+})->name('correos.create');
+
+Route::get('/correos/{id}', function ($id) {
+    return Inertia::render('Correos/Show', ['id' => $id]);
+})->name('correos.show');
+
+Route::get('/correos/{id}/editar', function ($id) {
+    return Inertia::render('Correos/Form', ['id' => $id]);
+})->name('correos.edit');
