@@ -3,6 +3,7 @@ const createTables = require('./createTables');
 const app = express();
 const port = process.env.PORT || 3000;
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 
 app.use(cors({
     origin: 'http://frontlaravel.test', // o usa '*' para permitir todos en la fase de desarrollo

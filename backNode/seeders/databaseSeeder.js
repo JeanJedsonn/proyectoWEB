@@ -1,5 +1,6 @@
 const pool = require('../databaseCredentials');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 // Importar seeders individuales
 const seedRedesSociales = require('./seeder_redes_sociales');
 const seedJuegos = require('./seeder_juegos');

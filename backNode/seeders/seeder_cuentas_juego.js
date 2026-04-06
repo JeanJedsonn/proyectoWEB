@@ -1,6 +1,7 @@
 const XLSX = require('xlsx');
 const path = require('path');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 /**
  * Lee las cuentas de juego desde el archivo Excel "DB_CuentaJuego.xlsx".
  * Agrupa los juegos por correo, ya que un mismo correo puede tener múltiples juegos.
@@ -20,7 +21,7 @@ const leerCuentasDesdeExcel = () => {
         if (!cuentasMap.has(correo)) {
             cuentasMap.set(correo, {
                 correo,
-                clave: row['clave'],
+                clave: bcrypt.hashSync(row['clave'], 10), // Encriptando la clave usando bcrypt
                 cumpleanos: row['cumpleanos'] || null,
                 region: row['region'] || 'NA',
                 fechaDesactivacion: row['fechaDesactivacion'] === 'null' ? null : row['fechaDesactivacion'],

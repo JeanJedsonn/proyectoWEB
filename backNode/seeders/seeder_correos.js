@@ -1,6 +1,7 @@
 const XLSX = require('xlsx');
 const path = require('path');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 /**
  * Lee los correos desde el archivo Excel "DB_Correo.xlsx".
  * Columnas del Excel: correo, clave, recuperacion, redirecion, cumpleaños
@@ -18,7 +19,7 @@ const leerCorreosDesdeExcel = () => {
     return data
         .map(row => ({
             direccion: row['correo'],
-            clave: row['clave'],
+            clave: bcrypt.hashSync(row['clave'], 10),  // Encriptando la clave usando bcrypt
             cumpleanos: row['cumpleaños'] || null,
             recuperacion: row['recuperacion'] || '',
             redireccion: row['redirecion'] || ''  // la columna del Excel tiene un typo ("redirecion")
