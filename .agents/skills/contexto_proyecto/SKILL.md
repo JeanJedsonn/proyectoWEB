@@ -81,5 +81,22 @@ Basado en un esquema **Ultra-Dark Premium**, la paleta se rige por transparencia
 3. **Navegación:** Uso de `Link` y `router` de `@inertiajs/react` para mantener el estado de SPA.
 4. **Componentización:** Al crear o modificar vistas, se DEBEN utilizar los componentes de `Components/UI/` en lugar de clases ad-hoc de Tailwind.
 
+## 🔒 6. Seguridad y Autenticación
+
+El sistema implementa una arquitectura moderna de seguridad separada entre Node.js y React:
+
+1. **JWT y Autenticación:**
+   - Node.js emite un JWT (1 hora de validez) tras validar el login (`authController.js`).
+   - El token se guarda en `localStorage('token')` del lado de React (`Login.jsx`).
+   - **Axios Global Interceptors:** En `bootstrap.js` toda petición saliente inyecta dinámicamente el `Bearer Token`. Si Node devuelve un `401 Unauthorized` por expiración, el interceptor expulsa limpia y automáticamente al usuario al `/login`.
+
+2. **Recuperación de Contraseñas (Zero-Mail):**
+   - El ecosistema incluye un Wizard estético de 2 fases en `Recuperar.jsx`.
+   - Modela 3 preguntas secretas en la Base de Datos.
+   - **Case Insensitivity:** Node corrige errores (espacios, mayúsculas) y verifica estrictamente contra Hashes Matemáticos de `bcrypt`. El texto plano jamás se guarda.
+
+3. **Manejo Seguro de Archivos / Raw JSON:**
+   - En lugar de redirigir la ventana del explorador nativo para leer archivos, el frontend utiliza `Axios` para descargar Blobs y generar un `URL.createObjectURL(blob)`, manteniendo los tokens 100% ocultos en los headers y garantizando cero fugas en el historial.
+
 ---
-*Última actualización: Estándares de redondez y paleta de colores.*
+*Última actualización: Integración Full-Stack de JWT, interceptores y recuperación de cuentas Hash-Based.*
