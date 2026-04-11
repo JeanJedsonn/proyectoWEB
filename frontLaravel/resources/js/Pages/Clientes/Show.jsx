@@ -41,6 +41,24 @@ export default function ClienteShow({ id }) {
         });
     };
 
+    // Abre la factura extrayendo los datos de manera SEGURA con cabeceras Bearer
+    const handleVerFacturaSegura = async (id_factura) => {
+        try {
+            const res = await axios.get(`http://localhost:3000/facturas/leer_factura/${id_factura}`);
+            
+            // Si el objetivo es solo visualizar la data (o en el futuro renderizar un componente),
+            // creamos un archivo en crudo local y lo abrimos en otra pestaña.
+            const dataStr = JSON.stringify(res.data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const temporaryUrl = URL.createObjectURL(blob);
+            
+            window.open(temporaryUrl, '_blank');
+        } catch (error) {
+            console.error("No se pudo cargar la factura:", error);
+            alert("No tienes permisos o el servidor falló al consultar esta factura.");
+        }
+    };
+
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', { 
@@ -225,7 +243,7 @@ export default function ClienteShow({ id }) {
                                         <div 
                                             key={factura.id}
                                             className="bg-white/2 border border-white/5 rounded-2xl p-4 cursor-pointer hover:border-indigo-500/30 transition-all group border-l-4 border-l-indigo-500"
-                                            onClick={() => window.location.href = `http://localhost:3000/facturas/leer_factura/${factura.id}`}
+                                            onClick={() => handleVerFacturaSegura(factura.id)}
                                         >
                                             <div className="flex justify-between items-start mb-3">
                                                 <h4 className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors line-clamp-1">

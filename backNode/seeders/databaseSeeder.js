@@ -1,6 +1,7 @@
 const pool = require('../databaseCredentials');
 
 // Importar seeders individuales
+const seedUsuarios = require('./seeder_usuarios');
 const seedRedesSociales = require('./seeder_redes_sociales');
 const seedJuegos = require('./seeder_juegos');
 const seedCorreos = require('./seeder_correos');
@@ -21,6 +22,9 @@ const seedDatabase = async (shouldClosePool = true) => {
     try {
         console.log('Iniciando carga completa de datos de prueba (Seeder)...\n');
         await client.query('BEGIN');
+
+        // 0. Usuarios
+        await seedUsuarios(client);
 
         // 1. Redes Sociales
         await seedRedesSociales(client);

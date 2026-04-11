@@ -35,9 +35,24 @@ async function createTables() {
         // Eliminación en cascada de todas las tablas existentes
         console.log('Eliminando tablas existentes (CASCADE)...');
         await client.query(`
-            DROP TABLE IF EXISTS Factura, Cuentajuego, RedesSociales, Juego, Correo, Cliente CASCADE
+            DROP TABLE IF EXISTS Factura, Cuentajuego, RedesSociales, Juego, Correo, Cliente, Usuario CASCADE
         `);
 
+
+        // 0. Tabla: Usuario
+        await checkAndCreateTable(client, 'Usuario', `
+            CREATE TABLE Usuario (
+                id SERIAL PRIMARY KEY,
+                correo VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                pregunta1 VARCHAR(255),
+                respuesta1 VARCHAR(255),
+                pregunta2 VARCHAR(255),
+                respuesta2 VARCHAR(255),
+                pregunta3 VARCHAR(255),
+                respuesta3 VARCHAR(255)
+            );
+        `);
 
         // 1. Tabla: Cliente
         await checkAndCreateTable(client, 'Cliente', `
