@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 const cors = require('cors');
 
 app.use(cors({
-    origin: 'http://frontlaravel.test', // o usa '*' para permitir todos en la fase de desarrollo
+    origin: ['http://frontlaravel.test', 'http://localhost:8000', 'http://127.0.0.1:8000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true
 }));
@@ -20,13 +20,18 @@ const correosRouter = require('./routes/correos');
 const cuentasRouter = require('./routes/cuentas');
 const facturasRouter = require('./routes/facturas');
 const dashboardRouter = require('./routes/dashboard');
+const authRouter = require('./routes/auth');
+const authMiddleware = require('./middleware/authMiddleware');
 
-app.use('/clientes', clientesRouter);
-app.use('/juegos', juegosRouter);
-app.use('/correos', correosRouter);
-app.use('/cuentas', cuentasRouter);
-app.use('/facturas', facturasRouter);
-app.use('/', dashboardRouter); // Dashboard at /dashboard
+app.use('/auth', authRouter); // Ruta de autenticación pública
+
+// Rutas protegidas con el middleware de JWT
+app.use('/clientes', authMiddleware, clientesRouter);
+app.use('/juegos', authMiddleware, juegosRouter);
+app.use('/correos', authMiddleware, correosRouter);
+app.use('/cuentas', authMiddleware, cuentasRouter);
+app.use('/facturas', authMiddleware, facturasRouter);
+app.use('/', authMiddleware, dashboardRouter); // Dashboard at /dashboard
 
 
 // Ruta de prueba

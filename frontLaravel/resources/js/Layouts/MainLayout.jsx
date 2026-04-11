@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, FileText, Users, Mail, Gamepad2, PackageSearch, Settings, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Mail, Gamepad2, PackageSearch, Settings, Menu, X, LogOut } from 'lucide-react';
 
 export default function MainLayout({ children }) {
     const { url } = usePage();
@@ -91,6 +91,18 @@ export default function MainLayout({ children }) {
                             <Settings className="w-5 h-5" />
                             <span className="font-medium text-sm">Opciones Globales</span>
                         </Link>
+                        
+                        <button 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                localStorage.removeItem('token');
+                                window.location.href = '/login';
+                            }}
+                            className="w-full mt-1 flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-400 hover:bg-red-500/10 hover:text-red-400"
+                        >
+                            <LogOut className="w-5 h-5" />
+                            <span className="font-medium text-sm">Cerrar Sesión</span>
+                        </button>
                     </div>
 
                 </div>

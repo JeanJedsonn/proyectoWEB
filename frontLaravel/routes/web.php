@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// Ruta para login
+Route::get('/login', function () {
+    return Inertia::render('Login');
+})->name('login');
+
 // Ruta para la vista principal, se encuentra en resources/js/Pages/Dashboard.jsx
 Route::get('/', function () {
     return Inertia::render('Dashboard');
