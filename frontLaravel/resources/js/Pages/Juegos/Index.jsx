@@ -92,6 +92,7 @@ export default function JuegosIndex() {
                     page={page}
                     lastPage={paginationInfo.last_page}
                     total={paginationInfo.total}
+                    perPage={perPage}
                     onPageChange={setPage}
                     label="juegos registrados"
                 />

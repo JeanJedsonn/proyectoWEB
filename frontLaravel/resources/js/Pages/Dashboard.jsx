@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import MainLayout from '@/Layouts/MainLayout';      // Layout principal, contiene la barra lateral y el header
 import { 
-    Plus, FileText, TrendingUp, TrendingDown, 
-    DollarSign, Users, Package, Check, Circle, Loader2
+    Plus, FileText, TrendingUp, 
+    DollarSign, Users, Package, Circle, Loader2
 } from 'lucide-react';
 import axios from 'axios';
 
 import Button from '@/Components/UI/Button';
+import PageHeader from '@/Components/UI/PageHeader';
+import GenericTable from '@/Components/UI/GenericTable';
 
 export default function Dashboard() {
     const [data, setData] = useState(null);
@@ -154,33 +156,31 @@ export default function Dashboard() {
                             </a>
                         </div>
                         
-                        <div className="overflow-x-auto flex-1">
-                            <table className="w-full text-left text-sm whitespace-nowrap">
-                                <thead className="bg-[#0b0d12]/50 text-gray-400 uppercase text-xs font-semibold">
-                                    <tr>
-                                        <th className="px-6 py-4">Nº Ticket</th>
-                                        <th className="px-6 py-4">Fecha</th>
-                                        <th className="px-6 py-4">Cliente</th>
-                                        <th className="px-6 py-4">Producto</th>
-                                        <th className="px-6 py-4">Tipo</th>
-                                        <th className="px-6 py-4 text-right">Monto</th>
+                        <div className="overflow-x-auto flex-1 p-0">
+                            <GenericTable 
+                                columns={[
+                                    { header: 'Nº Ticket' },
+                                    { header: 'Fecha' },
+                                    { header: 'Cliente' },
+                                    { header: 'Producto' },
+                                    { header: 'Tipo' },
+                                    { header: 'Monto', className: 'text-right' },
+                                ]}
+                                data={data.ultimasVentas}
+                                loading={false}
+                                renderRow={(venta) => (
+                                    <tr key={venta.id} className="group border-b border-white/5 hover:bg-white/2 transition-all cursor-pointer">
+                                        <td className="px-6 py-4 font-bold text-gray-500">#{venta.id}</td>
+                                        <td className="px-6 py-4 text-gray-300 font-medium">{formatDate(venta.fecha)}</td>
+                                        <td className="px-6 py-4 text-white font-bold">{venta.cliente}</td>
+                                        <td className="px-6 py-4 text-gray-300 font-medium">{venta.juego}</td>
+                                        <td className="px-6 py-4">
+                                            {renderTypeBadge(venta.tipo)}
+                                        </td>
+                                        <td className="px-6 py-4 font-black text-white text-right">$ {venta.monto}</td>
                                     </tr>
-                                </thead>
-                                <tbody className="divide-y divide-white/5">
-                                    {data.ultimasVentas.map((venta) => (
-                                        <tr key={venta.id} className="hover:bg-white/5 cursor-pointer transition-colors group">
-                                            <td className="px-6 py-4 font-semibold text-gray-500">#{venta.id}</td>
-                                            <td className="px-6 py-4 text-gray-300">{formatDate(venta.fecha)}</td>
-                                            <td className="px-6 py-4 text-white font-medium">{venta.cliente}</td>
-                                            <td className="px-6 py-4 text-gray-300">{venta.juego}</td>
-                                            <td className="px-6 py-4">
-                                                {renderTypeBadge(venta.tipo)}
-                                            </td>
-                                            <td className="px-6 py-4 font-bold text-white text-right">$ {venta.monto}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                )}
+                            />
                         </div>
                     </div>
 
@@ -236,12 +236,12 @@ export default function Dashboard() {
     return (
         
         <MainLayout>
-            {/* Header */}
-            <header className="flex justify-between items-start mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Dashboard</h1>
-                    <p className="text-gray-400 text-sm">Resumen operativo de ventas, métricas de facturación y tareas pendientes del sistema.</p>
-                </div>
+            <PageHeader
+                title="Dashboard"
+                description="Resumen operativo de ventas, métricas de facturación y tareas pendientes del sistema."
+                icon={TrendingUp}
+                topLabel="Panel Principal"
+            >
                 <Button 
                     variant="primary" 
                     icon={Plus} 
@@ -249,7 +249,7 @@ export default function Dashboard() {
                 >
                     Generar Nueva Venta
                 </Button>
-            </header>
+            </PageHeader>
 
             {renderContent()}
         </MainLayout>
