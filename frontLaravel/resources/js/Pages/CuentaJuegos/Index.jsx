@@ -4,11 +4,19 @@ import { Head, Link, router } from '@inertiajs/react';
 import { 
     Monitor, Search, Filter, Loader2, ChevronLeft, ChevronRight, 
     Plus, ExternalLink, Copy, Gamepad2, ShieldCheck, 
-    Smartphone, Database, LayoutGrid, Key
+    Smartphone, Database, LayoutGrid, Key 
 } from 'lucide-react';
 import axios from 'axios';
 
+// Componentes Atómicos
+import PageHeader from '@/Components/UI/PageHeader';
+import Button from '@/Components/UI/Button';
+import Select from '@/Components/UI/Select';
+import Input from '@/Components/UI/Input';
+
 export default function CuentaJuegosIndex() {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [platform, setPlatform] = useState('');
     const [cuentas, setCuentas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -26,7 +34,6 @@ export default function CuentaJuegosIndex() {
         const fetchCuentas = async () => {
             setLoading(true);
             try {
-                // Endpoint: /cuentas/cuentas_por_pagina/{cantidad}/num_pagina/{indice}
                 const res = await axios.get(`http://localhost:3000/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`);
                 setCuentas(res.data.data || []);
                 setPaginationInfo({
@@ -178,47 +185,43 @@ export default function CuentaJuegosIndex() {
         <MainLayout>
             <Head title="Cuentas Registradas" />
             
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
-                <div>
-                    <div className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-3">
-                        <Gamepad2 className="w-4 h-4" />
-                        <span>Inventario Matriz</span>
-                    </div>
-                    <h1 className="text-4xl font-extrabold text-white tracking-tighter leading-none">
-                        Cuenta Juegos
-                    </h1>
-                    <p className="text-gray-400 text-sm mt-3 font-medium italic">
-                        Desglose de credenciales, plataformas y dependencias de juegos.
-                    </p>
-                </div>
-                <Link 
-                    href="/cuentas_juego/nuevo"
-                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3.5 rounded-2xl text-sm font-black transition-all shadow-xl shadow-indigo-500/20 uppercase tracking-widest"
+            <PageHeader
+                title="Cuenta Juegos"
+                description="Desglose de credenciales, plataformas y dependencias de juegos."
+                icon={Gamepad2}
+                topLabel="Inventario Matriz"
+            >
+                <Button 
+                    variant="primary" 
+                    icon={Plus} 
+                    onClick={() => router.visit('/cuentas_juego/nuevo')}
                 >
-                    <Plus className="w-5 h-5" />
                     Añadir Cuenta
-                </Link>
-            </div>
+                </Button>
+            </PageHeader>
 
             {/* Filters */}
             <div className="flex flex-col md:flex-row gap-4 mb-8">
-                <div className="relative flex-1 group">
-                    <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-gray-600" />
-                    <input 
-                        type="text" 
-                        placeholder="Buscar por correo, clave, juego o ID..." 
-                        className="w-full bg-[#161821] border border-white/5 rounded-2xl pl-14 pr-6 py-4.5 text-sm text-white placeholder-gray-700 focus:outline-none focus:border-indigo-500/50 shadow-2xl font-bold transition-all"
-                    />
-                </div>
+                <Input 
+                    icon={Search}
+                    placeholder="Buscar por correo, clave, juego o ID..." 
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="flex-1 space-y-0"
+                />
                 <div className="flex gap-4">
-                    <select className="bg-[#161821] border border-white/5 rounded-2xl px-6 py-4 text-sm text-gray-400 focus:outline-none focus:border-indigo-500/50 transition-all font-bold cursor-pointer appearance-none">
-                        <option value="">Plataformas</option>
-                        <option value="psn">PlayStation</option>
-                        <option value="xbox">Xbox Live</option>
-                        <option value="steam">Steam PC</option>
-                        <option value="nintendo">Nintendo</option>
-                    </select>
+                    <Select 
+                        placeholder="Plataformas"
+                        value={platform}
+                        onChange={(e) => setPlatform(e.target.value)}
+                        options={[
+                            { value: 'psn', label: 'PlayStation' },
+                            { value: 'xbox', label: 'Xbox Live' },
+                            { value: 'steam', label: 'Steam PC' },
+                            { value: 'nintendo', label: 'Nintendo' },
+                        ]}
+                        className="space-y-0 w-48"
+                    />
                     <button className="flex items-center justify-center px-5 bg-white/2 hover:bg-indigo-600 rounded-2xl text-gray-600 hover:text-white transition-all border border-white/5">
                         <Filter className="w-5 h-5" />
                     </button>
@@ -284,7 +287,7 @@ export default function CuentaJuegosIndex() {
 
             {/* Toast */}
             {showCopyMsg && (
-                <div className="fixed bottom-10 right-10 z-100 animate-in slide-in-from-right-10 fade-in duration-500">
+                <div className="fixed bottom-10 right-10 z-100">
                     <div className="bg-indigo-600/90 backdrop-blur-xl text-white px-8 py-5 rounded-3xl shadow-2xl font-black flex items-center gap-4 border border-white/10 uppercase text-xs tracking-widest italic">
                         <ShieldCheck className="w-5 h-5" />
                         {copyMsgText}
