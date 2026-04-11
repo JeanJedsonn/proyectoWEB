@@ -59,3 +59,20 @@ Route::get('/correos/{id}', function ($id) {
 Route::get('/correos/{id}/editar', function ($id) {
     return Inertia::render('Correos/Form', ['id' => $id]);
 })->name('correos.edit');
+
+// Rutas para Cuenta Juegos
+Route::get('/cuentas_juego', function () {
+    return Inertia::render('CuentaJuegos/Index');
+})->name('cuentas_juego.index');
+
+Route::get('/cuentas_juego/nuevo', function () {
+    return Inertia::render('CuentaJuegos/Form');
+})->name('cuentas_juego.create');
+
+Route::get('/cuentas_juego/{id}', function ($id) {
+    return Inertia::render('CuentaJuegos/Show', ['id' => $id]);
+})->name('cuentas_juego.show');
+
+Route::get('/cuentas_juego/{id}/editar', function ($id) {
+    return Inertia::render('CuentaJuegos/Form', ['id' => $id]);
+})->name('cuentas_juego.edit');

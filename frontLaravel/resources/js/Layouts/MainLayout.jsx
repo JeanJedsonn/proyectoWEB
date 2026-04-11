@@ -11,7 +11,7 @@ export default function MainLayout({ children }) {
         { name: 'Facturas', href: '/facturas', icon: FileText },
         { name: 'Clientes', href: '/clientes', icon: Users },
         { name: 'Correos', href: '/correos', icon: Mail },
-        { name: 'Cuenta Juegos', href: '/cuentas', icon: Gamepad2 },
+        { name: 'Cuenta Juegos', href: '/cuentas_juego', icon: Gamepad2 },
         { name: 'Juegos', href: '/juegos', icon: PackageSearch },
     ];
 
