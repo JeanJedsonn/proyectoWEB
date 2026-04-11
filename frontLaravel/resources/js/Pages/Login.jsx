@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Lock, Mail, Loader2, ArrowRight } from 'lucide-react';
 
@@ -111,6 +111,15 @@ export default function Login() {
                                 required
                             />
                         </div>
+                    </div>
+
+                    <div className="flex justify-end pt-1">
+                        <Link 
+                            href="/recuperar" 
+                            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </Link>
                     </div>
 
                     <div className="pt-2">
