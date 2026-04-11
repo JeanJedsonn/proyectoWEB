@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 
+import Button from '@/Components/UI/Button';
+
 export default function Dashboard() {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -240,10 +242,13 @@ export default function Dashboard() {
                     <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Dashboard</h1>
                     <p className="text-gray-400 text-sm">Resumen operativo de ventas, métricas de facturación y tareas pendientes del sistema.</p>
                 </div>
-                <button className="flex items-center gap-2 bg-[#6366f1] hover:bg-[#4f46e5] text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors shadow-lg shadow-indigo-500/20">
-                    <Plus className="w-4 h-4" />
+                <Button 
+                    variant="primary" 
+                    icon={Plus} 
+                    onClick={() => console.log('Nueva Venta')}
+                >
                     Generar Nueva Venta
-                </button>
+                </Button>
             </header>
 
             {renderContent()}
