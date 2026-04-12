@@ -8,6 +8,8 @@ import {
     Gamepad2, ShieldCheck, Key, AlertTriangle, Mail
 } from 'lucide-react';
 import Button from '@/Components/UI/Button';
+import Input from '@/Components/UI/Input';
+import Select from '@/Components/UI/Select';
 
 export default function FacturaForm({ id = null }) {
     const isEditing = !!id;
@@ -197,6 +199,7 @@ export default function FacturaForm({ id = null }) {
                     </Button>
                     <Button 
                         type="submit" 
+                        form="facturaForm"
                         variant="primary"
                         loading={submitting}
                         icon={Save}
@@ -206,7 +209,7 @@ export default function FacturaForm({ id = null }) {
                 </div>
             </header>
 
-            <form onSubmit={handleSubmit} className="animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20 max-w-6xl mx-auto">
+            <form id="facturaForm" onSubmit={handleSubmit} className="animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20 max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Sección 1: Detalles de Transacción */}
                     <div className="bg-[#161821] border border-white/5 rounded-4xl p-10 shadow-xl relative border-l-4 border-l-emerald-500">
@@ -217,49 +220,34 @@ export default function FacturaForm({ id = null }) {
 
                         <div className="space-y-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Inversión Base (Costo)*</label>
-                                    <div className="relative">
-                                        <DollarSign className="w-4 h-4 absolute left-6 top-1/2 -translate-y-1/2 text-gray-700" />
-                                        <input 
-                                            type="number" step="0.01" required
-                                            name="precioCompra"
-                                            value={formData.precioCompra}
-                                            onChange={handleChange}
-                                            placeholder="0.00"
-                                            className="w-full bg-black/40 border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-emerald-400/50 font-black focus:outline-none focus:border-indigo-500/50"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Facturación al Cliente *</label>
-                                    <div className="relative">
-                                        <DollarSign className="w-4 h-4 absolute left-6 top-1/2 -translate-y-1/2 text-gray-700" />
-                                        <input 
-                                            type="number" step="0.01" required
-                                            name="precioVenta"
-                                            value={formData.precioVenta}
-                                            onChange={handleChange}
-                                            placeholder="0.00"
-                                            className="w-full bg-black/40 border-emerald-500/20 rounded-2xl pl-14 pr-6 py-4 text-emerald-400 font-black focus:outline-none focus:border-emerald-500/50"
-                                        />
-                                    </div>
-                                </div>
+                                <Input
+                                    label="Inversión Base (Costo)"
+                                    type="number" step="0.01" required
+                                    name="precioCompra"
+                                    value={formData.precioCompra}
+                                    onChange={handleChange}
+                                    placeholder="0.00"
+                                    icon={DollarSign}
+                                />
+                                <Input
+                                    label="Facturación al Cliente"
+                                    type="number" step="0.01" required
+                                    name="precioVenta"
+                                    value={formData.precioVenta}
+                                    onChange={handleChange}
+                                    placeholder="0.00"
+                                    icon={DollarSign}
+                                />
                             </div>
 
-                            <div className="space-y-3">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Fecha y Hora de Emisión *</label>
-                                <div className="relative">
-                                    <Calendar className="w-4 h-4 absolute left-6 top-1/2 -translate-y-1/2 text-gray-700" />
-                                    <input 
-                                        type="datetime-local" required
-                                        name="fecha"
-                                        value={formData.fecha}
-                                        onChange={handleChange}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500/50 appearance-none"
-                                    />
-                                </div>
-                            </div>
+                            <Input
+                                label="Fecha y Hora de Emisión"
+                                type="datetime-local" required
+                                name="fecha"
+                                value={formData.fecha}
+                                onChange={handleChange}
+                                icon={Calendar}
+                            />
                             
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex justify-between">
@@ -267,29 +255,34 @@ export default function FacturaForm({ id = null }) {
                                     <Link href="/clientes/nuevo" className="text-indigo-400 hover:underline">Registrar Nuevo</Link>
                                 </label>
                                 <div className="bg-black/20 border border-white/5 rounded-2xl p-4 space-y-4">
-                                    <div className="relative">
-                                        <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-600" />
-                                        <input 
-                                            type="text"
-                                            placeholder="Buscar cliente por nombre..."
-                                            value={searchCliente}
-                                            onChange={(e) => setSearchCliente(e.target.value)}
-                                            className="w-full bg-black/40 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-indigo-500/30"
-                                        />
-                                    </div>
-                                    <div className="relative">
-                                        <User className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-700 pointer-events-none" />
-                                        <select 
-                                            name="clienteID" required
-                                            size="4"
-                                            value={formData.clienteID}
-                                            onChange={handleChange}
-                                            className="w-full bg-black/40 border border-white/5 rounded-xl px-12 py-3 text-white text-sm font-bold focus:outline-none focus:border-indigo-500/50 appearance-none cursor-pointer custom-scrollbar"
-                                        >
-                                            {filteredClientes.map(cl => (
-                                                <option key={cl.id} value={cl.id} className="p-2 hover:bg-white/5 border-b border-white/5 last:border-0 rounded">{cl.nombre} ({cl.red || 'S/R'})</option>
-                                            ))}
-                                        </select>
+                                    <Input 
+                                        type="text"
+                                        placeholder="Buscar cliente por nombre..."
+                                        value={searchCliente}
+                                        onChange={(e) => setSearchCliente(e.target.value)}
+                                        icon={Search}
+                                        className="space-y-0"
+                                    />
+                                    <div className="relative bg-black/40 border border-white/5 rounded-xl overflow-hidden transition-colors">
+                                        <User className="w-4 h-4 absolute left-4 top-5 text-gray-700 pointer-events-none z-10" />
+                                        <div className="w-full h-40 overflow-y-auto custom-scrollbar p-2 pl-12">
+                                            {filteredClientes.map(cl => {
+                                                const isSelected = String(formData.clienteID) === String(cl.id);
+                                                return (
+                                                    <button 
+                                                        key={cl.id} 
+                                                        type="button"
+                                                        onClick={() => handleChange({target: {name: 'clienteID', value: cl.id}})}
+                                                        className={`w-full text-left p-3 text-sm font-bold transition-all mb-1 last:mb-0 rounded-lg ${isSelected ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white border border-transparent'}`}
+                                                    >
+                                                        {cl.nombre} <span className="opacity-50 font-normal">({cl.red || 'S/R'})</span>
+                                                    </button>
+                                                )
+                                            })}
+                                            {filteredClientes.length === 0 && (
+                                                <div className="p-4 text-center text-xs font-bold text-gray-700 uppercase italic">Sin coincidencias</div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -305,99 +298,100 @@ export default function FacturaForm({ id = null }) {
 
                         <div className="space-y-8 mb-10">
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex justify-between">
+                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex justify-between px-1">
                                     Título Licenciado *
                                     <Link href="/juegos/nuevo" className="text-indigo-400 hover:underline">Agregar Manualmente</Link>
                                 </label>
-                                <select 
+                                <Select 
                                     name="juego_id" required
                                     value={formData.juego_id}
                                     onChange={handleChange}
-                                    className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none appearance-none"
-                                >
-                                    <option value="">Selecciona el activo digital...</option>
-                                    {juegos.map(jg => (
-                                        <option key={jg.id} value={jg.id}>{jg.titulo}</option>
-                                    ))}
-                                </select>
+                                    placeholder="Selecciona el activo digital..."
+                                    options={juegos.map(jg => ({ value: jg.id, label: jg.titulo }))}
+                                    className="space-y-0"
+                                />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Plataforma Matriz *</label>
-                                    <select 
-                                        name="plataforma" required
-                                        value={formData.plataforma}
-                                        onChange={handleChange}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none appearance-none"
-                                    >
-                                        <option value="PS4">PlayStation 4</option>
-                                        <option value="PS5">PlayStation 5</option>
-                                        <option value="Xbox">Xbox Server</option>
-                                        <option value="Nintendo">Nintendo Switch</option>
-                                    </select>
-                                </div>
+                                <Select 
+                                    label="Plataforma Matriz"
+                                    name="plataforma" required
+                                    value={formData.plataforma}
+                                    onChange={handleChange}
+                                    options={[
+                                        {value: "PS4", label: "PlayStation 4"},
+                                        {value: "PS5", label: "PlayStation 5"},
+                                        {value: "Xbox", label: "Xbox Server"},
+                                        {value: "Nintendo", label: "Nintendo Switch"}
+                                    ]}
+                                />
 
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Modo de Cuenta *</label>
-                                    <select 
-                                        name="tipo" required
-                                        value={formData.tipo}
-                                        onChange={handleChange}
-                                        className="w-full bg-black/40 border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none appearance-none"
-                                    >
-                                        <option value="Primaria">Primaria (Global)</option>
-                                        <option value="Secundaria">Secundaria (Lock)</option>
-                                    </select>
-                                </div>
+                                <Select 
+                                    label="Modo de Cuenta"
+                                    name="tipo" required
+                                    value={formData.tipo}
+                                    onChange={handleChange}
+                                    options={[
+                                        {value: "Primaria", label: "Primaria (Global)"},
+                                        {value: "Secundaria", label: "Secundaria (Lock)"}
+                                    ]}
+                                />
                             </div>
                         </div>
 
                         {/* Snapshot Box */}
-                        <div className="bg-red-500/5 p-8 rounded-3xl border border-red-500/10 mt-8">
-                            <h3 className="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                                <ShieldCheck className="w-4 h-4" />
-                                Snapshot Histórico (Credenciales)
-                            </h3>
-                            <p className="text-xs text-red-500/50 font-medium mb-6 italic">
-                                Busca y asocia la Cuenta Maestra para extraer automáticamente su Correo y Clave. Estos datos quedarán plasmados definitivamente en la factura.
-                            </p>
+                        <div className="space-y-3 mt-8 pt-8 border-t border-white/5">
+                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex justify-between mb-4">
+                                <span className="flex items-center gap-2">
+                                    <ShieldCheck className="w-3.5 h-3.5" />
+                                    Snapshot Histórico (Cuenta Origen)
+                                </span>
+                            </label>
                             
-                            <div className="bg-black/20 border border-red-500/10 rounded-2xl p-4 mb-6 space-y-4">
-                                <div className="relative">
-                                    <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-red-900" />
-                                    <input 
-                                        type="text"
-                                        placeholder="Buscar cuenta por correo o clave..."
-                                        value={searchCuenta}
-                                        onChange={(e) => setSearchCuenta(e.target.value)}
-                                        className="w-full bg-red-950/20 border border-red-500/10 rounded-xl pl-10 pr-4 py-3 text-xs text-white focus:outline-none focus:border-red-500/30"
-                                    />
-                                </div>
-                                <div className="relative">
-                                    <Gamepad2 className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-red-900 pointer-events-none" />
-                                    <select 
-                                        name="cuentaSelect"
-                                        size="3"
-                                        value={selectedCuentaId}
-                                        onChange={handleCuentaSelect}
-                                        className="w-full bg-red-950/20 border border-red-500/10 rounded-xl px-12 py-3 text-white text-sm font-bold focus:outline-none focus:border-red-500/50 appearance-none cursor-pointer custom-scrollbar overflow-y-auto"
-                                    >
-                                        <option value="" className="p-2 text-red-400/50">-- Selecciona la cuenta a extraer --</option>
-                                        {filteredCuentas.map(ct => (
-                                            <option key={ct.id} value={ct.id} className="p-2 hover:bg-white/5 border-b border-white/5 text-sm">
-                                                {ct.direccionCorreo} (Clave: {ct.clave})
-                                            </option>
-                                        ))}
-                                    </select>
+                            <div className="bg-black/20 border border-white/5 rounded-2xl p-4 space-y-4">
+                                <Input 
+                                    type="text"
+                                    placeholder="Buscar cuenta por correo o clave..."
+                                    value={searchCuenta}
+                                    onChange={(e) => setSearchCuenta(e.target.value)}
+                                    icon={Search}
+                                    className="space-y-0"
+                                />
+                                <div className="relative bg-black/40 border border-white/5 rounded-xl overflow-hidden transition-colors">
+                                    <Gamepad2 className="w-4 h-4 absolute left-4 top-5 text-gray-700 pointer-events-none z-10" />
+                                    <div className="w-full h-36 overflow-y-auto custom-scrollbar p-2 pl-12">
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleCuentaSelect({target: {value: ''}})}
+                                            className={`w-full text-left p-3 text-xs font-medium transition-all mb-1 rounded-lg ${!selectedCuentaId ? 'bg-white/5 text-gray-300' : 'text-gray-500 hover:bg-white/5'}`}
+                                        >
+                                            -- Selecciona la cuenta a extraer --
+                                        </button>
+                                        {filteredCuentas.map(ct => {
+                                            const isSelected = String(selectedCuentaId) === String(ct.id);
+                                            return (
+                                                <button 
+                                                    key={ct.id} 
+                                                    type="button"
+                                                    onClick={() => handleCuentaSelect({target: {value: ct.id}})}
+                                                    className={`w-full text-left p-3 text-sm font-bold transition-all mb-1 last:mb-0 rounded-lg ${isSelected ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-gray-400 hover:bg-white/5 hover:text-white border border-transparent'}`}
+                                                >
+                                                    {ct.direccionCorreo} <span className="opacity-50 font-mono text-xs block mt-0.5">Clave: {ct.clave}</span>
+                                                </button>
+                                            )
+                                        })}
+                                        {filteredCuentas.length === 0 && (
+                                            <div className="p-4 text-center text-xs font-bold text-gray-700 uppercase italic">Sin coincidencias</div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
+                            <div className="space-y-3 mt-4">
                                 <div className="flex items-center gap-3 bg-black/60 border border-white/5 rounded-xl p-4">
                                     <Mail className="w-5 h-5 text-gray-500 shrink-0" />
                                     <div className="flex-1">
-                                        <span className="text-[9px] uppercase tracking-widest text-red-500/70 font-bold block mb-1">Correo de Acceso Extraído</span>
+                                        <span className="text-[9px] uppercase tracking-widest text-indigo-400 font-bold block mb-1">Correo de Acceso Extraído</span>
                                         <div className="text-sm font-mono text-white break-all">
                                             {formData.correo || <span className="text-gray-600 italic">No asociado</span>}
                                         </div>
@@ -406,7 +400,7 @@ export default function FacturaForm({ id = null }) {
                                 <div className="flex items-center gap-3 bg-black/60 border border-white/5 rounded-xl p-4">
                                     <Key className="w-5 h-5 text-gray-500 shrink-0" />
                                     <div className="flex-1">
-                                        <span className="text-[9px] uppercase tracking-widest text-red-500/70 font-bold block mb-1">Clave Temporal Extraída</span>
+                                        <span className="text-[9px] uppercase tracking-widest text-indigo-400 font-bold block mb-1">Clave Temporal Extraída</span>
                                         <div className="text-sm font-mono text-white break-all">
                                             {formData.clave || <span className="text-gray-600 italic">No asociada</span>}
                                         </div>

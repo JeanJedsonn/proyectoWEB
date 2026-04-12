@@ -5,6 +5,7 @@ import {
     DollarSign, Users, Package, Circle, Loader2
 } from 'lucide-react';
 import axios from 'axios';
+import { Link, router } from '@inertiajs/react';
 
 import Button from '@/Components/UI/Button';
 import PageHeader from '@/Components/UI/PageHeader';
@@ -151,9 +152,9 @@ export default function Dashboard() {
                                 <FileText className="w-5 h-5 text-indigo-400" />
                                 Últimas Ventas Registradas
                             </h2>
-                            <a href="/facturas" className="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors">
+                            <Link href="/facturas" className="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition-colors">
                                 Ver todo &rarr;
-                            </a>
+                            </Link>
                         </div>
                         
                         <div className="overflow-x-auto flex-1 p-0">
@@ -169,7 +170,7 @@ export default function Dashboard() {
                                 data={data.ultimasVentas}
                                 loading={false}
                                 renderRow={(venta) => (
-                                    <tr key={venta.id} className="group border-b border-white/5 hover:bg-white/2 transition-all cursor-pointer">
+                                    <tr key={venta.id} onClick={() => router.visit(`/facturas/${venta.id}`)} className="group border-b border-white/5 hover:bg-white/2 transition-all cursor-pointer">
                                         <td className="px-6 py-4 font-bold text-gray-500">#{venta.id}</td>
                                         <td className="px-6 py-4 text-gray-300 font-medium">{formatDate(venta.fecha)}</td>
                                         <td className="px-6 py-4 text-white font-bold">{venta.cliente}</td>
@@ -245,7 +246,7 @@ export default function Dashboard() {
                 <Button 
                     variant="primary" 
                     icon={Plus} 
-                    onClick={() => console.log('Nueva Venta')}
+                    onClick={() => router.visit('/facturas/nueva')}
                 >
                     Generar Nueva Venta
                 </Button>
