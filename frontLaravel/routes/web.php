@@ -86,3 +86,20 @@ Route::get('/cuentas_juego/{id}', function ($id) {
 Route::get('/cuentas_juego/{id}/editar', function ($id) {
     return Inertia::render('CuentaJuegos/Form', ['id' => $id]);
 })->name('cuentas_juego.edit');
+
+// Rutas para Facturas
+Route::get('/facturas', function () {
+    return Inertia::render('Facturas/Index');
+})->name('facturas.index');
+
+Route::get('/facturas/nueva', function () {
+    return Inertia::render('Facturas/Form');
+})->name('facturas.create');
+
+Route::get('/facturas/{id}', function ($id) {
+    return Inertia::render('Facturas/Show', ['id' => $id]);
+})->name('facturas.show');
+
+Route::get('/facturas/{id}/editar', function ($id) {
+    return Inertia::render('Facturas/Form', ['id' => $id]);
+})->name('facturas.edit');

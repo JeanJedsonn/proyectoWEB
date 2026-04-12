@@ -16,7 +16,7 @@ export default function MainLayout({ children }) {
     ];
 
     return (
-        <div className="flex min-h-screen bg-[#0b0d12] text-white font-sans">
+        <div className="flex min-h-screen bg-[#0b0d12] text-white font-sans print:bg-white print:text-black print:block">
             
             {/* Overlay para movil */}
             {isSidebarOpen && (
@@ -34,7 +34,7 @@ export default function MainLayout({ children }) {
             )}
             
             {/* Barra lateral */}
-            <nav className={`w-64 bg-[#161821] border-r border-white/5 flex flex-col fixed h-full z-30 transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} xl:translate-x-0`}>
+            <nav className={`w-64 bg-[#161821] border-r border-white/5 flex flex-col fixed h-full z-30 transition-transform duration-300 print:hidden ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} xl:translate-x-0`}>
                 
                 {/* Logo y boton cerrar */}
                 <div className="p-6 flex items-center justify-between">
@@ -109,9 +109,9 @@ export default function MainLayout({ children }) {
             </nav>
 
             {/* Contenedor principal */}
-            <main className="flex-1 xl:ml-64 min-h-screen relative flex flex-col">
+            <main className="flex-1 xl:ml-64 min-h-screen relative flex flex-col print:ml-0 print:block">
                 {/* Header para móvil para abrir el menú */}
-                <div className="xl:hidden sticky top-0 z-10 flex items-center gap-4 bg-[#161821]/80 backdrop-blur-md px-4 py-4 border-b border-white/5">
+                <div className="xl:hidden sticky top-0 z-10 flex items-center gap-4 bg-[#161821]/80 backdrop-blur-md px-4 py-4 border-b border-white/5 print:hidden">
                     <button 
                         onClick={() => setIsSidebarOpen(true)}
                         className="p-2 -ml-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
@@ -121,7 +121,7 @@ export default function MainLayout({ children }) {
                     <span className="font-bold text-lg tracking-tight">GestVentas</span>
                 </div>
 
-                <div className="p-4 md:p-8 flex-1">
+                <div className="p-4 md:p-8 flex-1 print:p-0 print:m-0">
                     {children}
                 </div>
             </main>
