@@ -181,7 +181,12 @@ const getFormCuentaJuego = async (req, res) => {
                 cj.semilla,
                 cj.codigos2AF AS "codigos2FA",
                 cj.direccion,
-                cj.juegos_comprados_id AS "juegos"
+                cj.juegos_comprados_id AS "juegos",
+                EXISTS (
+                    SELECT 1 
+                    FROM Factura f 
+                    WHERE f.correo = c.direccion
+                ) AS tiene_facturas
             FROM Cuentajuego cj
             JOIN Correo c ON cj.Correo_id = c.id
             WHERE cj.id = $1

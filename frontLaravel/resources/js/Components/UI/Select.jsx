@@ -15,6 +15,7 @@ export default function Select({
     error = '', 
     hint = '', 
     required = false,
+    variant = 'default',
     className = '',
 }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -52,7 +53,7 @@ export default function Select({
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`w-full bg-[#161821] border ${isOpen ? 'border-indigo-500/50' : 'border-white/5'} rounded-2xl px-6 py-4 text-sm font-bold text-left flex justify-between items-center transition-all hover:bg-black/40 shadow-xl ${error ? 'border-red-500/30' : ''}`}
+                    className={`w-full ${variant === 'dark' ? 'bg-[#0b0d12]' : 'bg-[#161821]'} border ${isOpen ? 'border-indigo-500/50' : 'border-white/5'} rounded-2xl px-6 py-4 text-sm font-bold text-left flex justify-between items-center transition-all hover:bg-black/40 shadow-xl ${error ? 'border-red-500/30' : ''}`}
                 >
                     <span className={`truncate ${selectedOption ? 'text-white' : 'text-gray-400'}`}>
                         {selectedOption ? selectedOption.label : placeholder}

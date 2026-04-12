@@ -3,7 +3,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import { 
     Search, Filter, 
-    Plus, Gamepad2
+    Plus, Gamepad2, Check
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -14,29 +14,34 @@ import Select from '@/Components/UI/Select';
 import Input from '@/Components/UI/Input';
 import Pagination from '@/Components/UI/Pagination';
 import CuentaJuegosTable from '@/Components/CuentaJuegos/CuentaJuegosTable';
-import Toast from '@/Components/UI/Toast';
+
 
 export default function CuentaJuegosIndex() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [platform, setPlatform] = useState('');
+    const [searchField, setSearchField] = useState('direccionCorreo');
     const [cuentas, setCuentas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [perPage] = useState(10);
+    const [perPage, setPerPage] = useState(10);
     const [paginationInfo, setPaginationInfo] = useState({
         current_page: 1,
         last_page: 1,
         per_page: 10,
         total: 0
     });
-    const [showCopyMsg, setShowCopyMsg] = useState(false);
-    const [copyMsgText, setCopyMsgText] = useState('Copiado al portapapeles');
+    const [copiedAlert, setCopiedAlert] = useState(false);
 
     useEffect(() => {
         const fetchCuentas = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`http://localhost:3000/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`);
+                let url = `http://localhost:3000/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
+                
+                if (searchTerm.trim() !== '') {
+                    url = `http://localhost:3000/cuentas/campo/${searchField}/buscar/${searchTerm}/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
+                }
+
+                const res = await axios.get(url);
                 setCuentas(res.data.data || []);
                 setPaginationInfo({
                     current_page: res.data.current_page || 1,
@@ -51,29 +56,52 @@ export default function CuentaJuegosIndex() {
             }
         };
 
-        fetchCuentas();
-    }, [page, perPage]);
+        const debounceTimer = setTimeout(() => {
+            fetchCuentas();
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
+    }, [page, perPage, searchTerm, searchField]);
 
     const handleCopy = (e, text, msg = 'Copiado al portapapeles') => {
         e.stopPropagation();
-        navigator.clipboard.writeText(text).then(() => {
-            setCopyMsgText(msg);
-            setShowCopyMsg(true);
-            setTimeout(() => setShowCopyMsg(false), 2000);
-        });
-    };
+        
+        const triggerSuccess = () => {
+            setCopiedAlert(true);
+            setTimeout(() => setCopiedAlert(false), 1500);
+        };
 
-    // La tabla y su lógica han sido extraídas a CuentaJuegosTable.jsx
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(triggerSuccess)
+                .catch(err => console.error("Fallo al copiar: ", err));
+        } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "absolute";
+            textArea.style.left = "-999999px";
+            document.body.prepend(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                triggerSuccess();
+            } catch (error) {
+                console.error("Fallo clipboard fallback:", error);
+            } finally {
+                textArea.remove();
+            }
+        }
+    };
 
     return (
         <MainLayout>
             <Head title="Cuentas Registradas" />
             
             <PageHeader
-                title="Cuenta Juegos"
-                description="Desglose de credenciales, plataformas y dependencias de juegos."
+                title="Cuentas"
+                description="Desglose de credenciales y plataforma."
                 icon={Gamepad2}
-                topLabel="Inventario Matriz"
+                topLabel="Inventario de Cuentas"
             >
                 <Button 
                     variant="primary" 
@@ -88,25 +116,53 @@ export default function CuentaJuegosIndex() {
             <div className="flex flex-col md:flex-row gap-4 mb-8">
                 <Input 
                     icon={Search}
-                    placeholder="Buscar por correo, clave, juego o ID..." 
+                    placeholder="Escribe para buscar..." 
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setPage(1);
+                    }}
                     className="flex-1 space-y-0"
                 />
                 <div className="flex gap-4">
                     <Select 
-                        placeholder="Plataformas"
-                        value={platform}
-                        onChange={(e) => setPlatform(e.target.value)}
+                        placeholder="Buscar por..."
+                        value={searchField}
+                        onChange={(e) => {
+                            setSearchField(e.target.value);
+                            setPage(1);
+                        }}
                         options={[
-                            { value: 'psn', label: 'PlayStation' },
-                            { value: 'xbox', label: 'Xbox Live' },
-                            { value: 'steam', label: 'Steam PC' },
-                            { value: 'nintendo', label: 'Nintendo' },
+                            { value: 'direccionCorreo', label: 'Correo' },
+                            { value: 'plataforma', label: 'Plataforma' },
+                            { value: 'clave', label: 'Clave' },
+                            { value: 'id', label: 'ID de Cuenta' }
                         ]}
-                        className="space-y-0 w-48"
+                        className="space-y-0 w-44"
                     />
-                    <button className="flex items-center justify-center px-5 bg-white/2 hover:bg-indigo-600 rounded-2xl text-gray-600 hover:text-white transition-all border border-white/5">
+                    <Select 
+                        placeholder="Mostrar"
+                        value={perPage}
+                        onChange={(e) => {
+                            setPerPage(Number(e.target.value));
+                            setPage(1);
+                        }}
+                        options={[
+                            { value: 10, label: '10 filas' },
+                            { value: 25, label: '25 filas' },
+                            { value: 50, label: '50 filas' },
+                        ]}
+                        className="space-y-0 w-32"
+                    />
+                    <button 
+                        onClick={() => {
+                            setSearchTerm('');
+                            setSearchField('direccionCorreo');
+                            setPage(1);
+                        }}
+                        className="flex items-center justify-center px-5 bg-white/2 hover:bg-red-500/20 rounded-2xl text-gray-600 hover:text-red-400 transition-all border border-white/5"
+                        title="Limpiar filtros"
+                    >
                         <Filter className="w-5 h-5" />
                     </button>
                 </div>
@@ -132,13 +188,12 @@ export default function CuentaJuegosIndex() {
                 />
             </div>
 
-            {/* Toast Global */}
-            <Toast 
-                show={showCopyMsg}
-                message={copyMsgText}
-                variant="copy"
-                onClose={() => setShowCopyMsg(false)}
-            />
+            {copiedAlert && (
+                <div className="fixed bottom-10 right-10 z-[100] bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
+                    <Check className="w-4 h-4" />
+                    Copiado al Portapapeles
+                </div>
+            )}
         </MainLayout>
     );
 }

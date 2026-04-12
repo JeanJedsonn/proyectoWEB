@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, router } from '@inertiajs/react';
-import { Copy, ExternalLink, Gamepad2, Monitor, LayoutGrid, Smartphone, Key, Database } from 'lucide-react';
+import { ExternalLink, Gamepad2, Monitor, LayoutGrid, Smartphone, Key, Database } from 'lucide-react';
 import GenericTable from '@/Components/UI/GenericTable';
 
 /**
@@ -37,7 +37,11 @@ export default function CuentaJuegosTable({ cuentas, loading, onCopy }) {
                 <div className="flex items-center gap-3">
                     <div className={`w-2 h-2 rounded-full ${cuenta.codigos2FA ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`}></div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors block leading-none mb-1">
+                        <span 
+                            className="text-sm font-bold text-white hover:text-indigo-400 transition-colors block leading-none mb-1 cursor-pointer"
+                            title="Haz clic para copiar el Correo"
+                            onClick={(e) => onCopy && onCopy(e, cuenta.direccionCorreo, 'Correo copiado al portapapeles')}
+                        >
                             {cuenta.direccionCorreo}
                         </span>
                         <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">ID #{String(cuenta.id).padStart(4, '0')}</span>
@@ -47,18 +51,22 @@ export default function CuentaJuegosTable({ cuentas, loading, onCopy }) {
             <td className="px-6 py-5">
                 <button 
                     type="button"
-                    onClick={(e) => onCopy && onCopy(e, cuenta.clave)}
-                    className="flex items-center gap-2 group/key p-0 bg-transparent border-none focus:outline-none"
-                    title="Copiar Clave"
+                    onClick={(e) => onCopy && onCopy(e, cuenta.clave, 'Contraseña copiada')}
+                    className="flex items-center gap-2 group/key p-0 bg-transparent border-none focus:outline-none cursor-pointer"
+                    title="Haz clic para copiar Clave"
                 >
                     <Key className="w-3.5 h-3.5 text-gray-700 group-hover/key:text-indigo-400 transition-colors" />
                     <span className="text-xs font-mono text-gray-500 group-hover/key:text-white transition-colors">
-                        ••••••••
+                        {cuenta.clave}
                     </span>
                 </button>
             </td>
             <td className="px-6 py-5">
-                <span className={`text-[10px] font-black uppercase tracking-tighter ${cuenta.codigos2FA ? 'text-gray-300' : 'text-gray-700 italic'}`}>
+                <span 
+                    className={`text-[10px] font-black uppercase tracking-tighter ${cuenta.codigos2FA ? 'text-gray-300 cursor-pointer hover:text-indigo-400 transition-colors' : 'text-gray-700 italic'}`}
+                    title={cuenta.codigos2FA ? "Haz clic para copiar códigos 2FA" : ""}
+                    onClick={(e) => cuenta.codigos2FA && onCopy && onCopy(e, cuenta.codigos2FA, 'Códigos 2FA copiados')}
+                >
                     {cuenta.codigos2FA || '- Ninguno -'}
                 </span>
             </td>
@@ -97,13 +105,7 @@ export default function CuentaJuegosTable({ cuentas, loading, onCopy }) {
             </td>
             <td className="px-6 py-5">
                 <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                        onClick={(e) => onCopy && onCopy(e, `Cta: ${cuenta.direccionCorreo}\nClave: ${cuenta.clave}\n2FA: ${cuenta.codigos2FA || 'No'}`)}
-                        className="p-3 bg-white/2 hover:bg-indigo-600 rounded-2xl text-gray-600 hover:text-white transition-all border border-white/5"
-                        title="Copiar datos completos"
-                    >
-                        <Copy className="w-4 h-4" />
-                    </button>
+
                     <Link 
                         href={`/cuentas_juego/${cuenta.id}`}
                         className="p-3 bg-white/2 hover:bg-white/10 rounded-2xl text-gray-600 hover:text-white transition-all border border-white/5"
