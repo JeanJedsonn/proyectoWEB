@@ -15,6 +15,7 @@ import GameCard from '@/Components/Juegos/GameCard';
 export default function JuegosIndex() {
     const [juegos, setJuegos] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
+    const [appliedSearch, setAppliedSearch] = useState('');
     const [loading, setLoading] = useState(true);
     
     // Estados de Paginación
@@ -32,7 +33,13 @@ export default function JuegosIndex() {
         const fetchJuegos = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`http://localhost:3000/juegos/juegos_por_pagina/${perPage}/num_pagina/${page}`);
+                let url = `http://localhost:3000/juegos/juegos_por_pagina/${perPage}/num_pagina/${page}`;
+                
+                if (appliedSearch) {
+                    url = `http://localhost:3000/juegos/campo/titulo/buscar/${encodeURIComponent(appliedSearch)}/juegos_por_pagina/${perPage}/num_pagina/${page}`;
+                }
+
+                const res = await axios.get(url);
                 setJuegos(res.data.data || []);
                 setPaginationInfo({
                     current_page: res.data.current_page || 1,
@@ -48,7 +55,18 @@ export default function JuegosIndex() {
         };
 
         fetchJuegos();
-    }, [page, perPage]);
+    }, [page, perPage, appliedSearch]);
+
+    const handleSearch = () => {
+        setAppliedSearch(searchTerm);
+        setPage(1);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    };
 
     const renderContent = () => {
         if (loading) {
@@ -128,11 +146,12 @@ export default function JuegosIndex() {
                         placeholder="Localizar título por denominación..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         className="flex-1 lg:max-w-md space-y-0"
                     />
 
                     {/*Boton de búsqueda*/}
-                    <Button variant="secondary" icon={Search}>
+                    <Button variant="secondary" icon={Search} onClick={handleSearch}>
                         Buscar
                     </Button>
                 </div>

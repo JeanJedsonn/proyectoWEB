@@ -25,20 +25,25 @@ El proyecto es un sistema de administración / dashboard (CRM de ventas para jue
 - `Show.jsx`: Métricas de venta y listado de cuentas asignadas.
 - `Form.jsx`: CRUD completo con zona de peligro y gestión de metadatos.
 
-### 👥 Módulo de Clientes (Completo)
-- `Index.jsx`: Tablas dinámicas con filtros por origen. (Pendiente refactorizar a UI Components)
+### 👥 Módulo de Clientes (Refactorizado con UI Components)
+- `Index.jsx`: Tablas dinámicas con filtros por origen. (100% Componentes Atómicos)
 - `Show.jsx`: Perfil detallado con historial de compras e interacción social.
 - `Form.jsx`: Creación/Edición con validaciones.
 
-### 📧 Módulo de Correos (Completo)
-- `Index.jsx`: Bóveda de correos base con iconos por proveedor. (Pendiente refactorizar a UI Components)
+### 📧 Módulo de Correos (Refactorizado con UI Components)
+- `Index.jsx`: Bóveda de correos base con iconos por proveedor. (100% Componentes Atómicos)
 - `Show.jsx`: Visualización de credenciales.
 - `Form.jsx`: Gestión de claves y recuperación.
 
-### 🔑 Módulo de Cuenta Juegos (Completo)
-- `Index.jsx`: Inventario de cuentas por plataforma. (Pendiente refactorizar a UI Components)
+### 🔑 Módulo de Cuenta Juegos (Refactorizado con UI Components)
+- `Index.jsx`: Inventario de cuentas por plataforma. (100% Componentes Atómicos)
 - `Show.jsx`: Detalles técnicos y semilla de recuperación.
 - `Form.jsx`: Asignación multiselect de juegos y regionalización.
+
+### 🧾 Módulo de Facturas (Refactorizado con UI Components)
+- `Index.jsx`: Historial de ventas paginado con filtros avanzados. (100% Componentes Atómicos)
+- `Show.jsx`: Vista de Recibo Imprimible (Receipt Layout) con modo Vendedor/Cliente dinámico y CSS de `@media print`.
+- `Form.jsx`: Generación de facturas con multi-fetch, buscador integrado de clientes, y selector de extracción de snapshot histórico (Correo/Clave) de Cuentas Matrices.
 
 ## 📍 3. Sistema de Componentes UI (Atomic Design)
 
@@ -99,4 +104,4 @@ El sistema implementa una arquitectura moderna de seguridad separada entre Node.
    - En lugar de redirigir la ventana del explorador nativo para leer archivos, el frontend utiliza `Axios` para descargar Blobs y generar un `URL.createObjectURL(blob)`, manteniendo los tokens 100% ocultos en los headers y garantizando cero fugas en el historial.
 
 ---
-*Última actualización: Integración Full-Stack de JWT, interceptores y recuperación de cuentas Hash-Based.*
+*Última actualización: Estandarización del 100% de las Vistas del Frontend a Componentes Atómicos de Tailwind UI finalizada.*
