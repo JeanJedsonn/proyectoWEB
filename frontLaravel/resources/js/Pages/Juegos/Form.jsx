@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
-import { ArrowLeft, Save, X, Loader2, Gamepad2, Link as LinkIcon, AlertCircle, Trash2, Shield } from 'lucide-react';
+import { ArrowLeft, Save, X, Loader2, Gamepad2, Link as LinkIcon, Trash2, Shield, PackageSearch } from 'lucide-react';
 import axios from 'axios';
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
+import Alert from '@/Components/UI/Alert';
 
 export default function JuegoForm({ id = null }) 
 {
@@ -119,11 +120,13 @@ export default function JuegoForm({ id = null })
             <Head title={isEdit ? "Editar Juego" : "Añadir Juego"} />
 
             <PageHeader 
-                title={isEdit ? 'Modificar Título Base' : 'Añadir al Catálogo Base'}
+                title={isEdit ? 'Modificar Juego' : 'Añadir Juego al Catálogo'}
                 breadcrumbs={[
                     { label: 'Catálogo Listado', href: '/juegos' },
                     { label: isEdit ? 'Editar Título' : 'Nuevo Título' }
                 ]}
+                description={isEdit ? 'Edita la información del juego' : 'Añade un nuevo juego al catálogo'}
+                icon={PackageSearch}
             >
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     <Button 
@@ -147,18 +150,20 @@ export default function JuegoForm({ id = null })
             <div className="max-w-2xl mx-auto">
                 {/* Mensajes de estado */}
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center gap-3 text-red-400 mb-6 animate-in slide-in-from-top-2">
-                        <AlertCircle className="w-5 h-5 shrink-0" />
-                        <p className="text-sm font-medium">{error}</p>
-                    </div>
+                    <Alert 
+                        variant="danger" 
+                        message={error} 
+                        className="mb-8" 
+                        onClose={() => setError(null)} 
+                    />
                 )}
                 {success && (
-                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 flex items-center gap-3 text-emerald-400 mb-6 animate-in slide-in-from-top-2">
-                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                            <Save className="w-3.5 h-3.5" />
-                        </div>
-                        <p className="text-sm font-medium">{success}</p>
-                    </div>
+                    <Alert 
+                        variant="success" 
+                        message={success} 
+                        className="mb-8" 
+                        onClose={() => setSuccess(null)} 
+                    />
                 )}
 
                 <div className="bg-[#161821] border border-white/5 rounded-2xl overflow-hidden mb-8">
@@ -172,45 +177,34 @@ export default function JuegoForm({ id = null })
                     <div className="p-6">
 
                         <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="space-y-2">
-                                <label htmlFor="nombre" className="flex justify-between text-sm font-medium text-gray-300">
-                                    <span>Título Exacto del Juego *</span>
-                                    <span className="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-md">
-                                        Valor Único
-                                    </span>
-                                </label>
-                                <Input 
-                                    id="nombre"
-                                    name="nombre"
-                                    type="text" 
-                                    required
-                                    value={form.nombre}
-                                    onChange={(e) => setForm({...form, nombre: e.target.value})}
-                                    placeholder="Ej. EA SPORTS FC 24 Standard Edition"
-                                    icon={Gamepad2}
-                                    hint="Escribe el nombre cuidando mayúsculas y signos, ya que se usará para rastreo en búsquedas."
-                                    className="m-0! space-y-0 pt-2"
-                                    variant="dark"
-                                />
-                            </div>
+                            <Input 
+                                label="Título Exacto del Juego"
+                                id="nombre"
+                                name="nombre"
+                                type="text" 
+                                required
+                                value={form.nombre}
+                                onChange={(e) => setForm({...form, nombre: e.target.value})}
+                                placeholder="Ej. EA SPORTS FC 24 Standard Edition"
+                                icon={Gamepad2}
+                                hint="Escribe el nombre cuidando mayúsculas y signos, ya que se usará para rastreo en búsquedas."
+                                className="m-0! space-y-0"
+                                variant="dark"
+                            />
 
-                            <div className="space-y-2">
-                                <label htmlFor="url" className="text-sm font-medium text-gray-300">
-                                    URL de la Portada (Opcional)
-                                </label>
-                                <Input 
-                                    id="url"
-                                    name="url"
-                                    type="url"
-                                    value={form.url}
-                                    onChange={(e) => setForm({...form, url: e.target.value})}
-                                    placeholder="https://image.api.playstation.com/..."
-                                    icon={LinkIcon}
-                                    hint="Se utiliza para mostrar una imagen visual en el catálogo y detalles."
-                                    className="m-0! space-y-0 pt-2"
-                                    variant="dark"
-                                />
-                            </div>
+                            <Input 
+                                label="URL de la Portada (Opcional)"
+                                id="url"
+                                name="url"
+                                type="url"
+                                value={form.url}
+                                onChange={(e) => setForm({...form, url: e.target.value})}
+                                placeholder="https://image.api.playstation.com/..."
+                                icon={LinkIcon}
+                                hint="Se utiliza para mostrar una imagen visual en el catálogo y detalles."
+                                className="m-0! space-y-0"
+                                variant="dark"
+                            />
 
                             <div className="pt-4">
                                 <div className="bg-[#0b0d12]/50 border border-dashed border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center">

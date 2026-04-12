@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { ArrowLeft, Loader2, Mail, User, Shield, Users, Trophy, Pencil, Activity, Server, Ticket } from 'lucide-react';
+import { ArrowLeft, Loader2, Mail, User, Shield, Users, Trophy, Pencil, Activity, Server, Ticket, PackageSearch } from 'lucide-react';
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
@@ -72,6 +72,8 @@ export default function JuegoShow({ id }) {
                         { label: 'Catálogo Listado', href: '/juegos' },
                         { label: `Título #${id}` }
                     ]}
+                    description={juego.descripcion}
+                    icon={PackageSearch}
                 >
                     <div className="flex items-center gap-3 w-full md:w-auto">
                         <Button 
