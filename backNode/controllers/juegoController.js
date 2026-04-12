@@ -173,7 +173,19 @@ const getFormJuego = async (req, res) => {
             return res.status(400).json({ error: 'El ID del juego debe ser un número entero positivo' });
         }
 
-        const query = `SELECT id, titulo AS nombre, url FROM Juego WHERE id = $1`;
+        const query = `
+            SELECT 
+                id, 
+                titulo AS nombre, 
+                url,
+                EXISTS (
+                    SELECT 1 
+                    FROM Cuentajuego 
+                    WHERE $1 = ANY(juegos_comprados_id)
+                ) AS tiene_cuentas
+            FROM Juego 
+            WHERE id = $1
+        `;
         const { rows } = await pool.query(query, [id_juego]);
 
         if (rows.length === 0) {

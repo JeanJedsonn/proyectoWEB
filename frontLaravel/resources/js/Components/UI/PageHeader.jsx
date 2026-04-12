@@ -8,7 +8,7 @@ export default function PageHeader({
     title = '', 
     description = '', 
     icon: Icon = null, 
-    topLabel = 'Inventario Matriz', 
+    topLabel = '',  
     breadcrumbs = [], 
     children = null, 
     className = '' 

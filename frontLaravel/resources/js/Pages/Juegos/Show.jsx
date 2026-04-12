@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { ArrowLeft, Loader2, Gamepad2, Mail, User, Shield, Users, Trophy, Pencil, Activity, Server, Ticket } from 'lucide-react';
+import { ArrowLeft, Loader2, Mail, User, Shield, Users, Trophy, Pencil, Activity, Server, Ticket } from 'lucide-react';
+import PageHeader from '@/Components/UI/PageHeader';
+import Button from '@/Components/UI/Button';
+import Card from '@/Components/UI/Card';
 
 export default function JuegoShow({ id }) {
     const [juego, setJuego] = useState(null);
@@ -61,45 +64,43 @@ export default function JuegoShow({ id }) {
         const porcentajeSecundarias = totalVentas > 0 ? Math.round(((juego.ventas?.secundarias || 0) / totalVentas) * 100) : 0;
 
         return (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div>
                 {/* Header */}
-                <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-                    <div>
-                        <div className="flex items-center gap-2 text-sm text-gray-400 mb-4 font-medium">
-                            <Link href="/juegos" className="hover:text-white transition-colors">Catálogo Listado</Link>
-                            <span className="text-gray-600">/</span>
-                            <span className="text-white">Título #{id}</span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 rounded-xl bg-linear-to-br from-indigo-500 to-[#161821] flex items-center justify-center shadow-lg shadow-black/40 shrink-0">
-                                <Gamepad2 className="w-7 h-7 text-white/90" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl md:text-[28px] font-bold text-white leading-tight">
-                                    {juego.titulo}
-                                </h1>
-                                <p className="text-gray-400 text-sm mt-1">ID de Base de Datos: #{id}</p>
-                            </div>
-                        </div>
+                <PageHeader 
+                    title={juego.titulo}
+                    breadcrumbs={[
+                        { label: 'Catálogo Listado', href: '/juegos' },
+                        { label: `Título #${id}` }
+                    ]}
+                >
+                    <div className="flex items-center gap-3 w-full md:w-auto">
+                        <Button 
+                            variant="secondary"
+                            icon={ArrowLeft}
+                            onClick={() => globalThis.history.back()}
+                        >
+                            Volver
+                        </Button>
+                        <Button 
+                            variant="primary"
+                            icon={Pencil}
+                            onClick={() => router.visit(`/juegos/${id}/editar`)}
+                        >
+                            Editar Juego
+                        </Button>
                     </div>
-                    <Link href={`/juegos/${id}/editar`} className="flex items-center gap-2 bg-[#161821] hover:bg-white/5 border border-white/5 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-colors">
-                        <Pencil className="w-4 h-4" />
-                        Editar Nombre
-                    </Link>
-                </header>
+                </PageHeader>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Left Column: Cuentas Listado */}
                     <div className="lg:col-span-8">
-                        <div className="bg-[#161821] border border-white/5 rounded-2xl p-6 h-full border-t-4 border-t-indigo-500 flex flex-col">
-                            <div className="flex items-center justify-between mb-2">
-                                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                                    <Server className="w-5 h-5" />
-                                    Cuentas con este Juego ({juego.cuentaJuegos?.length || 0})
-                                </h2>
-                            </div>
-                            
-                            <p className="text-[13px] text-gray-400 mb-6">
+                        <Card 
+                            title={`Cuentas con el Título #${id} (${juego.cuentaJuegos?.length || 0})`}
+                            icon={Server}
+                            className="h-full flex flex-col"
+                            variant="default"
+                        >
+                            <p className="text-[13px] text-gray-400 mb-6 mt-[-20px]">
                                 Esta lista se genera automáticamente buscando este título en las cuentas registradas.
                             </p>
                             
@@ -113,7 +114,15 @@ export default function JuegoShow({ id }) {
                                     juego.cuentaJuegos.map(cuenta => (
                                         <div 
                                             key={cuenta.id} 
-                                            className="bg-white/2 border border-white/5 rounded-xl p-3 cursor-pointer hover:border-indigo-500/50 transition-colors"
+                                            onClick={() => router.visit(`/cuentas_juego/${cuenta.id}`)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter' || e.key === ' ') {
+                                                    router.visit(`/cuentas_juego/${cuenta.id}`);
+                                                }
+                                            }}
+                                            role="button"
+                                            tabIndex={0}
+                                            className="bg-white/2 border border-white/5 rounded-xl p-3 cursor-pointer hover:border-indigo-500/50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                                         >
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex items-center gap-2 text-sm font-semibold text-white">
@@ -136,17 +145,17 @@ export default function JuegoShow({ id }) {
                                     ))
                                 )}
                             </div>
-                        </div>
+                        </Card>
                     </div>
 
                     {/* Right Column: Stats de Venta (Facturas) */}
                     <div className="lg:col-span-4">
-                        <div className="bg-[#161821] border border-white/5 rounded-2xl p-6 h-full border-t-4 border-t-emerald-500 flex flex-col">
-                            <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-6">
-                                <Activity className="w-5 h-5" />
-                                Métricas de Facturación
-                            </h2>
-                            
+                        <Card 
+                            title="Métricas de Facturación"
+                            icon={Activity}
+                            variant="success"
+                            className="h-full flex flex-col"
+                        >
                             <div className="flex flex-col gap-4">
                                 <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 text-center">
                                     <div className="text-3xl font-bold text-white mb-1">{totalVentas}</div>
@@ -180,11 +189,15 @@ export default function JuegoShow({ id }) {
                                 </div>
                             </div>
 
-                            <button className="w-full mt-6 bg-[#161821] hover:bg-white/5 border border-white/5 text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors flex justify-center items-center gap-2">
-                                <Ticket className="w-4 h-4" />
+                            <Button 
+                                variant="outline"
+                                icon={Ticket}
+                                className="w-full mt-6 flex justify-center"
+                                onClick={() => router.visit('/facturas')}
+                            >
                                 Ver Facturas de este Juego
-                            </button>
-                        </div>
+                            </Button>
+                        </Card>
                     </div>
                 </div>
             </div>

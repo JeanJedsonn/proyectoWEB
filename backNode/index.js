@@ -47,3 +47,7 @@ createTables().then(() => {
 }).catch(err => {
   console.error('Error al inicializar la base de datos:', err);
 });
+
+//TODO: Verificar si la creacion de juegos valida que no exista el titulo (tolerancia del 95%)
+//FIX: Los vendedores pueden crear juegos
+//TODO: La eliminacion de un juego depende de si tiene cuentas asociadas (verificar si existe o no)

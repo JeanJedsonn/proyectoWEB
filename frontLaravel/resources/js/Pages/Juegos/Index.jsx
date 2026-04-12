@@ -4,7 +4,7 @@ import { Head, router } from '@inertiajs/react';
 import { PackageSearch, Search, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
-// Atomic Components
+// Componentes 
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
@@ -13,6 +13,7 @@ import Select from '@/Components/UI/Select';
 import GameCard from '@/Components/Juegos/GameCard';
 
 export default function JuegosIndex() {
+    // Estados
     const [juegos, setJuegos] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [appliedSearch, setAppliedSearch] = useState('');
@@ -57,18 +58,23 @@ export default function JuegosIndex() {
         fetchJuegos();
     }, [page, perPage, appliedSearch]);
 
+    // Manejo de búsqueda
     const handleSearch = () => {
         setAppliedSearch(searchTerm);
         setPage(1);
     };
 
+    // Manejo de búsqueda por Enter
     const handleKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleSearch();
         }
     };
 
+    // Renderizado del contenido (3 casos)
     const renderContent = () => {
+
+        // Loader mientras carga los datos
         if (loading) {
             return (
                 <div className="bg-[#161821] border border-transparent rounded-4xl p-24 flex flex-col items-center justify-center min-h-[400px] shadow-2xl relative overflow-hidden">
@@ -79,6 +85,7 @@ export default function JuegosIndex() {
             );
         }
 
+        // Si no hay juegos, muestra un mensaje de error
         if (juegos.length === 0) {
             return (
                 <div className="bg-[#161821] border border-white/5 rounded-4xl p-24 flex flex-col items-center justify-center text-center min-h-[400px] shadow-2xl">
@@ -96,6 +103,7 @@ export default function JuegosIndex() {
             );
         }
 
+        // Renderizado del grid de juegos
         return (
             <div>
                 {/* Grid de Juegos */}
@@ -118,21 +126,22 @@ export default function JuegosIndex() {
         );
     };
 
+    // Renderizado del layout
     return (
         <MainLayout>
             <Head title="Inventario de Títulos" />
 
             <PageHeader 
                 title="Catálogo de Juegos"
-                description="Administra los títulos digitales, metadatos y stock global."
+                topLabel="Catálogo de Juegos"
+                description="Administra los títulos digitales."
                 icon={PackageSearch}
             >
                 <Button 
                     variant="primary" 
                     icon={PackageSearch} 
                     onClick={() => router.visit('/juegos/nuevo')}
-                >
-                    Añadir Título Base
+                > Añadir Título Base
                 </Button>
             </PageHeader>
 

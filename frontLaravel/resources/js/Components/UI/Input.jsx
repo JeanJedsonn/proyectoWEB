@@ -17,6 +17,7 @@ export default function Input({
     icon: Icon = null, 
     className = '', 
     required = false,
+    variant = 'default',
     ...props
 }) {
     return (
@@ -41,7 +42,7 @@ export default function Input({
                     onChange={onChange}
                     required={required}
                     placeholder={placeholder}
-                    className={`w-full bg-[#161821] border border-white/5 rounded-2xl py-4 text-sm text-white font-bold placeholder-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all shadow-2xl ${Icon ? 'pl-14' : 'px-6'} ${error ? 'border-red-500/30' : ''}`}
+                    className={`w-full ${variant === 'dark' ? 'bg-[#0b0d12]' : 'bg-[#161821]'} border border-white/5 rounded-2xl py-4 text-sm text-white font-bold placeholder-gray-700 focus:outline-none focus:border-indigo-500/50 transition-all shadow-2xl ${Icon ? 'pl-14 pr-6' : 'px-6'} ${error ? 'border-red-500/30' : ''}`}
                     {...props}
                 />
             </div>
