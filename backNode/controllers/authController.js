@@ -91,7 +91,20 @@ const resetPassword = async (req, res) => {
     if (!correo || !respuesta1 || !respuesta2 || !respuesta3 || !newPassword) {
         return res.status(400).json({ mensaje: 'Faltan parámetros requeridos.' });
     }
-
+	if (typeof correo !== 'string') {
+		return res.status(400).json({ mensaje: 'Correo no es de tipo valido' });
+	} else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(correo)){
+		return res.status(400).json({ mensaje: 'Correo no tiene el formato correcto' });
+	}
+	if (typeof respuesta1 !== 'string' || typeof respuesta2 !== 'string' || typeof respuesta3 !== 'string') {
+		return res.status(400).json({ mensaje: 'Respuesta(s) no es/son de tipo(s) valido(s)' });
+	}
+	if (typeof newPassword !== 'string') {
+		return res.status(400).json({ mensaje: 'Contrasena no es de tipo valido' });
+	} else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(newPassword)){
+		return res.status(400).json({ mensaje: 'Contrasena no es suficientemente segura' });
+	}
+	
     try {
         const client = await pool.connect();
         try {
