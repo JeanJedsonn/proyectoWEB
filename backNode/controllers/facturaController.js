@@ -246,8 +246,8 @@ const actualizarFormFactura = async (req, res) => {
         const clienteID = Number.parseInt(rawClienteID);
         const juegoID = Number.parseInt(rawJuegoID);
 
-        if (Number.isNaN(id_factura) || id_factura <= 0 || Number.isNaN(clienteID) || Number.isNaN(juegoID)) {
-            return res.status(400).json({ error: 'Los IDs proporcionados deben ser números válidos y positivos' });
+        if (Number.isNaN(id_factura) || id_factura <= 0 || Number.isNaN(clienteID) || Number.isNaN(juegoID) || !fecha || precioVenta === undefined || precioCompra === undefined || !tipo || !clave || !correo || !plataforma) {
+            return res.status(400).json({ error: 'Todos los campos (incluyendo correo y clave) son obligatorios y válidos' });
         }
 
         await client.query('BEGIN');
@@ -267,13 +267,12 @@ const actualizarFormFactura = async (req, res) => {
         }
 
         // 3. Validar correo
-        let correoFinal = correo || null;
-        if (correoFinal) {
-            const correoExists = await client.query('SELECT direccion FROM Correo WHERE direccion = $1', [correoFinal]);
-            if (correoExists.rows.length === 0) {
-                correoFinal = null;
-            }
+        const correoExists = await client.query('SELECT direccion FROM Correo WHERE direccion = $1', [correo]);
+        if (correoExists.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'El correo proporcionado no se encuentra registrado en el ecosistema' });
         }
+        const correoFinal = correo;
 
         // 4. Actualizar la factura
         const updateQuery = `
@@ -340,9 +339,9 @@ const crearFactura = async (req, res) => {
         const juegoID = Number.parseInt(rawJuegoID);
 
         // Validación de campos obligatorios
-        if (!fecha || precioVenta === undefined || precioCompra === undefined || Number.isNaN(clienteID) || !tipo || !plataforma || Number.isNaN(juegoID)) {
+        if (!fecha || precioVenta === undefined || precioCompra === undefined || Number.isNaN(clienteID) || !tipo || !plataforma || Number.isNaN(juegoID) || !correo || !clave) {
             return res.status(400).json({
-                error: 'Los campos fecha, precioVenta, precioCompra, clienteID, tipo, plataforma y juego_id son obligatorios'
+                error: 'Todos los campos de la factura, incluyendo Snapshot Histórico (correo, clave), son obligatorios'
             });
         }
 
@@ -363,13 +362,12 @@ const crearFactura = async (req, res) => {
         }
 
         // 3. Validar correo
-        let correoFinal = correo || null;
-        if (correoFinal) {
-            const correoExists = await client.query('SELECT direccion FROM Correo WHERE direccion = $1', [correoFinal]);
-            if (correoExists.rows.length === 0) {
-                correoFinal = null;
-            }
+        const correoExists = await client.query('SELECT direccion FROM Correo WHERE direccion = $1', [correo]);
+        if (correoExists.rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'El correo proporcionado no se encuentra registrado en el ecosistema' });
         }
+        const correoFinal = correo;
 
         // 4. Insertar la nueva factura
         const insertQuery = `
@@ -385,7 +383,7 @@ const crearFactura = async (req, res) => {
             precioCompra,
             clienteID,
             tipo,
-            clave || null,
+            clave,
             correoFinal,
             plataforma,
             juegoID
