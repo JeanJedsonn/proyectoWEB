@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const juegoController = require('../controllers/juegoController');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 // Rutas para gestión de formularios de juegos (CRUD)
 router.get('/form_juego/:id', juegoController.getFormJuego);
-router.patch('/form_juego/:id', juegoController.updateJuego);
-router.post('/form_juego', juegoController.createJuego);
-router.delete('/form_juego/:id', juegoController.eliminarJuego);
+router.patch('/form_juego/:id', adminMiddleware, juegoController.updateJuego);
+router.post('/form_juego', adminMiddleware, juegoController.createJuego);
+router.delete('/form_juego/:id', adminMiddleware, juegoController.eliminarJuego);
 
 // Ruta para ver el detalle de un juego asociado a una cuenta (ID de Cuentajuego)
 router.get('/leer_juego/:id', juegoController.leerJuego);

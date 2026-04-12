@@ -30,9 +30,9 @@ const login = async (req, res) => {
 
             // Generar token JWT
             const token = jwt.sign(
-                { id: usuario.id, correo: usuario.correo },
+                { id: usuario.id, correo: usuario.correo, is_admin: usuario.is_admin },
                 JWT_SECRET,
-                { expiresIn: '1h' } // El token expira en 12 horas
+                { expiresIn: '1h' } // El token expira en 1 hora
             );
 
             // Devolver respuesta exitosa (sin la contraseña)
@@ -41,7 +41,8 @@ const login = async (req, res) => {
                 token,
                 usuario: {
                     id: usuario.id,
-                    correo: usuario.correo
+                    correo: usuario.correo,
+                    is_admin: usuario.is_admin
                 }
             });
 
@@ -146,9 +147,58 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const crearUsuario = async (req, res) => {
+    const { correo, password, is_admin, pregunta1, respuesta1, pregunta2, respuesta2, pregunta3, respuesta3 } = req.body;
+
+    if (!correo || !password || !pregunta1 || !respuesta1 || !pregunta2 || !respuesta2 || !pregunta3 || !respuesta3) {
+        return res.status(400).json({ mensaje: 'Por favor, llene todos los campos requeridos.' });
+    }
+
+    try {
+        const client = await pool.connect();
+        try {
+            const checkQuery = 'SELECT * FROM Usuario WHERE correo = $1';
+            const { rows } = await client.query(checkQuery, [correo]);
+
+            if (rows.length > 0) {
+                return res.status(400).json({ mensaje: 'El correo ya está en uso.' });
+            }
+
+            const passwordHash = await bcrypt.hash(password, 10);
+            const ans1 = await bcrypt.hash(respuesta1.toString().toLowerCase().trim(), 10);
+            const ans2 = await bcrypt.hash(respuesta2.toString().toLowerCase().trim(), 10);
+            const ans3 = await bcrypt.hash(respuesta3.toString().toLowerCase().trim(), 10);
+
+            const insertQuery = `
+                INSERT INTO Usuario (correo, password, is_admin, pregunta1, respuesta1, pregunta2, respuesta2, pregunta3, respuesta3)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, correo, is_admin
+            `;
+            const newUser = await client.query(insertQuery, [
+                correo, 
+                passwordHash, 
+                is_admin || false, 
+                pregunta1, ans1, 
+                pregunta2, ans2, 
+                pregunta3, ans3
+            ]);
+
+            res.status(201).json({
+                mensaje: 'Usuario creado exitosamente.',
+                usuario: newUser.rows[0]
+            });
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error al crear usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor.' });
+    }
+};
+
 module.exports = {
     login,
     obtenerPreguntas,
     resetPassword,
+    crearUsuario,
     JWT_SECRET // Exportamos el secreto para reutilizarlo en el middleware si es necesario
 };

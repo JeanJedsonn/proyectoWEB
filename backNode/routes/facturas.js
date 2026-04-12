@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const facturaController = require('../controllers/facturaController');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 /**
  * Ruta para obtener facturas paginadas.
@@ -24,13 +25,13 @@ router.get('/form_factura/:id', facturaController.obtenerFormFactura);
  * Ruta para actualizar una factura desde el formulario.
  * Estructura: /facturas/form_factura/:id
  */
-router.patch('/form_factura/:id', facturaController.actualizarFormFactura);
+router.patch('/form_factura/:id', adminMiddleware, facturaController.actualizarFormFactura);
 
 /**
  * Ruta para crear una nueva factura.
  * Estructura: /facturas/form_factura
  */
-router.post('/form_factura', facturaController.crearFactura);
+router.post('/form_factura', adminMiddleware, facturaController.crearFactura);
 
 /**
  * Ruta para buscar facturas por campo con paginación.

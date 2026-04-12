@@ -74,7 +74,7 @@ export default function CorreoForm({ id = null }) {
             }
         } catch (err) {
             console.error("Error al guardar correo:", err);
-            setError("Error al procesar la solicitud. Es posible que la dirección ya exista.");
+            setError(err.response?.data?.mensaje || "Error al procesar la solicitud. Es posible que la dirección ya exista.");
         } finally {
             setSaving(false);
         }
@@ -93,7 +93,7 @@ export default function CorreoForm({ id = null }) {
             router.visit('/correos');
         } catch (err) {
             console.error("Error al eliminar correo:", err);
-            setError("No se pudo eliminar el correo. Es posible que tenga cuentas vinculadas.");
+            setError(err.response?.data?.mensaje || "No se pudo eliminar el correo. Es posible que tenga cuentas vinculadas.");
             setSaving(false);
         }
     };

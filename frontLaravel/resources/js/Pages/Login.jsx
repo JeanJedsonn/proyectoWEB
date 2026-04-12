@@ -22,10 +22,11 @@ export default function Login() {
                 password
             });
 
-            // Si es correcto, guardamos el token
-            const { token } = response.data;
+            // Si es correcto, guardamos el token y rol
+            const { token, usuario } = response.data;
             if (token) {
                 localStorage.setItem('token', token);
+                localStorage.setItem('is_admin', usuario.is_admin);
                 
                 // Redirigimos usando window.location para forzar recarga y asegurarnos 
                 // de que los nuevos interceptores atrapen el token para la primer consulta indexada

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const correoController = require('../controllers/correoController');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 // Ruta para obtener el detalle de un correo específico (ID de Correo)
 router.get('/leer_correo/:id', correoController.leerCorreo);
@@ -17,13 +18,13 @@ router.get('/form_correo/:id', correoController.obtenerFormCorreo);
 
 
 // Ruta para actualizar datos del formulario de correo por ID
-router.patch('/form_correo/:id', correoController.actualizarFormCorreo);
+router.patch('/form_correo/:id', adminMiddleware, correoController.actualizarFormCorreo);
 
 
 // Ruta para crear un nuevo correo
-router.post('/form_correo', correoController.crearCorreo);
+router.post('/form_correo', adminMiddleware, correoController.crearCorreo);
 
 // Ruta para eliminar un correo (DELETE)
-router.delete('/form_correo/:id', correoController.eliminarCorreo);
+router.delete('/form_correo/:id', adminMiddleware, correoController.eliminarCorreo);
 
 module.exports = router;

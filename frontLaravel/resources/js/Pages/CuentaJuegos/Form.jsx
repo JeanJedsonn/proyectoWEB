@@ -136,7 +136,7 @@ export default function CuentaJuegosForm({ id = null }) {
             router.visit('/cuentas_juego');
         } catch (err) {
             console.error("Error guardando cuenta:", err);
-            alert("No se pudo guardar la cuenta. Verifica los datos.");
+            alert(err.response?.data?.mensaje || "No se pudo guardar la cuenta. Verifica los datos.");
         } finally {
             setSubmitting(false);
         }
@@ -151,7 +151,7 @@ export default function CuentaJuegosForm({ id = null }) {
             router.visit('/cuentas_juego');
         } catch (err) {
             console.error("Error eliminando cuenta:", err);
-            alert("Error al eliminar el registro.");
+            alert(err.response?.data?.mensaje || "Error al eliminar el registro.");
         } finally {
             setSubmitting(false);
         }

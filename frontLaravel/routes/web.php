@@ -18,6 +18,11 @@ Route::get('/', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
+// Ruta para crear usuarios
+Route::get('/usuarios/nuevo', function () {
+    return Inertia::render('CrearUsuario');
+})->name('usuarios.create');
+
 // Rutas para Juegos
 Route::get('/juegos', function () {
     return Inertia::render('Juegos/Index');

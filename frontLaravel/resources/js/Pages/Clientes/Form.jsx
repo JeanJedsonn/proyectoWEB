@@ -67,7 +67,7 @@ export default function ClienteForm({ id = null }) {
             }
         } catch (err) {
             console.error("Error al guardar cliente:", err);
-            setError("Error al procesar la solicitud. Verifica los datos o la conexión.");
+            setError(err.response?.data?.mensaje || "Error al procesar la solicitud. Verifica los datos o la conexión.");
         } finally {
             setSaving(false);
         }
@@ -86,7 +86,7 @@ export default function ClienteForm({ id = null }) {
             router.visit('/clientes');
         } catch (err) {
             console.error("Error al eliminar cliente:", err);
-            setError("No se pudo eliminar el cliente. Es posible que tenga facturas asociadas en el sistema.");
+            setError(err.response?.data?.mensaje || "No se pudo eliminar el cliente. Es posible que tenga facturas asociadas en el sistema.");
             setSaving(false);
         }
     };

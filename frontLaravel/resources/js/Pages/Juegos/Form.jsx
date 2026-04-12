@@ -51,7 +51,7 @@ export default function JuegoForm({ id = null })
             router.visit('/juegos');
         } catch (err) {
             console.error("Error al eliminar juego:", err);
-            setError("No se pudo eliminar el juego. Es posible que tenga registros asociados.");
+            setError(err.response?.data?.mensaje || "No se pudo eliminar el juego. Es posible que tenga registros asociados.");
             setSaving(false);
         }
     };
@@ -77,7 +77,7 @@ export default function JuegoForm({ id = null })
             }
         } catch (err) {
             console.error("Error al guardar juego:", err);
-            setError("Error al procesar la solicitud. Verifica la conexión con el servidor.");
+            setError(err.response?.data?.mensaje || "Error al procesar la solicitud. Verifica la conexión con el servidor.");
         } finally {
             setSaving(false);
         }

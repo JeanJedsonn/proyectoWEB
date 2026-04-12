@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const clienteController = require('../controllers/clienteController');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 // Ruta para búsqueda por campo con paginación uniforme (ej: /clientes/campo/nombre/buscar/juan/clientes_por_pagina/10/num_pagina/1)
 router.get('/campo/:campo/buscar/:buscar/clientes_por_pagina/:clientes_por_pagina/num_pagina/:num_pagina', clienteController.buscarClientes);
@@ -13,7 +14,7 @@ router.get('/leer_cliente/:id', clienteController.leerCliente);
 
 // Rutas para formularios de cliente (CRUD básico)
 router.get('/form_cliente/:id', clienteController.getFormCliente);
-router.patch('/form_cliente/:id', clienteController.updateCliente);
-router.post('/form_cliente', clienteController.createCliente);
+router.patch('/form_cliente/:id', adminMiddleware, clienteController.updateCliente);
+router.post('/form_cliente', adminMiddleware, clienteController.createCliente);
 
 module.exports = router;

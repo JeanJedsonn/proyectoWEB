@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const cuentaJuegoController = require('../controllers/cuentaJuegoController');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
 /**
  * Ruta para obtener cuentas de juego paginadas.
@@ -30,12 +31,12 @@ router.get('/form_cuenta/:id', cuentaJuegoController.getFormCuentaJuego);
  * Ruta para actualizar los datos detallados del formulario de una cuenta de juego.
  * Estructura: /cuentas/form_cuentas/:id
  */
-router.patch('/form_cuenta/:id', cuentaJuegoController.actualizarFormCuentaJuego);
+router.patch('/form_cuenta/:id', adminMiddleware, cuentaJuegoController.actualizarFormCuentaJuego);
 
 /**
  * Ruta para crear una nueva cuenta de juego.
  * Estructura: /cuentas/form_cuentas
  */
-router.post('/form_cuenta', cuentaJuegoController.crearCuentaJuego);
+router.post('/form_cuenta', adminMiddleware, cuentaJuegoController.crearCuentaJuego);
 
 module.exports = router;

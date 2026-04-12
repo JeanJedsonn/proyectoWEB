@@ -140,7 +140,7 @@ export default function FacturaForm({ id = null }) {
             router.visit('/facturas');
         } catch (err) {
             console.error("Error guardando factura:", err);
-            alert("No se pudo guardar la factura. Verifica los datos requeridos (Cliente, Juego, Precios).");
+            alert(err.response?.data?.mensaje || "No se pudo guardar la factura. Verifica los datos requeridos (Cliente, Juego, Precios).");
         } finally {
             setSubmitting(false);
         }
