@@ -40,7 +40,12 @@ const obtenerCuentasPorPagina = async (req, res) => {
                 cj.codigos2AF AS "codigos2FA", 
                 c.direccion AS "direccionCorreo", 
                 cj.plataforma,
-                cj.juegos_comprados_id AS "juegos",
+                COALESCE(
+                    (SELECT json_agg(json_build_object('id', j.id, 'titulo', j.titulo))
+                     FROM Juego j
+                     WHERE j.id = ANY(cj.juegos_comprados_id)
+                    ), '[]'
+                ) AS "juegos",
                 COALESCE(
                     (SELECT array_agg(f.plataforma || ' ' || f.tipo) 
                      FROM Factura f 
@@ -128,7 +133,12 @@ const buscarCuentas = async (req, res) => {
                 cj.codigos2AF AS "codigos2FA", 
                 c.direccion AS "direccionCorreo", 
                 cj.plataforma,
-                cj.juegos_comprados_id AS "juegos",
+                COALESCE(
+                    (SELECT json_agg(json_build_object('id', j.id, 'titulo', j.titulo))
+                     FROM Juego j
+                     WHERE j.id = ANY(cj.juegos_comprados_id)
+                    ), '[]'
+                ) AS "juegos",
                 COALESCE(
                     (SELECT array_agg(f.plataforma || ' ' || f.tipo) 
                      FROM Factura f 

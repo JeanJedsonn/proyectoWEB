@@ -3,7 +3,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import { 
     Search, Filter, 
-    Plus, Gamepad2, Check
+    Plus, Gamepad2, Check, Loader2, PackageSearch
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -13,8 +13,7 @@ import Button from '@/Components/UI/Button';
 import Select from '@/Components/UI/Select';
 import Input from '@/Components/UI/Input';
 import Pagination from '@/Components/UI/Pagination';
-import CuentaJuegosTable from '@/Components/CuentaJuegos/CuentaJuegosTable';
-
+import CuentaJuegoCard from '@/Components/CuentaJuegos/CuentaJuegoCard';
 
 export default function CuentaJuegosIndex() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,11 +21,11 @@ export default function CuentaJuegosIndex() {
     const [cuentas, setCuentas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
+    const [perPage, setPerPage] = useState(12);
     const [paginationInfo, setPaginationInfo] = useState({
         current_page: 1,
         last_page: 1,
-        per_page: 10,
+        per_page: 12,
         total: 0
     });
     const [copiedAlert, setCopiedAlert] = useState(false);
@@ -64,7 +63,7 @@ export default function CuentaJuegosIndex() {
         return () => clearTimeout(debounceTimer);
     }, [page, perPage, searchTerm, searchField]);
 
-    const handleCopy = (e, text, msg = 'Copiado al portapapeles') => {
+    const handleCopy = (e, text) => {
         if (e) e.stopPropagation();
         
         const triggerSuccess = () => {
@@ -77,15 +76,62 @@ export default function CuentaJuegosIndex() {
             .catch(err => console.error("Fallo al copiar: ", err));
     };
 
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <div className="bg-[#161821] border border-transparent rounded-4xl p-24 flex flex-col items-center justify-center min-h-[400px] shadow-2xl relative overflow-hidden">
+                    <div className="absolute inset-0 bg-indigo-500/5" />
+                    <Loader2 className="w-12 h-12 animate-spin text-indigo-500 mb-6 relative z-10" />
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-[11px] italic relative z-10">Accediendo al Inventario de Credenciales...</p>
+                </div>
+            );
+        }
+
+        if (cuentas.length === 0) {
+            return (
+                <div className="bg-[#161821] border border-white/5 rounded-4xl p-24 flex flex-col items-center justify-center text-center min-h-[400px] shadow-2xl">
+                    <div className="w-24 h-24 bg-white/2 rounded-full flex items-center justify-center mb-8 border border-white/5 shadow-inner">
+                        <PackageSearch className="w-12 h-12 text-gray-700" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter italic">Cámara de Datos Vacía</h3>
+                    <p className="text-gray-500 max-w-sm mb-10 leading-relaxed font-bold uppercase text-[10px] tracking-widest opacity-60">
+                        No se detectaron cuentas registradas bajo los parámetros de búsqueda actuales.
+                    </p>
+                </div>
+            );
+        }
+
+        return (
+            <div>
+                {/* Grid de Cuentas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                    {cuentas.map((cuenta) => (
+                        <CuentaJuegoCard key={cuenta.id} cuenta={cuenta} onCopy={handleCopy} />
+                        ))}
+                </div>
+
+                {/* Pagination */}
+                <Pagination 
+                    page={page}
+                    lastPage={paginationInfo.last_page}
+                    total={paginationInfo.total}
+                    perPage={perPage}
+                    onPageChange={setPage}
+                    label="cuentas activas"
+                />
+            </div>
+        );
+    };
+
     return (
         <MainLayout>
-            <Head title="Cuentas Registradas" />
+            <Head title="Inventario de Cuentas" />
             
             <PageHeader
-                title="Cuentas"
-                description="Desglose de credenciales y plataforma."
+                title="Inventario de Cuentas"
+                description="Listado centralizado de credenciales matrices, plataformas y bibliotecas asignadas."
                 icon={Gamepad2}
-                topLabel="Inventario de Cuentas"
+                topLabel="Gestión de Cuentas"
             >
                 <Button 
                     variant="primary" 
@@ -97,10 +143,10 @@ export default function CuentaJuegosIndex() {
             </PageHeader>
 
             {/* Filters */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="flex flex-col md:flex-row gap-4 mb-10">
                 <Input 
                     icon={Search}
-                    placeholder="Escribe para buscar..." 
+                    placeholder="Filtrar por correo, plataforma o credenciales..." 
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value);
@@ -122,21 +168,21 @@ export default function CuentaJuegosIndex() {
                             { value: 'clave', label: 'Clave' },
                             { value: 'id', label: 'ID de Cuenta' }
                         ]}
-                        className="space-y-0 w-44"
+                        className="space-y-0 min-w-[150px]"
                     />
                     <Select 
-                        placeholder="Mostrar"
+                        placeholder="Registros"
                         value={perPage}
                         onChange={(e) => {
                             setPerPage(Number(e.target.value));
                             setPage(1);
                         }}
                         options={[
-                            { value: 10, label: '10 filas' },
-                            { value: 25, label: '25 filas' },
-                            { value: 50, label: '50 filas' },
+                            { value: 12, label: '12 Cuentas' },
+                            { value: 24, label: '24 Cuentas' },
+                            { value: 60, label: '60 Cuentas' },
                         ]}
-                        className="space-y-0 w-32"
+                        className="space-y-0 min-w-[130px]"
                     />
                     <button 
                         onClick={() => {
@@ -144,32 +190,17 @@ export default function CuentaJuegosIndex() {
                             setSearchField('direccionCorreo');
                             setPage(1);
                         }}
-                        className="flex items-center justify-center px-5 bg-white/2 hover:bg-red-500/20 rounded-2xl text-gray-600 hover:text-red-400 transition-all border border-white/5"
-                        title="Limpiar filtros"
+                        className="flex items-center justify-center px-5 bg-white/2 hover:bg-indigo-500/20 rounded-2xl text-gray-600 hover:text-indigo-400 transition-all border border-white/5 active:scale-95"
+                        title="Resetear filtros"
                     >
                         <Filter className="w-5 h-5" />
                     </button>
                 </div>
             </div>
 
-            {/* Main Table Component */}
-            <div className="bg-[#161821] border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                <CuentaJuegosTable 
-                    cuentas={cuentas}
-                    loading={loading}
-                    onCopy={handleCopy}
-                />
-
-                {/* Pagination */}
-                <Pagination 
-                    page={page}
-                    lastPage={paginationInfo.last_page}
-                    total={paginationInfo.total}
-                    perPage={perPage}
-                    onPageChange={setPage}
-                    label="cuentas"
-                    className="border-t border-white/5 bg-transparent"
-                />
+            {/* Contenido Dinámico */}
+            <div className="mb-20">
+                {renderContent()}
             </div>
 
             {copiedAlert && (
