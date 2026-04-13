@@ -5,7 +5,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
     Gamepad2, Mail, ArrowLeft, Pencil, 
-    ExternalLink, MapPin, 
+    MapPin, 
     Database, LayoutGrid, DollarSign, 
     Loader2, User, ShieldAlert, Shield
 } from 'lucide-react';
@@ -44,34 +44,14 @@ const CuentaJuegosShow = ({ id }) => {
     const handleCopy = (text) => {
         if (!text) return;
         
-        const triggerSuccess = () => {
-            setCopiedAlert(true);
-            setTimeout(() => setCopiedAlert(false), 1500);
-        };
-
-        if (navigator.clipboard && navigator.clipboard.writeText) {
+        if (navigator.clipboard?.writeText) {
             navigator.clipboard.writeText(text)
-                .then(triggerSuccess)
-                .catch(() => fallbackCopy(text, triggerSuccess));
-        } else {
-            fallbackCopy(text, triggerSuccess);
+                .then(() => {
+                    setCopiedAlert(true);
+                    setTimeout(() => setCopiedAlert(false), 1500);
+                })
+                .catch(err => console.error("Fallo al copiar al portapapeles:", err));
         }
-    };
-
-    const fallbackCopy = (text, callback) => {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "absolute";
-        textArea.style.left = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            if (callback) callback();
-        } catch (err) {
-            console.error('Fallback copy failed', err);
-        }
-        document.body.removeChild(textArea);
     };
 
     const formatDate = (dateString) => {

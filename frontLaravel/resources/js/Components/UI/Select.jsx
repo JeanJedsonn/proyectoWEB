@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { ChevronDown } from 'lucide-react';
 
 /**
  * Custom Select component for forms with premium styling.
  * Based on the project's standard filter style.
  */
-export default function Select({ 
+const Select = ({ 
     label = '', 
     name = '', 
     value = '', 
@@ -17,7 +18,7 @@ export default function Select({
     required = false,
     variant = 'default',
     className = '',
-}) {
+}) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
 
@@ -99,4 +100,23 @@ export default function Select({
             )}
         </div>
     );
-}
+};
+
+Select.propTypes = {
+    label: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onChange: PropTypes.func.isRequired,
+    options: PropTypes.arrayOf(PropTypes.shape({
+        value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        label: PropTypes.string.isRequired
+    })),
+    placeholder: PropTypes.string,
+    error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    hint: PropTypes.string,
+    required: PropTypes.bool,
+    variant: PropTypes.oneOf(['default', 'dark']),
+    className: PropTypes.string
+};
+
+export default Select;

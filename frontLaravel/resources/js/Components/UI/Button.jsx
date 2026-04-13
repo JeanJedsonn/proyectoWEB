@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Loader2 } from 'lucide-react';
 
 /**
@@ -8,7 +9,7 @@ import { Loader2 } from 'lucide-react';
  * @param {string} variant - 'primary', 'secondary', 'danger', 'ghost', 'outline'
  * @param {string} size - 'sm', 'md', 'lg'
  */
-export default function Button({ 
+const Button = ({ 
     children, 
     onClick, 
     variant = 'primary', 
@@ -19,7 +20,7 @@ export default function Button({
     icon: Icon = null,
     className = '',
     ...props
-}) {
+}) => {
     const variants = {
         primary: 'bg-[#6366f1] hover:bg-[#4f46e5] text-white shadow-lg shadow-indigo-500/20 border-transparent',
         secondary: 'bg-white/5 hover:bg-white/10 text-white border-white/5 shadow-sm',
@@ -50,4 +51,18 @@ export default function Button({
             {children}
         </button>
     );
-}
+};
+
+Button.propTypes = {
+    children: PropTypes.node.isRequired,
+    onClick: PropTypes.func,
+    variant: PropTypes.oneOf(['primary', 'secondary', 'danger', 'ghost', 'outline']),
+    size: PropTypes.oneOf(['sm', 'md', 'lg']),
+    disabled: PropTypes.bool,
+    loading: PropTypes.bool,
+    type: PropTypes.oneOf(['button', 'submit', 'reset']),
+    icon: PropTypes.elementType,
+    className: PropTypes.string
+};
+
+export default Button;

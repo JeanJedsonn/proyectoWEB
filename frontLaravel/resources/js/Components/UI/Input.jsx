@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * FormInput component for all text, password, and number inputs.
  * Standardized based on the Project's search and filter style.
  */
-export default function Input({ 
+const Input = ({ 
     label = '', 
     name = '', 
     value = '', 
@@ -18,7 +19,7 @@ export default function Input({
     required = false,
     variant = 'default',
     ...props
-}) {
+}) => {
     return (
         <div className={`space-y-3 ${className}`}>
             {label && (
@@ -53,4 +54,21 @@ export default function Input({
             )}
         </div>
     );
-}
+};
+
+Input.propTypes = {
+    label: PropTypes.string,
+    name: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onChange: PropTypes.func,
+    type: PropTypes.string,
+    placeholder: PropTypes.string,
+    error: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    hint: PropTypes.string,
+    icon: PropTypes.elementType,
+    className: PropTypes.string,
+    required: PropTypes.bool,
+    variant: PropTypes.oneOf(['default', 'dark'])
+};
+
+export default Input;

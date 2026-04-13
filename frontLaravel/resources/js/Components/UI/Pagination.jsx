@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
  * Pagination component for data tables.
  */
-export default function Pagination({ 
+const Pagination = ({ 
     page = 1, 
     lastPage = 1, 
     total = 0, 
@@ -12,7 +13,7 @@ export default function Pagination({
     onPageChange, 
     className = '',
     label = 'registros'
-}) {
+}) => {
     return (
         <div className={`px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 ${className}`}>
             <span className="text-sm text-gray-500">
@@ -48,4 +49,16 @@ export default function Pagination({
             </div>
         </div>
     );
-}
+};
+
+Pagination.propTypes = {
+    page: PropTypes.number,
+    lastPage: PropTypes.number,
+    total: PropTypes.number,
+    perPage: PropTypes.number,
+    onPageChange: PropTypes.func.isRequired,
+    className: PropTypes.string,
+    label: PropTypes.string
+};
+
+export default Pagination;

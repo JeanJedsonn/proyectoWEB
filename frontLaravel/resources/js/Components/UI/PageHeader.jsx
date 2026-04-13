@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * PageHeader component for all views.
  * Standardized based on the Inventory and Dashboard style.
  */
-export default function PageHeader({ 
+const PageHeader = ({ 
     title = '', 
     description = '', 
     icon: Icon = null, 
@@ -12,7 +13,7 @@ export default function PageHeader({
     breadcrumbs = [], 
     children = null, 
     className = '' 
-}) {
+}) => {
     return (
         <header className={`mb-12 flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 ${className}`}>
             <div className="flex-1">
@@ -55,4 +56,19 @@ export default function PageHeader({
             </div>
         </header>
     );
-}
+};
+
+PageHeader.propTypes = {
+    title: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    icon: PropTypes.elementType,
+    topLabel: PropTypes.string,
+    breadcrumbs: PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        href: PropTypes.string
+    })),
+    children: PropTypes.node,
+    className: PropTypes.string
+};
+
+export default PageHeader;

@@ -120,13 +120,13 @@ const FacturaForm = ({ id = null }) => {
     };
 
     const filteredClientes = clientes.filter(c => 
-        c.nombre.toLowerCase().includes(searchCliente.toLowerCase()) || 
-        (c.red && c.red.toLowerCase().includes(searchCliente.toLowerCase()))
+        c.nombre?.toLowerCase().includes(searchCliente.toLowerCase()) || 
+        c.red?.toLowerCase().includes(searchCliente.toLowerCase())
     );
 
     const filteredCuentas = cuentas.filter(c => 
-        (c.direccionCorreo && c.direccionCorreo.toLowerCase().includes(searchCuenta.toLowerCase())) || 
-        (c.clave && c.clave.toLowerCase().includes(searchCuenta.toLowerCase()))
+        c.direccionCorreo?.toLowerCase().includes(searchCuenta.toLowerCase()) || 
+        c.clave?.toLowerCase().includes(searchCuenta.toLowerCase())
     );
 
     const handleSubmit = async (e) => {
