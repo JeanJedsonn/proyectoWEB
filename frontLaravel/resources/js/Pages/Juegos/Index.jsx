@@ -141,7 +141,7 @@ export default function JuegosIndex() {
                     variant="primary" 
                     icon={PackageSearch} 
                     onClick={() => router.visit('/juegos/nuevo')}
-                > Añadir Título Base
+                > Añadir Juego
                 </Button>
             </PageHeader>
 

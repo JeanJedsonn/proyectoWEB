@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
-import { Users, UserPlus, Search, Filter } from 'lucide-react';
+import { Users, UserPlus, Search } from 'lucide-react';
 import axios from 'axios';
 
 // Componentes Modularizados
@@ -11,28 +11,43 @@ import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
-import Toast from '@/Components/UI/Toast';
+// Componentes Modularizados
 
 export default function ClientesIndex() {
     const [clientes, setClientes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [perPage] = useState(10);
+    const [perPage, setPerPage] = useState(10);
     const [paginationInfo, setPaginationInfo] = useState({
         current_page: 1,
         last_page: 1,
         per_page: 10,
         total: 0
     });
-    const [showCopyMsg, setShowCopyMsg] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [network, setNetwork] = useState('');
+    const [searchField, setSearchField] = useState('');
 
     useEffect(() => {
         const fetchClientes = async () => {
+             // Si el campo de búsqueda está seleccionado pero no hay término, no disparamos la búsqueda aún
+            if (searchField && !searchTerm) {
+                setClientes([]);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             try {
-                const res = await axios.get(`http://localhost:3000/clientes/clientes_por_pagina/${perPage}/num_pagina/${page}`);
+                let url = `http://localhost:3000/clientes/clientes_por_pagina/${perPage}/num_pagina/${page}`;
+                
+                if (network) {
+                    url = `http://localhost:3000/clientes/campo/red/buscar/${network}/clientes_por_pagina/${perPage}/num_pagina/${page}`;
+                } else if (searchField && searchTerm) {
+                    url = `http://localhost:3000/clientes/campo/${searchField}/buscar/${searchTerm}/clientes_por_pagina/${perPage}/num_pagina/${page}`;
+                }
+
+                const res = await axios.get(url);
                 setClientes(res.data.data || []);
                 setPaginationInfo({
                     current_page: res.data.current_page || 1,
@@ -42,20 +57,21 @@ export default function ClientesIndex() {
                 });
             } catch (error) {
                 console.error("Error cargando clientes:", error);
+                setClientes([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchClientes();
-    }, [page, perPage]);
+    }, [page, perPage, searchTerm, network, searchField]);
 
-    const handleCopy = (text) => {
-        navigator.clipboard.writeText(text).then(() => {
-            setShowCopyMsg(true);
-            setTimeout(() => setShowCopyMsg(false), 2000);
-        });
-    };
+    // Resetear a página 1 cuando cambian filtros o tamaño de página
+    useEffect(() => {
+        setPage(1);
+    }, [searchTerm, network, searchField, perPage]);
+
+
 
     return (
         <MainLayout>
@@ -80,26 +96,60 @@ export default function ClientesIndex() {
             <div className="flex flex-col md:flex-row gap-4 mb-8">
                 <Input 
                     icon={Search}
-                    placeholder="Buscar por código, nombre o teléfono..." 
+                    placeholder={!searchField && !network ? "Selecciona un campo para buscar..." : "Escribe para buscar..."} 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    disabled={!searchField || network !== ''}
                     className="flex-1 space-y-0"
                 />
-                <div className="flex gap-4">
+                <div className="flex flex-wrap gap-4">
                     <Select 
-                        placeholder="Medio de Contacto (Red)"
-                        value={network}
-                        onChange={(e) => setNetwork(e.target.value)}
+                        placeholder="Buscar por Campo"
+                        value={searchField}
+                        onChange={(e) => {
+                            setSearchField(e.target.value);
+                            if (e.target.value !== '') {
+                                setNetwork('');
+                            }
+                        }}
                         options={[
-                            { value: 'ws', label: 'WhatsApp' },
-                            { value: 'ig', label: 'Instagram' },
-                            { value: 'fb', label: 'Facebook' },
+                            { value: '', label: 'Cualquier Campo' },
+                            { value: 'nombre', label: 'Nombre' },
+                            { value: 'correo', label: 'Correo' },
+                            { value: 'telefono', label: 'Teléfono' },
                         ]}
-                        className="space-y-0 min-w-[200px]"
+                        className="space-y-0 min-w-[180px]"
                     />
-                    <button className="flex items-center justify-center px-5 bg-white/2 hover:bg-indigo-600 rounded-2xl text-gray-600 hover:text-white transition-all border border-white/5">
-                        <Filter className="w-5 h-5" />
-                    </button>
+                    <Select 
+                        placeholder="Filtrar por Red"
+                        value={network}
+                        onChange={(e) => {
+                            setNetwork(e.target.value);
+                            if (e.target.value !== '') {
+                                setSearchField('');
+                                setSearchTerm('');
+                            }
+                        }}
+                        options={[
+                            { value: '', label: 'Cualquier Red' },
+                            { value: 'WhatsApp', label: 'WhatsApp' },
+                            { value: 'Instagram', label: 'Instagram' },
+                            { value: 'Facebook', label: 'Facebook' },
+                            { value: 'X (Twitter)', label: 'X (Twitter)' },
+                        ]}
+                        className="space-y-0 min-w-[180px]"
+                    />
+                    <Select 
+                        placeholder="Filas"
+                        value={perPage}
+                        onChange={(e) => setPerPage(Number(e.target.value))}
+                        options={[
+                            { value: 10, label: '10 Filas' },
+                            { value: 25, label: '25 Filas' },
+                            { value: 50, label: '50 Filas' },
+                        ]}
+                        className="space-y-0 min-w-[120px]"
+                    />
                 </div>
             </div>
 
@@ -108,7 +158,6 @@ export default function ClientesIndex() {
                 <ClientesTable 
                     clientes={clientes} 
                     loading={loading} 
-                    onCopy={handleCopy} 
                 />
 
                 {/* Pagination */}
@@ -123,13 +172,7 @@ export default function ClientesIndex() {
                 />
             </div>
 
-            {/* Notification Toast */}
-            <Toast 
-                show={showCopyMsg}
-                message="Copiado al portapapeles"
-                variant="copy"
-                onClose={() => setShowCopyMsg(false)}
-            />
+
         </MainLayout>
     );
 }

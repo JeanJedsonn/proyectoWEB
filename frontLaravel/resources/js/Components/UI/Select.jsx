@@ -83,7 +83,7 @@ export default function Select({
                                 );
                             })}
                             {options.length === 0 && (
-                                <div className="p-4 text-center text-[10px] font-bold text-gray-700 uppercase italic">
+                                <div className="p-4 text-center text-[10px] font-bold text-gray-700 uppercase">
                                     Sin opciones disponibles
                                 </div>
                             )}
@@ -93,7 +93,7 @@ export default function Select({
             </div>
             
             {(error || hint) && (
-                <p className={`text-[9px] font-black uppercase italic px-1 ${error ? 'text-red-500' : 'text-gray-700'}`}>
+                <p className={`text-[9px] font-black uppercase px-1 ${error ? 'text-red-500' : 'text-gray-700'}`}>
                     {error || hint}
                 </p>
             )}

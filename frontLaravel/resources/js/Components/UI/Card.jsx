@@ -21,12 +21,12 @@ export default function Card({
 
     return (
         <div 
-            className={`rounded-4xl p-10 shadow-2xl relative overflow-hidden group border ${variants[variant] || variants.default} ${className}`}
+            className={`rounded-4xl p-10 shadow-2xl relative group border ${variants[variant] || variants.default} ${className}`}
             {...props}
         >
             {title && (
                 <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-6">
-                    <h2 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-3 italic">
+                    <h2 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-3">
                         {Icon && <Icon className="w-5 h-5 text-indigo-500" />}
                         {title}
                     </h2>

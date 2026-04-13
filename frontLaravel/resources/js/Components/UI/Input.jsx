@@ -48,7 +48,7 @@ export default function Input({
             </div>
             
             {(error || hint) && (
-                <p className={`text-[9px] font-black uppercase italic px-1 ${error ? 'text-red-500' : 'text-gray-700'}`}>
+                <p className={`text-[9px] font-black uppercase px-1 ${error ? 'text-red-500' : 'text-gray-700'}`}>
                     {error || hint}
                 </p>
             )}
