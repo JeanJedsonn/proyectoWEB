@@ -14,7 +14,7 @@ import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
 import Badge from '@/Components/UI/Badge';
-import Toast from '@/Components/UI/Toast';
+import Alert from '@/Components/UI/Alert';
 import PropTypes from 'prop-types';
 import JuegoNavButton from '@/Components/UI/JuegoNavButton';
 
@@ -45,10 +45,40 @@ export default function ClienteShow({ id }) {
 
     const handleCopy = (text) => {
         if (!text) return;
-        navigator.clipboard.writeText(text).then(() => {
+
+        const performCopy = () => {
             setShowCopyMsg(true);
             setTimeout(() => setShowCopyMsg(false), 2000);
-        });
+        };
+
+        if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(performCopy)
+                .catch(err => {
+                    console.error('Error al usar clipboard API:', err);
+                    fallbackCopy(text, performCopy);
+                });
+        } else {
+            fallbackCopy(text, performCopy);
+        }
+    };
+
+    const fallbackCopy = (text, callback) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) callback();
+        } catch (err) {
+            console.error('Fallback de copia falló:', err);
+        }
+        textArea.remove();
     };
 
     const formatDate = (dateString) => {
@@ -261,12 +291,19 @@ export default function ClienteShow({ id }) {
                 </div>
             </div>
 
-            <Toast 
-                show={showCopyMsg}
-                message="Copiado al portapapeles"
-                variant="copy"
-                onClose={() => setShowCopyMsg(false)}
-            />
+            {/* Feedback de Copiado con Alert */}
+            {showCopyMsg && (
+                <div className="fixed bottom-10 right-10 z-100 animate-in fade-in slide-in-from-right-10">
+                    <Alert 
+                        variant="success"
+                        title="Portapapeles"
+                        message="Información del cliente copiada."
+                        icon={Copy}
+                        onClose={() => setShowCopyMsg(false)}
+                        className="shadow-[0_20px_50px_rgba(0,0,0,0.3)] min-w-[320px]"
+                    />
+                </div>
+            )}
         </MainLayout>
     );
 }

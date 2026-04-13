@@ -5,18 +5,17 @@ import axios from 'axios';
 import { 
     Printer, ArrowLeft, Loader2, ShieldAlert, Eye, Download, FileCheck
 } from 'lucide-react';
-import Toast from '@/Components/UI/Toast';
 import Button from '@/Components/UI/Button';
 import FacturaReceipt from '@/Components/Facturas/FacturaReceipt';
 import PageHeader from '@/Components/UI/PageHeader';
 import PropTypes from 'prop-types';
+import { useClipboard } from '@/hooks/useClipboard';
 
 export default function FacturaShow({ id }) {
     const [factura, setFactura] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showCopyMsg, setShowCopyMsg] = useState(false);
-    const [copyMsgText, setCopyMsgText] = useState('Copiado al portapapeles');
+    const { copy, renderAlert } = useClipboard();
     // Estado para alternar entre la versión de administrador (completa) y cliente (reducida)
     const [viewMode, setViewMode] = useState('admin');
 
@@ -38,13 +37,9 @@ export default function FacturaShow({ id }) {
         if (id) fetchFactura();
     }, [id]);
 
-    const handleCopy = (e, text, customMsg = 'Copiado al portapapeles') => {
+    const handleCopy = (e, text) => {
         if (e) e.stopPropagation();
-        navigator.clipboard.writeText(text).then(() => {
-            setCopyMsgText(customMsg);
-            setShowCopyMsg(true);
-            setTimeout(() => setShowCopyMsg(false), 2000);
-        });
+        copy(text);
     };
 
     const handlePrint = () => {
@@ -111,7 +106,7 @@ export default function FacturaShow({ id }) {
                     >
                         Volver
                     </Button>
-
+ 
                     <button 
                         onClick={toggleViewMode}
                         className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
@@ -123,16 +118,16 @@ export default function FacturaShow({ id }) {
                         <Eye className="w-4 h-4" />
                         {viewMode === 'admin' ? 'Vendedor' : 'Cliente'}
                     </button>
-
+ 
                     <Button variant="secondary" icon={Printer} onClick={handlePrint}>
                         Imprimir
                     </Button>
-
+ 
                     <Button variant="primary" icon={Download} onClick={handlePrint}>
                         PDF
                     </Button>
                 </PageHeader>
-
+ 
                 {/* Recibo Centrado */}
                 <div className="max-w-4xl mx-auto pb-20">
                     <FacturaReceipt 
@@ -144,23 +139,19 @@ export default function FacturaShow({ id }) {
             </div>
         );
     };
-
+ 
     return (
         <MainLayout>
             <Head title={`Factura #${factura?.id || 'Cargando...'}`} />
             
             {renderContent()}
-
-            <Toast 
-                show={showCopyMsg}
-                message={copyMsgText}
-                variant="copy"
-                onClose={() => setShowCopyMsg(false)}
-            />
+ 
+            {/* Feedback de Copiado Localizado en el hook */}
+            {renderAlert()}
         </MainLayout>
     );
 };
-
+ 
 FacturaShow.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 };

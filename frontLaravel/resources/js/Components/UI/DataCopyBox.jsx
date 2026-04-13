@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Copy } from 'lucide-react';
+import { useClipboard } from '@/hooks/useClipboard';
 
 /**
  * DataCopyBox component for displaying read-only data with a quick copy action.
@@ -16,6 +17,8 @@ export default function DataCopyBox({
     mono = false,
     className = ''
 }) {
+    const { copy, renderAlert } = useClipboard();
+
     const variantClasses = {
         emerald: 'text-emerald-400/90 selection:bg-emerald-500/30',
         indigo: 'text-indigo-400/90 selection:bg-indigo-500/30',
@@ -25,9 +28,9 @@ export default function DataCopyBox({
     const fontClass = mono ? 'font-mono tracking-widest text-[13px]' : 'font-medium';
 
     const handleCopyAction = () => {
-        if (value && onCopy) {
-            onCopy(value);
-        }
+        if (!value) return;
+        copy(value);
+        if (onCopy) onCopy(value);
     };
 
     return (
@@ -44,7 +47,7 @@ export default function DataCopyBox({
                     )}
                 </div>
                 
-                {value && onCopy && (
+                {value && (
                     <button 
                         type="button"
                         onClick={handleCopyAction}
@@ -55,6 +58,9 @@ export default function DataCopyBox({
                     </button>
                 )}
             </div>
+
+            {/* Notificación Local de Copiado */}
+            {renderAlert(`${label || 'Información'} copiada exitosamente.`)}
         </div>
     );
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) {
     if (!factura) return null;
@@ -9,9 +10,16 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
         return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
 
-    const precioVenta = parseFloat(factura.precioVenta) || 0;
-    const precioCompra = parseFloat(factura.precioCompra) || 0;
+    const precioVenta = Number.parseFloat(factura.precioVenta) || 0;
+    const precioCompra = Number.parseFloat(factura.precioCompra) || 0;
     const margenNeto = precioVenta - precioCompra;
+
+    const getTypeBadgeStyles = (tipo) => {
+        const type = (tipo || '').toLowerCase();
+        if (type === 'primaria') return 'bg-indigo-100 text-indigo-700';
+        if (type === 'secundaria') return 'bg-emerald-100 text-emerald-700';
+        return 'bg-gray-100 text-gray-700';
+    };
 
     return (
         <div className="receipt-container bg-white text-gray-900 rounded-3xl p-10 shadow-2xl font-['Inter'] mx-auto border border-gray-200">
@@ -94,11 +102,7 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
                             <td className="p-4 border-b border-gray-200 text-gray-900 text-base">{factura.plataforma || 'N/A'}</td>
                             {viewMode === 'admin' && (
                                 <td className="p-4 border-b border-gray-200 text-gray-900 text-base">
-                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                                        factura.tipo?.toLowerCase() === 'primaria' ? 'bg-indigo-100 text-indigo-700' : 
-                                        factura.tipo?.toLowerCase() === 'secundaria' ? 'bg-emerald-100 text-emerald-700' : 
-                                        'bg-gray-100 text-gray-700'
-                                    }`}>
+                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${getTypeBadgeStyles(factura.tipo)}`}>
                                         {factura.tipo || 'N/A'}
                                     </span>
                                 </td>
@@ -130,7 +134,7 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
                 <div className="flex justify-between items-center mb-3">
                     <h3 className="text-red-700 text-sm font-semibold m-0">Credenciales de Entrega {viewMode === 'admin' && '(Snapshot Histórico)'}</h3>
                     <button 
-                        onClick={(e) => onCopy(e, `Acceso a tu Compra:\nCorreo: "${factura.correo}"\nClave: "${factura.clave}"`)}
+                        onClick={(e) => onCopy(e, `Correo: ${factura.correo}\nClave: ${factura.clave}`)}
                         className="bg-white text-red-500 border border-red-300 px-3 py-1.5 rounded text-xs hover:bg-red-50 font-semibold transition-colors print-hide"
                     >
                         Copiar Entrega
@@ -160,3 +164,26 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
         </div>
     );
 }
+
+FacturaReceipt.propTypes = {
+    factura: PropTypes.shape({
+        id: PropTypes.number,
+        fecha: PropTypes.string,
+        precioVenta: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        precioCompra: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        cliente: PropTypes.shape({
+            id: PropTypes.number,
+            nombres: PropTypes.string,
+            red: PropTypes.string,
+            telefono: PropTypes.string,
+            correo: PropTypes.string,
+        }),
+        titulo_juego: PropTypes.string,
+        plataforma: PropTypes.string,
+        tipo: PropTypes.string,
+        correo: PropTypes.string,
+        clave: PropTypes.string,
+    }).isRequired,
+    viewMode: PropTypes.oneOf(['admin', 'client']),
+    onCopy: PropTypes.func.isRequired,
+};

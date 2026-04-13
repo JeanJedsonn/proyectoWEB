@@ -5,7 +5,7 @@ import {
     DollarSign, Users, Package, Circle, Loader2, PackageSearch
 } from 'lucide-react';
 import axios from 'axios';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, Head } from '@inertiajs/react';
 
 import Button from '@/Components/UI/Button';
 import PageHeader from '@/Components/UI/PageHeader';
@@ -229,8 +229,9 @@ export default function Dashboard() {
     return (
         
         <MainLayout>
+            <Head title="Panel Operativo" />
             <PageHeader
-                title="Dashboard Operativo"
+                title="Dashboard"
                 description="Resumen operativo de ventas, métricas de facturación y estado del catálogo maestro."
                 icon={TrendingUp}
                 topLabel="Panel Principal"

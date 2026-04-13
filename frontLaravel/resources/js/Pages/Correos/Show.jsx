@@ -19,7 +19,6 @@ export default function CorreoShow({ id }) {
     const [correo, setCorreo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [copiedAlert, setCopiedAlert] = useState(false);
 
     useEffect(() => {
         const fetchCorreo = async () => {
@@ -38,18 +37,6 @@ export default function CorreoShow({ id }) {
 
         if (id) fetchCorreo();
     }, [id]);
-
-
-
-    const handleCopy = (text) => {
-        if (!text) return;
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text).then(() => {
-                setCopiedAlert(true);
-                setTimeout(() => setCopiedAlert(false), 2000);
-            });
-        }
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'No especificada';
@@ -144,7 +131,6 @@ export default function CorreoShow({ id }) {
                                         label="Dirección de Correo"
                                         value={correo.direccionCorreo}
                                         icon={Mail}
-                                        onCopy={handleCopy}
                                         variant="emerald"
                                     />
                                 </div>
@@ -159,7 +145,6 @@ export default function CorreoShow({ id }) {
                                         label="Contraseña Base"
                                         value={correo.clave}
                                         icon={ShieldCheck}
-                                        onCopy={handleCopy}
                                         variant="indigo"
                                         mono={true}
                                     />
@@ -178,7 +163,6 @@ export default function CorreoShow({ id }) {
                                     label="Correo de Recuperación"
                                     value={correo.recuperacion}
                                     icon={RefreshCcw}
-                                    onCopy={handleCopy}
                                     variant="gray"
                                     placeholder="Sin método configurado"
                                 />
@@ -187,7 +171,6 @@ export default function CorreoShow({ id }) {
                                     label="Redireccionamiento"
                                     value={correo.redireccion}
                                     icon={ExternalLink}
-                                    onCopy={handleCopy}
                                     variant="gray"
                                     placeholder="No configurado"
                                 />
@@ -241,23 +224,13 @@ export default function CorreoShow({ id }) {
                         </Card>
                     </div>
                 </div>
-
-                {/* Feedback de Copiado */}
-                {copiedAlert && (
-                    <Alert 
-                        variant="success"
-                        message="Credencial de correo copiada al portapapeles."
-                        className="fixed bottom-10 right-10 z-50 shadow-2xl max-w-xs border-white/10"
-                        onClose={() => setCopiedAlert(false)}
-                    />
-                )}
             </div>
         );
     };
 
     return (
         <MainLayout>
-            <Head title={`Bóveda: ${correo?.direccionCorreo || 'Cargando...'}`} />
+            <Head title={`Correo: ${correo?.direccionCorreo || 'Cargando...'}`} />
             
             {renderContent()}
         </MainLayout>

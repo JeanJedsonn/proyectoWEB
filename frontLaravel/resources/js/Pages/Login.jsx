@@ -55,12 +55,14 @@ export default function Login() {
 
             <div className="w-full max-w-md bg-[#161821] border border-white/5 p-8 rounded-3xl shadow-2xl relative z-10">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-500 mb-4 shadow-lg shadow-indigo-500/20 border border-indigo-500/30">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                        </svg>
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4 shadow-xl border border-white/5 overflow-hidden">
+                        <img 
+                            src="/logo.webp" 
+                            alt="Logo PS VirtualStore" 
+                            className="w-full h-full object-contain p-1"
+                        />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-white">Bienvenido a GestVentas</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-white">Bienvenido a PS VirtualStore</h1>
                     <p className="text-gray-400 text-sm mt-2 text-center">
                         Ingresa tus credenciales administrativas para acceder al panel.
                     </p>
@@ -143,7 +145,7 @@ export default function Login() {
             </div>
             
             <div className="absolute bottom-6 text-center text-gray-600 text-xs font-medium w-full pointer-events-none">
-                GestVentas CRM &copy; {new Date().getFullYear()}
+                PS VirtualStore CRM &copy; {new Date().getFullYear()}
             </div>
         </div>
     );
