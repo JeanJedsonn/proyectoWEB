@@ -21,16 +21,21 @@ const formatDate = (dateString) => {
     });
 };
 
-export default function FacturaCard({ factura }) {
+export default function FacturaCard({ factura, variant = 'default' }) {
     const isPrimaria = factura.tipo?.toLowerCase().includes('primaria');
     
-    // Fallbacks para consistencia entre diferentes endpoints de la API
-    const tituloFactura = factura.titulo_juego || factura.titulo || 'Sin título';
+    // Fallbacks para consistencia entre diferentes endpoints de la API (Incluyendo Dashboard)
+    const tituloFactura = factura.titulo_juego || factura.titulo || factura.juego || 'Sin título';
     const fechaFactura = factura.fecha || factura.fechaVenta;
-    const precioFactura = factura.precioVenta || factura.precio;
+    const precioFactura = factura.precioVenta || factura.precio || factura.monto;
+
+    // Estilos según variante
+    const bgStyles = variant === 'dark' 
+        ? 'bg-[#0b0d12] hover:bg-black/40' 
+        : 'bg-[#161821] hover:shadow-[0_40px_80px_-20px_rgba(99,102,241,0.15)]';
 
     return (
-        <div className="bg-[#161821] border border-white/5 rounded-3xl overflow-hidden hover:border-indigo-500/50 hover:shadow-[0_40px_80px_-20px_rgba(99,102,241,0.15)] transition-all duration-500 group flex flex-col relative h-full">
+        <div className={`${bgStyles} border border-white/5 rounded-3xl overflow-hidden hover:border-indigo-500/50 transition-all duration-500 group flex flex-col relative h-full`}>
             {/* Header / Tipo */}
             <div className="p-5 flex items-center justify-between border-b border-white/5">
                 <div className="flex items-center gap-2">
@@ -59,7 +64,6 @@ export default function FacturaCard({ factura }) {
                     
                     {/* Cliente */}
                     <div className="grid grid-cols-1 gap-2.5">
-
                         {/* Nombre del cliente */}
                         <div className="flex items-center gap-2 text-[11px] font-bold text-gray-500">
                             <User className="w-3.5 h-3.5 text-indigo-400/50" />
@@ -108,12 +112,15 @@ FacturaCard.propTypes = {
         id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         titulo: PropTypes.string,
         titulo_juego: PropTypes.string,
+        juego: PropTypes.string,
         cliente: PropTypes.string,
         tipo: PropTypes.string,
         fecha: PropTypes.string,
         fechaVenta: PropTypes.string,
         precio: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         precioVenta: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        monto: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         plataforma: PropTypes.string,
     }).isRequired,
+    variant: PropTypes.oneOf(['default', 'dark']),
 };
