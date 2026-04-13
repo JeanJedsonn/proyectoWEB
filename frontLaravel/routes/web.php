@@ -18,10 +18,15 @@ Route::get('/', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-// Ruta para crear usuarios
+// Rutas para gestión de usuarios (solo Usuario Maestro)
 Route::get('/usuarios/nuevo', function () {
     return Inertia::render('CrearUsuario');
 })->name('usuarios.create');
+
+Route::get('/usuarios/administrar', function () {
+    return Inertia::render('AdministrarUsuarios');
+})->name('usuarios.administrar');
+
 
 // Rutas para Juegos
 Route::get('/juegos', function () {
