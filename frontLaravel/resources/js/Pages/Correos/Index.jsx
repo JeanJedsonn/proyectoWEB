@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { 
-    Mail, Search, Plus, Copy, Database 
+    Mail, Search, Plus, Eye, Database 
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -14,11 +14,9 @@ import Select from '@/Components/UI/Select';
 import Badge from '@/Components/UI/Badge';
 import Pagination from '@/Components/UI/Pagination';
 import GenericTable from '@/Components/UI/GenericTable';
-import Toast from '@/Components/UI/Toast';
 
 export default function CorreosIndex() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [provider, setProvider] = useState('');
     const [correos, setCorreos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -29,14 +27,18 @@ export default function CorreosIndex() {
         per_page: 10,
         total: 0
     });
-    const [showCopyMsg, setShowCopyMsg] = useState(false);
 
     useEffect(() => {
         const fetchCorreos = async () => {
             setLoading(true);
             try {
-                // Endpoint: /correos/correos_por_pagina/{cantidad}/num_pagina/{indice}
-                const res = await axios.get(`http://localhost:3000/correos/correos_por_pagina/${perPage}/num_pagina/${page}`);
+                let url = `http://localhost:3000/correos/correos_por_pagina/${perPage}/num_pagina/${page}`;
+                
+                if (searchTerm) {
+                    url = `http://localhost:3000/correos/campo/direccion/buscar/${searchTerm}/correos_por_pagina/${perPage}/num_pagina/${page}`;
+                }
+
+                const res = await axios.get(url);
                 setCorreos(res.data.data || []);
                 setPaginationInfo({
                     current_page: res.data.current_page || 1,
@@ -46,20 +48,21 @@ export default function CorreosIndex() {
                 });
             } catch (error) {
                 console.error("Error cargando correos:", error);
+                setCorreos([]);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchCorreos();
-    }, [page, perPage]);
+    }, [page, perPage, searchTerm]);
 
-    const handleCopy = (text) => {
-        navigator.clipboard.writeText(text).then(() => {
-            setShowCopyMsg(true);
-            setTimeout(() => setShowCopyMsg(false), 2000);
-        });
-    };
+    // Resetear a página 1 cuando cambian filtros o tamaño de página
+    useEffect(() => {
+        setPage(1);
+    }, [searchTerm, perPage]);
+
+
 
     const getProviderIcon = (email) => {
         const lowerEmail = email?.toLowerCase() || '';
@@ -74,8 +77,8 @@ export default function CorreosIndex() {
 
     const columns = [
         { header: 'ID' },
-        { header: 'Dirección (Unique)' },
-        { header: 'Cuentas Relacionadas', className: 'text-center' },
+        { header: 'Dirección (Unico)' },
+        { header: 'Facturas', className: 'text-center' },
         { header: 'Acciones Rápidas', className: 'text-right' }
     ];
 
@@ -103,13 +106,13 @@ export default function CorreosIndex() {
             </td>
             <td className="px-6 py-4">
                 <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                        onClick={() => handleCopy(correo.direccionCorreo)}
+                    <Link 
+                        href={`/correos/${correo.id}`}
                         className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all border border-white/5"
-                        title="Copiar dirección"
+                        title="Ver detalles"
                     >
-                        <Copy className="w-4 h-4" />
-                    </button>
+                        <Eye className="w-4 h-4" />
+                    </Link>
                 </div>
             </td>
         </tr>
@@ -130,7 +133,7 @@ export default function CorreosIndex() {
                     icon={Plus} 
                     onClick={() => router.visit('/correos/nuevo')}
                 >
-                    Nuevo Correo Base
+                    Añadir Correo
                 </Button>
             </PageHeader>
 
@@ -145,19 +148,16 @@ export default function CorreosIndex() {
                 />
                 <div className="flex gap-4">
                     <Select 
-                        placeholder="Proveedor (Todos)"
-                        value={provider}
-                        onChange={(e) => setProvider(e.target.value)}
+                        placeholder="Filas"
+                        value={perPage}
+                        onChange={(e) => setPerPage(Number(e.target.value))}
                         options={[
-                            { value: 'outlook', label: 'Outlook / Hotmail' },
-                            { value: 'gmail', label: 'Gmail' },
-                            { value: 'skiff', label: 'Skiff' },
+                            { value: 10, label: '10 Filas' },
+                            { value: 25, label: '25 Filas' },
+                            { value: 50, label: '50 Filas' },
                         ]}
-                        className="space-y-0 w-64"
+                        className="space-y-0 min-w-[140px]"
                     />
-                    <Button variant="secondary" icon={Search}>
-                        Buscar
-                    </Button>
                 </div>
             </div>
 
@@ -179,18 +179,11 @@ export default function CorreosIndex() {
                     total={paginationInfo.total}
                     perPage={perPage}
                     onPageChange={setPage}
-                    label="correos base"
+                    label="Correos"
                     className="border-t border-white/5 bg-transparent"
                 />
             </div>
 
-            {/* Notification Toast */}
-            <Toast 
-                show={showCopyMsg}
-                message="Copiado al Portapapeles"
-                variant="copy"
-                onClose={() => setShowCopyMsg(false)}
-            />
         </MainLayout>
     );
 }

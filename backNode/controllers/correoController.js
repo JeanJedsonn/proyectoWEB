@@ -4,11 +4,11 @@ const obtenerCorreosPorPagina = async (req, res) => {
     try {
         const { correos_por_pagina: rawPerPage, num_pagina: rawPage } = req.params;
 
-        const num_pagina = parseInt(rawPage);
-        const per_page = parseInt(rawPerPage);
+        const num_pagina = Number.parseInt(rawPage);
+        const per_page = Number.parseInt(rawPerPage);
 
         // Validación de parámetros
-        if (isNaN(num_pagina) || num_pagina <= 0 || isNaN(per_page) || per_page <= 0) {
+        if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
                 error: 'Los parámetros de paginación deben ser números enteros positivos'
             });
@@ -16,7 +16,7 @@ const obtenerCorreosPorPagina = async (req, res) => {
 
         // Obtener el total de correos
         const countResult = await pool.query('SELECT COUNT(*) FROM Correo');
-        const total = parseInt(countResult.rows[0].count);
+        const total = Number.parseInt(countResult.rows[0].count);
 
         // Calcular la última página
         const last_page = Math.ceil(total / per_page) || 1;
@@ -59,10 +59,10 @@ const obtenerCorreosPorPagina = async (req, res) => {
 const buscarCorreos = async (req, res) => {
     try {
         const { campo, buscar, correos_por_pagina: rawPerPage, num_pagina: rawPage } = req.params;
-        const num_pagina = parseInt(rawPage);
-        const per_page = parseInt(rawPerPage);
+        const num_pagina = Number.parseInt(rawPage);
+        const per_page = Number.parseInt(rawPerPage);
 
-        if (isNaN(num_pagina) || num_pagina <= 0 || isNaN(per_page) || per_page <= 0) {
+        if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
@@ -85,7 +85,7 @@ const buscarCorreos = async (req, res) => {
         // 1. Obtener el total de resultados para la búsqueda
         const countQuery = `SELECT COUNT(*) FROM Correo WHERE ${campoReal}::text ILIKE $1`;
         const countResult = await pool.query(countQuery, [paramBuqueda]);
-        const total = parseInt(countResult.rows[0].count);
+        const total = Number.parseInt(countResult.rows[0].count);
 
         // 2. Calcular paginación
         const last_page = Math.ceil(total / per_page) || 1;
@@ -123,9 +123,9 @@ const buscarCorreos = async (req, res) => {
 
 const leerCorreo = async (req, res) => {
     try {
-        const id_correo = parseInt(req.params.id);
+        const id_correo = Number.parseInt(req.params.id);
 
-        if (isNaN(id_correo) || id_correo <= 0) {
+        if (Number.isNaN(id_correo) || id_correo <= 0) {
             return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
         }
 
@@ -180,23 +180,26 @@ const leerCorreo = async (req, res) => {
 
 const obtenerFormCorreo = async (req, res) => {
     try {
-        const id_correo = parseInt(req.params.id);
+        const id_correo = Number.parseInt(req.params.id);
 
-        if (isNaN(id_correo) || id_correo <= 0) {
+        if (Number.isNaN(id_correo) || id_correo <= 0) {
             return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
         }
 
         const query = `
             SELECT 
-                id, 
-                direccion, 
-                clave, 
-                nombres, 
-                cumpleanos, 
-                recuperacion, 
-                redireccion
-            FROM Correo
-            WHERE id = $1
+                c.id, 
+                c.direccion, 
+                c.clave, 
+                c.nombres, 
+                c.cumpleanos, 
+                c.recuperacion, 
+                c.redireccion,
+                COUNT(cj.id)::int > 0 AS tiene_cuentas
+            FROM Correo c
+            LEFT JOIN Cuentajuego cj ON c.id = cj.Correo_id
+            WHERE c.id = $1
+            GROUP BY c.id
         `;
         const { rows } = await pool.query(query, [id_correo]);
 
@@ -214,10 +217,10 @@ const obtenerFormCorreo = async (req, res) => {
 
 const actualizarFormCorreo = async (req, res) => {
     try {
-        const id_correo = parseInt(req.params.id);
+        const id_correo = Number.parseInt(req.params.id);
         const { direccion, clave, nombres, cumpleanos, recuperacion, redireccion } = req.body;
 
-        if (isNaN(id_correo) || id_correo <= 0) {
+        if (Number.isNaN(id_correo) || id_correo <= 0) {
             return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
         }
 
@@ -298,9 +301,9 @@ const crearCorreo = async (req, res) => {
 
 const eliminarCorreo = async (req, res) => {
     try {
-        const id_correo = parseInt(req.params.id);
+        const id_correo = Number.parseInt(req.params.id);
 
-        if (isNaN(id_correo) || id_correo <= 0) {
+        if (Number.isNaN(id_correo) || id_correo <= 0) {
             return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
         }
 

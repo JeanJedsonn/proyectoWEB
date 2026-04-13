@@ -44,7 +44,7 @@ export default function Select({
         <div className={`space-y-3 ${className}`} ref={containerRef}>
             {label && (
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest block mb-2 px-1">
-                    {label} {required && <span className="text-red-500">*</span>}
+                    {label} {required && <span className="text-red-500 ml-1">●</span>}
                 </label>
             )}
             
