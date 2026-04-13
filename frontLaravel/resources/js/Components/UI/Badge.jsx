@@ -1,10 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Badge component for statuses and tags.
  * @param {string} variant - 'primary', 'secondary', 'success', 'danger', 'info', 'warning', 'outline'
  */
-export default function Badge({ children, variant = 'primary', className = '' }) {
+const Badge = ({ children, variant = 'primary', className = '' }) => {
     const variants = {
         primary: 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20 shadow-indigo-500/10',
         secondary: 'bg-white/5 text-gray-400 border-white/5 shadow-white/5',
@@ -20,4 +21,12 @@ export default function Badge({ children, variant = 'primary', className = '' })
             {children}
         </span>
     );
-}
+};
+
+Badge.propTypes = {
+    children: PropTypes.node.isRequired,
+    variant: PropTypes.oneOf(['primary', 'secondary', 'success', 'danger', 'info', 'warning', 'outline']),
+    className: PropTypes.string
+};
+
+export default Badge;

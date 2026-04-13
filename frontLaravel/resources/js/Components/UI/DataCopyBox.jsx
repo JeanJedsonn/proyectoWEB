@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Copy } from 'lucide-react';
 
 /**
@@ -57,3 +58,14 @@ export default function DataCopyBox({
         </div>
     );
 }
+
+DataCopyBox.propTypes = {
+    label: PropTypes.string,
+    value: PropTypes.string,
+    icon: PropTypes.elementType,
+    onCopy: PropTypes.func,
+    placeholder: PropTypes.string,
+    variant: PropTypes.oneOf(['emerald', 'indigo', 'gray']),
+    mono: PropTypes.bool,
+    className: PropTypes.string
+};

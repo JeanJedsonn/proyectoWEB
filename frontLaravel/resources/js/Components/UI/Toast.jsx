@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { CheckCircle2, Info, AlertTriangle, XCircle, Copy } from 'lucide-react';
 
 /**
@@ -9,13 +10,13 @@ import { CheckCircle2, Info, AlertTriangle, XCircle, Copy } from 'lucide-react';
  * @param {function} onClose - Function to call when the toast should close.
  * @param {number} duration - How long to show the toast in ms.
  */
-export default function Toast({ 
+const Toast = ({ 
     show, 
     message, 
     variant = 'success', 
     onClose, 
     duration = 3000 
-}) {
+}) => {
     useEffect(() => {
         if (show && duration > 0) {
             const timer = setTimeout(() => {
@@ -53,4 +54,14 @@ export default function Toast({
             </div>
         </div>
     );
-}
+};
+
+Toast.propTypes = {
+    show: PropTypes.bool.isRequired,
+    message: PropTypes.string.isRequired,
+    variant: PropTypes.oneOf(['success', 'error', 'warning', 'info', 'copy']),
+    onClose: PropTypes.func,
+    duration: PropTypes.number
+};
+
+export default Toast;

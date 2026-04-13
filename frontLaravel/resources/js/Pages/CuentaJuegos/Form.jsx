@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
@@ -18,7 +19,7 @@ import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
 import QuickSelectList from '@/Components/UI/QuickSelectList';
 
-export default function CuentaJuegosForm({ id = null }) {
+const CuentaJuegosForm = ({ id = null }) => {
     const isEditing = !!id;
     const [loading, setLoading] = useState(isEditing);
     const [submitting, setSubmitting] = useState(false);
@@ -51,7 +52,7 @@ export default function CuentaJuegosForm({ id = null }) {
     });
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchInitialData = async () => {
             try {
                 // 1. Fetch available Correos
                 const resCorreos = await axios.get('http://localhost:3000/correos/correos_por_pagina/1000/num_pagina/1');
@@ -61,53 +62,60 @@ export default function CuentaJuegosForm({ id = null }) {
                 const resJuegos = await axios.get('http://localhost:3000/juegos/juegos_por_pagina/1000/num_pagina/1');
                 setAllJuegos(resJuegos.data.data || []);
 
-                // 3. If editing, fetch account details
                 if (isEditing) {
-                    const resCuenta = await axios.get(`http://localhost:3000/cuentas/form_cuenta/${id}`);
-                    const data = resCuenta.data;
-                    
-                    let parsedDir = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
-                    if (data.direccion) {
-                        try {
-                            if (typeof data.direccion === 'string') {
-                                if (data.direccion.startsWith('{')) {
-                                    parsedDir = { ...parsedDir, ...JSON.parse(data.direccion) };
-                                } else {
-                                    parsedDir.calle = data.direccion;
-                                }
-                            } else if (typeof data.direccion === 'object') {
-                                parsedDir = { ...parsedDir, ...data.direccion };
-                            }
-                        } catch (e) {
-                            parsedDir.calle = data.direccion;
-                        }
-                    }
-
-                    setFormData({
-                        correoID: data.correoID || '',
-                        correoDireccion: data.correoDireccion || '',
-                        clave: data.clave || '',
-                        cumpleaños: data.cumpleaños ? data.cumpleaños.split('T')[0] : '',
-                        fechadesactivacion: data.fechadesactivacion ? data.fechadesactivacion.split('T')[0] : '',
-                        saldo: data.saldo || '',
-                        nick: data.nick || '',
-                        plataforma: data.plataforma || 'PlayStation',
-                        region: data.region || 'US',
-                        semilla: data.semilla || '',
-                        codigos2FA: data.codigos2FA || '',
-                        direccion: parsedDir,
-                        juegos: data.juegos || [],
-                        tieneFacturas: !!data.tiene_facturas
-                    });
+                    await fetchAccountDetails();
                 }
             } catch (err) {
-                console.error("Error cargando datos:", err);
+                console.error("Error cargando datos iniciales:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
+        const fetchAccountDetails = async () => {
+            const resCuenta = await axios.get(`http://localhost:3000/cuentas/form_cuenta/${id}`);
+            const data = resCuenta.data;
+            
+            let parsedDir = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
+            if (data.direccion) {
+                parsedDir = parseDireccion(data.direccion);
+            }
+
+            setFormData({
+                correoID: data.correoID || '',
+                correoDireccion: data.correoDireccion || '',
+                clave: data.clave || '',
+                cumpleaños: data.cumpleaños ? data.cumpleaños.split('T')[0] : '',
+                fechadesactivacion: data.fechadesactivacion ? data.fechadesactivacion.split('T')[0] : '',
+                saldo: data.saldo || '',
+                nick: data.nick || '',
+                plataforma: data.plataforma || 'PlayStation',
+                region: data.region || 'US',
+                semilla: data.semilla || '',
+                codigos2FA: data.codigos2FA || '',
+                direccion: parsedDir,
+                juegos: data.juegos || [],
+                tieneFacturas: !!data.tiene_facturas
+            });
+        };
+
+        const parseDireccion = (rawDir) => {
+            let base = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
+            try {
+                if (typeof rawDir === 'string') {
+                    if (rawDir.startsWith('{')) {
+                        return { ...base, ...JSON.parse(rawDir) };
+                    }
+                    return { ...base, calle: rawDir };
+                }
+                return { ...base, ...rawDir };
+            } catch (e) {
+                console.warn("Fallo al parsear dirección JSON, usando raw string como calle", e);
+                return { ...base, calle: typeof rawDir === 'string' ? rawDir : '' };
+            }
+        };
+
+        fetchInitialData();
     }, [id, isEditing]);
 
     const handleChange = (e) => {
@@ -519,4 +527,10 @@ export default function CuentaJuegosForm({ id = null }) {
             </div>
         </MainLayout>
     );
-}
+};
+
+CuentaJuegosForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
+
+export default CuentaJuegosForm;

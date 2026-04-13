@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { ArrowLeft, Loader2, Mail, User, Shield, Users, Trophy, Pencil, Activity, Server, Ticket, PackageSearch } from 'lucide-react';
+import { ArrowLeft, Loader2, Shield, Users, Pencil, Activity, Server, Ticket, PackageSearch } from 'lucide-react';
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
+import PropTypes from 'prop-types';
 
 export default function JuegoShow({ id }) {
     const [juego, setJuego] = useState(null);
@@ -114,17 +115,11 @@ export default function JuegoShow({ id }) {
                                     </div>
                                 ) : (
                                     juego.cuentaJuegos.map(cuenta => (
-                                        <div 
+                                        <button 
                                             key={cuenta.id} 
+                                            type="button"
                                             onClick={() => router.visit(`/cuentas_juego/${cuenta.id}`)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter' || e.key === ' ') {
-                                                    router.visit(`/cuentas_juego/${cuenta.id}`);
-                                                }
-                                            }}
-                                            role="button"
-                                            tabIndex={0}
-                                            className="bg-white/2 border border-white/5 rounded-xl p-3 cursor-pointer hover:border-indigo-500/50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                            className="w-full text-left bg-white/2 border border-white/5 rounded-xl p-3 cursor-pointer hover:border-indigo-500/50 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                                         >
                                             <div className="flex justify-between items-start mb-2">
                                                 <div className="flex items-center gap-2 text-sm font-semibold text-white">
@@ -143,7 +138,7 @@ export default function JuegoShow({ id }) {
                                                     En Catálogo
                                                 </span>
                                             </div>
-                                        </div>
+                                        </button>
                                     ))
                                 )}
                             </div>
@@ -212,4 +207,8 @@ export default function JuegoShow({ id }) {
             {renderContent()}
         </MainLayout>
     );
-}
+};
+
+JuegoShow.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};

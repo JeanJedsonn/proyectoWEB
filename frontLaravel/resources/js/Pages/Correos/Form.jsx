@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import { 
@@ -14,7 +15,7 @@ import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
 import Input from '@/Components/UI/Input';
 
-export default function CorreoForm({ id = null }) {
+const CorreoForm = ({ id = null }) => {
     const isEdit = !!id;
     const [loading, setLoading] = useState(isEdit);
     const [saving, setSaving] = useState(false);
@@ -302,4 +303,10 @@ export default function CorreoForm({ id = null }) {
             </form>
         </MainLayout>
     );
-}
+};
+
+CorreoForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
+
+export default CorreoForm;

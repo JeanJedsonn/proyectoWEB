@@ -1,18 +1,19 @@
 import React from 'react';
-import { AlertCircle, CheckCircle2, Info, X, ShieldAlert, Save } from 'lucide-react';
+import PropTypes from 'prop-types';
+import { AlertCircle, Info, X, ShieldAlert, Save } from 'lucide-react';
 
 /**
  * Reusable Alert component for feedback and notifications.
  * Variants: 'success', 'danger', 'info', 'warning'
  */
-export default function Alert({ 
+const Alert = ({ 
     variant = 'info', 
     message = '', 
     title = '',
     onClose = null, 
     className = '',
     icon: IconOverride = null
-}) {
+}) => {
     const variants = {
         success: {
             bg: 'bg-emerald-500/10',
@@ -76,4 +77,15 @@ export default function Alert({
             )}
         </div>
     );
-}
+};
+
+Alert.propTypes = {
+    variant: PropTypes.oneOf(['success', 'danger', 'warning', 'info']),
+    message: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    onClose: PropTypes.func,
+    className: PropTypes.string,
+    icon: PropTypes.elementType
+};
+
+export default Alert;
