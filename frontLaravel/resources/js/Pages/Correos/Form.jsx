@@ -35,8 +35,9 @@ export default function CorreoForm({ id = null }) {
         if (isEdit) {
             const fetchCorreo = async () => {
                 setLoading(true);
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
                 try {
-                    const res = await axios.get(`http://localhost:3000/correos/form_correo/${id}`);
+                    const res = await axios.get(`${API_URL}/correos/form_correo/${id}`);
                     const data = res.data;
                     // Format birthday for input type="date" (YYYY-MM-DD)
                     if (data.cumpleanos) {
@@ -69,14 +70,15 @@ export default function CorreoForm({ id = null }) {
         setSuccess(null);
 
         try {
+            const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
-                await axios.patch(`http://localhost:3000/correos/form_correo/${id}`, {
+                await axios.patch(`${API_URL}/correos/form_correo/${id}`, {
                     id: id,
                     ...form
                 });
                 setSuccess("¡Credenciales del correo actualizadas correctamente!");
             } else {
-                await axios.post('http://localhost:3000/correos/form_correo/', form);
+                await axios.post(`${API_URL}/correos/form_correo/`, form);
                 setSuccess("¡Nuevo correo base registrado exitosamente!");
                 setForm({ direccion: '', clave: '', nombres: '', cumpleanos: '', recuperacion: '', redireccion: '' });
             }
@@ -96,8 +98,9 @@ export default function CorreoForm({ id = null }) {
         setSaving(true);
         setError(null);
 
+        const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
         try {
-            await axios.delete(`http://localhost:3000/correos/form_correo/${id}`);
+            await axios.delete(`${API_URL}/correos/form_correo/${id}`);
             router.visit('/correos');
         } catch (err) {
             console.error("Error al eliminar correo:", err);

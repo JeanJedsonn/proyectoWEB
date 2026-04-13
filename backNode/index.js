@@ -5,9 +5,14 @@ const port = process.env.PORT || 3000;
 const cors = require('cors');
 
 app.use(cors({
-    origin: ['http://frontlaravel.test', 'http://localhost:8000', 'http://127.0.0.1:8000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    credentials: true
+  origin: [
+    'http://frontlaravel.test',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://192.168.100.2:8000', // Acceso desde red local
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true
 }));
 
 // Middleware para parsear JSON en las peticiones

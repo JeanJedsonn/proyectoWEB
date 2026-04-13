@@ -30,7 +30,8 @@ export default function JuegoForm({ id = null })
             const fetchJuego = async () => {
                 setLoading(true);
                 try {
-                    const res = await axios.get(`http://localhost:3000/juegos/form_juego/${id}`);
+                    const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                    const res = await axios.get(`${API_URL}/juegos/form_juego/${id}`);
                     setForm({
                         nombre: res.data.nombre || '',
                         url: res.data.url || '',
@@ -57,7 +58,8 @@ export default function JuegoForm({ id = null })
         setError(null);
 
         try {
-            await axios.delete(`http://localhost:3000/juegos/form_juego/${id}`);
+            const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+            await axios.delete(`${API_URL}/juegos/form_juego/${id}`);
             router.visit('/juegos');
         } catch (err) {
             console.error("Error al eliminar juego:", err);
@@ -81,15 +83,16 @@ export default function JuegoForm({ id = null })
         }
 
         try {
+            const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
-                await axios.patch(`http://localhost:3000/juegos/form_juego/${id}`, {
+                await axios.patch(`${API_URL}/juegos/form_juego/${id}`, {
                     id: id,
                     ...form
                 });
                 setSuccess("¡Juego actualizado correctamente!");
 
             } else {
-                await axios.post('http://localhost:3000/juegos/form_juego/', form);
+                await axios.post(`${API_URL}/juegos/form_juego/`, form);
                 setSuccess("¡Juego registrado correctamente!");     
                 setForm({ nombre: '', url: '' });                   // Limpiar formulario después de la creación
 

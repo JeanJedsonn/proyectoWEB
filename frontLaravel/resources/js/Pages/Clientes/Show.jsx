@@ -27,7 +27,8 @@ export default function ClienteShow({ id }) {
             setLoading(true);
             setError(null);
             try {
-                const res = await axios.get(`http://localhost:3000/clientes/leer_cliente/${id}`);
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                const res = await axios.get(`${API_URL}/clientes/leer_cliente/${id}`);
                 setCliente(res.data);
             } catch (err) {
                 console.error("Error cargando cliente:", err);

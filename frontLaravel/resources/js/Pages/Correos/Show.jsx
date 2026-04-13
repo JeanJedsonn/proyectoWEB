@@ -25,7 +25,8 @@ export default function CorreoShow({ id }) {
         const fetchCorreo = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`http://localhost:3000/correos/leer_correo/${id}`);
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                const res = await axios.get(`${API_URL}/correos/leer_correo/${id}`);
                 setCorreo(res.data);
             } catch (err) {
                 console.error("Error cargando correo:", err);

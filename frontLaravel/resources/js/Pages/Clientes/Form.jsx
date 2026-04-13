@@ -34,8 +34,9 @@ export default function ClienteForm({ id = null }) {
         if (isEdit) {
             const fetchCliente = async () => {
                 setLoading(true);
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
                 try {
-                    const res = await axios.get(`http://localhost:3000/clientes/form_cliente/${id}`);
+                    const res = await axios.get(`${API_URL}/clientes/form_cliente/${id}`);
                     setForm({
                         nombre: res.data.nombre || '',
                         red: res.data.red || 'WhatsApp',
@@ -66,15 +67,16 @@ export default function ClienteForm({ id = null }) {
             return;
         }
 
+        const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
         try {
             if (isEdit) {
-                await axios.patch(`http://localhost:3000/clientes/form_cliente/${id}`, {
+                await axios.patch(`${API_URL}/clientes/form_cliente/${id}`, {
                     id: id,
                     ...form
                 });
                 setSuccessMsg("¡Perfil maestro actualizado correctamente!");
             } else {
-                await axios.post('http://localhost:3000/clientes/form_cliente/', form);
+                await axios.post(`${API_URL}/clientes/form_cliente/`, form);
                 setSuccessMsg("¡Nuevo cliente registrado en la base de datos!");
                 setForm({ nombre: '', red: 'WhatsApp', telefono: '', correo: '', notas: '' });
             }

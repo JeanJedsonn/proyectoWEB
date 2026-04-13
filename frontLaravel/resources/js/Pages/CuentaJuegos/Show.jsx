@@ -27,7 +27,8 @@ export default function CuentaJuegosShow({ id }) {
         const fetchCuenta = async () => {
             setLoading(true);
             try {
-                const res = await axios.get(`http://localhost:3000/cuentas/leer_cuenta/${id}`);
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                const res = await axios.get(`${API_URL}/cuentas/leer_cuenta/${id}`);
                 setCuenta(res.data);
             } catch (err) {
                 console.error("Error cargando cuenta de juego:", err);

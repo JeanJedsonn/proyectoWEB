@@ -39,12 +39,13 @@ export default function ClientesIndex() {
 
             setLoading(true);
             try {
-                let url = `http://localhost:3000/clientes/clientes_por_pagina/${perPage}/num_pagina/${page}`;
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                let url = `${API_URL}/clientes/clientes_por_pagina/${perPage}/num_pagina/${page}`;
                 
                 if (network) {
-                    url = `http://localhost:3000/clientes/campo/red/buscar/${network}/clientes_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${API_URL}/clientes/campo/red/buscar/${network}/clientes_por_pagina/${perPage}/num_pagina/${page}`;
                 } else if (searchField && searchTerm) {
-                    url = `http://localhost:3000/clientes/campo/${searchField}/buscar/${searchTerm}/clientes_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${API_URL}/clientes/campo/${searchField}/buscar/${searchTerm}/clientes_por_pagina/${perPage}/num_pagina/${page}`;
                 }
 
                 const res = await axios.get(url);

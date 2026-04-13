@@ -53,17 +53,18 @@ export default function CuentaJuegosForm({ id = null }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
                 // 1. Fetch available Correos
-                const resCorreos = await axios.get('http://localhost:3000/correos/correos_por_pagina/1000/num_pagina/1');
+                const resCorreos = await axios.get(`${API_URL}/correos/correos_por_pagina/1000/num_pagina/1`);
                 setCorreos(resCorreos.data.data || []);
 
                 // 2. Fetch available Juegos
-                const resJuegos = await axios.get('http://localhost:3000/juegos/juegos_por_pagina/1000/num_pagina/1');
+                const resJuegos = await axios.get(`${API_URL}/juegos/juegos_por_pagina/1000/num_pagina/1`);
                 setAllJuegos(resJuegos.data.data || []);
 
                 // 3. If editing, fetch account details
                 if (isEditing) {
-                    const resCuenta = await axios.get(`http://localhost:3000/cuentas/form_cuenta/${id}`);
+                    const resCuenta = await axios.get(`${API_URL}/cuentas/form_cuenta/${id}`);
                     const data = resCuenta.data;
                     
                     let parsedDir = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
@@ -146,11 +147,12 @@ export default function CuentaJuegosForm({ id = null }) {
         setSuccess(null);
 
         try {
+            const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEditing) {
-                await axios.patch(`http://localhost:3000/cuentas/form_cuenta/${id}`, formData);
+                await axios.patch(`${API_URL}/cuentas/form_cuenta/${id}`, formData);
                 setSuccess("¡Los cambios en la cuenta se han sincronizado correctamente!");
             } else {
-                await axios.post(`http://localhost:3000/cuentas/form_cuenta`, formData);
+                await axios.post(`${API_URL}/cuentas/form_cuenta`, formData);
                 setSuccess("¡La nueva cuenta ha sido registrada con éxito en la bóveda!");
                 // Limpiar si es nuevo
                 setFormData({
@@ -171,8 +173,9 @@ export default function CuentaJuegosForm({ id = null }) {
     const handleDelete = async () => {
         if (!globalThis.confirm("¿Estás seguro de que deseas eliminar esta cuenta?")) return;
         setSubmitting(true);
+        const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
         try {
-            await axios.delete(`http://localhost:3000/cuentas/form_cuenta/${id}`);
+            await axios.delete(`${API_URL}/cuentas/form_cuenta/${id}`);
             router.visit('/cuentas_juego');
         } catch (err) {
             console.error("Error eliminando cuenta:", err);

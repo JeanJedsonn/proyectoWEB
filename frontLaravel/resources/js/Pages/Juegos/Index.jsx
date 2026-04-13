@@ -34,10 +34,11 @@ export default function JuegosIndex() {
         const fetchJuegos = async () => {
             setLoading(true);
             try {
-                let url = `http://localhost:3000/juegos/juegos_por_pagina/${perPage}/num_pagina/${page}`;
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                let url = `${API_URL}/juegos/juegos_por_pagina/${perPage}/num_pagina/${page}`;
                 
                 if (appliedSearch) {
-                    url = `http://localhost:3000/juegos/campo/titulo/buscar/${encodeURIComponent(appliedSearch)}/juegos_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${API_URL}/juegos/campo/titulo/buscar/${encodeURIComponent(appliedSearch)}/juegos_por_pagina/${perPage}/num_pagina/${page}`;
                 }
 
                 const res = await axios.get(url);

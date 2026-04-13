@@ -35,10 +35,11 @@ export default function CuentaJuegosIndex() {
         const fetchCuentas = async () => {
             setLoading(true);
             try {
-                let url = `http://localhost:3000/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                let url = `${API_URL}/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
                 
                 if (searchTerm.trim() !== '') {
-                    url = `http://localhost:3000/cuentas/campo/${searchField}/buscar/${searchTerm}/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${API_URL}/cuentas/campo/${searchField}/buscar/${searchTerm}/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
                 }
 
                 const res = await axios.get(url);

@@ -13,7 +13,11 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        host: '0.0.0.0',       // Escucha en todas las interfaces
         cors: true,
+        hmr: {
+            host: '192.168.100.2', // Le dice al browser dónde conectar el HMR
+        },
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

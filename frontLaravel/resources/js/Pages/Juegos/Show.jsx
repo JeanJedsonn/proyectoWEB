@@ -17,7 +17,8 @@ export default function JuegoShow({ id }) {
             setLoading(true);
             setError(null);
             try {
-                const res = await axios.get(`http://localhost:3000/juegos/leer_juego/${id}`);
+                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                const res = await axios.get(`${API_URL}/juegos/leer_juego/${id}`);
                 setJuego(res.data);
             } catch (err) {
                 console.error("Error cargando detalles del juego:", err);
