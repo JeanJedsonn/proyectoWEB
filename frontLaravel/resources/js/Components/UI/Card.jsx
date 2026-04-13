@@ -1,16 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Card component for containers and panels.
  */
-export default function Card({ 
+const Card = ({ 
     children, 
     title = '', 
     icon: Icon = null, 
     className = '', 
     variant = 'default',
     ...props
-}) {
+}) => {
     const variants = {
         default: 'bg-[#161821] border-white/5 border-l-4 border-l-indigo-500 shadow-indigo-500/5',
         success: 'bg-[#161821] border-white/5 border-l-4 border-l-emerald-500 shadow-emerald-500/5',
@@ -35,4 +36,14 @@ export default function Card({
             {children}
         </div>
     );
-}
+};
+
+Card.propTypes = {
+    children: PropTypes.node.isRequired,
+    title: PropTypes.string,
+    icon: PropTypes.elementType,
+    className: PropTypes.string,
+    variant: PropTypes.oneOf(['default', 'premium', 'success', 'danger', 'ghost', 'outline'])
+};
+
+export default Card;

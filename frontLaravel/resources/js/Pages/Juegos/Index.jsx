@@ -97,7 +97,7 @@ export default function JuegosIndex() {
                     <p className="text-gray-500 max-w-sm mb-10 leading-relaxed font-bold uppercase text-[10px] tracking-widest opacity-60">
                         No se detectaron registros de títulos activos o se perdió el enlace con el servidor de datos.
                     </p>
-                    <Button variant="outline" size="sm" icon={PackageSearch} onClick={() => window.location.reload()}>
+                    <Button variant="outline" size="sm" icon={PackageSearch} onClick={() => globalThis.location.reload()}>
                         Reintentar Enlace
                     </Button>
                 </div>

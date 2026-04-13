@@ -4,11 +4,11 @@ const obtenerCuentasPorPagina = async (req, res) => {
     try {
         const { cuentas_por_pagina: rawPerPage, num_pagina: rawPage } = req.params;
 
-        const num_pagina = parseInt(rawPage);
-        const per_page = parseInt(rawPerPage);
+        const num_pagina = Number.parseInt(rawPage);
+        const per_page = Number.parseInt(rawPerPage);
 
         // Validación de parámetros de paginación
-        if (isNaN(num_pagina) || num_pagina <= 0 || isNaN(per_page) || per_page <= 0) {
+        if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
                 error: 'Los parámetros de paginación deben ser números enteros positivos'
             });
@@ -16,7 +16,7 @@ const obtenerCuentasPorPagina = async (req, res) => {
 
         // Obtener el total de cuentas de juego
         const countResult = await pool.query('SELECT COUNT(*) FROM Cuentajuego');
-        const total = parseInt(countResult.rows[0].count);
+        const total = Number.parseInt(countResult.rows[0].count);
 
         // Calcular la última página
         const last_page = Math.ceil(total / per_page) || 1;
@@ -73,10 +73,10 @@ const obtenerCuentasPorPagina = async (req, res) => {
 const buscarCuentas = async (req, res) => {
     try {
         const { campo, buscar, cuentas_por_pagina: rawPerPage, num_pagina: rawPage } = req.params;
-        const num_pagina = parseInt(rawPage);
-        const per_page = parseInt(rawPerPage);
+        const num_pagina = Number.parseInt(rawPage);
+        const per_page = Number.parseInt(rawPerPage);
 
-        if (isNaN(num_pagina) || num_pagina <= 0 || isNaN(per_page) || per_page <= 0) {
+        if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
@@ -113,7 +113,7 @@ const buscarCuentas = async (req, res) => {
             WHERE ${campoReal}::text ILIKE $1
         `;
         const countResult = await pool.query(countQuery, [paramBusqueda]);
-        const total = parseInt(countResult.rows[0].count);
+        const total = Number.parseInt(countResult.rows[0].count);
 
         // 2. Calcular paginación
         const last_page = Math.ceil(total / per_page) || 1;
@@ -160,9 +160,9 @@ const buscarCuentas = async (req, res) => {
 
 const getFormCuentaJuego = async (req, res) => {
     try {
-        const id_cuentajuego = parseInt(req.params.id);
+        const id_cuentajuego = Number.parseInt(req.params.id);
 
-        if (isNaN(id_cuentajuego) || id_cuentajuego <= 0) {
+        if (Number.isNaN(id_cuentajuego) || id_cuentajuego <= 0) {
             return res.status(400).json({ error: 'El ID de la cuenta de juego debe ser un número entero positivo' });
         }
 
@@ -209,7 +209,7 @@ const getFormCuentaJuego = async (req, res) => {
 const actualizarFormCuentaJuego = async (req, res) => {
     const client = await pool.connect();
     try {
-        const id_cuentajuego = parseInt(req.params.id);
+        const id_cuentajuego = Number.parseInt(req.params.id);
         const {
             correoID,
             correoDireccion,
@@ -226,7 +226,7 @@ const actualizarFormCuentaJuego = async (req, res) => {
             juegos
         } = req.body;
 
-        if (isNaN(id_cuentajuego) || id_cuentajuego <= 0) {
+        if (Number.isNaN(id_cuentajuego) || id_cuentajuego <= 0) {
             return res.status(400).json({ error: 'El ID de la cuenta de juego debe ser un número entero positivo' });
         }
 
@@ -357,9 +357,9 @@ const crearCuentaJuego = async (req, res) => {
 
 const leerCuentaJuego = async (req, res) => {
     try {
-        const id_cuenta = parseInt(req.params.id);
+        const id_cuenta = Number.parseInt(req.params.id);
 
-        if (isNaN(id_cuenta) || id_cuenta <= 0) {
+        if (Number.isNaN(id_cuenta) || id_cuenta <= 0) {
             return res.status(400).json({ error: 'El ID de la cuenta debe ser un número entero positivo' });
         }
 

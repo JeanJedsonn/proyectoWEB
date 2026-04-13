@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
-import { 
-    Gamepad2, ArrowLeft, Save, 
-    Trash2, Database, Key, 
+import {
+    Gamepad2, ArrowLeft, Save,
+    Trash2, Database, Key,
     DollarSign, Calendar, Loader2, Globe, User,
     Search, Shield, MapPin, X, Mail
 } from 'lucide-react';
@@ -18,7 +19,7 @@ import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
 import QuickSelectList from '@/Components/UI/QuickSelectList';
 
-export default function CuentaJuegosForm({ id = null }) {
+const CuentaJuegosForm = ({ id = null }) => {
     const isEditing = !!id;
     const [loading, setLoading] = useState(isEditing);
     const [submitting, setSubmitting] = useState(false);
@@ -27,7 +28,7 @@ export default function CuentaJuegosForm({ id = null }) {
     const [searchJuego, setSearchJuego] = useState('');
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
-    
+
     const [formData, setFormData] = useState({
         correoID: '',
         correoDireccion: '',
@@ -51,7 +52,46 @@ export default function CuentaJuegosForm({ id = null }) {
     });
 
     useEffect(() => {
-        const fetchData = async () => {
+        const parseDireccion = (rawDir) => {
+            let base = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
+            try {
+                if (typeof rawDir === 'string') {
+                    if (rawDir.startsWith('{')) {
+                        return { ...base, ...JSON.parse(rawDir) };
+                    }
+                    return { ...base, calle: rawDir };
+                }
+                return { ...base, ...rawDir };
+            } catch (e) {
+                console.warn("Fallo al parsear dirección JSON, usando raw string como calle", e);
+                return { ...base, calle: typeof rawDir === 'string' ? rawDir : '' };
+            }
+        };
+
+        const fetchAccountDetails = async (API_URL) => {
+            const resCuenta = await axios.get(`${API_URL}/cuentas/form_cuenta/${id}`);
+            const data = resCuenta.data;
+
+            setFormData(prev => ({
+                ...prev,
+                correoID: data.correoID || '',
+                correoDireccion: data.correoDireccion || '',
+                clave: data.clave || '',
+                cumpleaños: data.cumpleaños ? data.cumpleaños.split('T')[0] : '',
+                fechadesactivacion: data.fechadesactivacion ? data.fechadesactivacion.split('T')[0] : '',
+                saldo: data.saldo || '',
+                nick: data.nick || '',
+                plataforma: data.plataforma || 'PlayStation',
+                region: data.region || 'US',
+                semilla: data.semilla || '',
+                codigos2FA: data.codigos2FA || '',
+                direccion: parseDireccion(data.direccion),
+                juegos: (data.juegos || []).map(j => typeof j === 'object' ? j.id : j),
+                tieneFacturas: !!data.tiene_facturas
+            }));
+        };
+
+        const fetchInitialData = async () => {
             try {
                 const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
                 // 1. Fetch available Correos
@@ -62,61 +102,25 @@ export default function CuentaJuegosForm({ id = null }) {
                 const resJuegos = await axios.get(`${API_URL}/juegos/juegos_por_pagina/1000/num_pagina/1`);
                 setAllJuegos(resJuegos.data.data || []);
 
-                // 3. If editing, fetch account details
                 if (isEditing) {
-                    const resCuenta = await axios.get(`${API_URL}/cuentas/form_cuenta/${id}`);
-                    const data = resCuenta.data;
-                    
-                    let parsedDir = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
-                    if (data.direccion) {
-                        try {
-                            if (typeof data.direccion === 'string') {
-                                if (data.direccion.startsWith('{')) {
-                                    parsedDir = { ...parsedDir, ...JSON.parse(data.direccion) };
-                                } else {
-                                    parsedDir.calle = data.direccion;
-                                }
-                            } else if (typeof data.direccion === 'object') {
-                                parsedDir = { ...parsedDir, ...data.direccion };
-                            }
-                        } catch (e) {
-                            parsedDir.calle = data.direccion;
-                        }
-                    }
-
-                    setFormData({
-                        correoID: data.correoID || '',
-                        correoDireccion: data.correoDireccion || '',
-                        clave: data.clave || '',
-                        cumpleaños: data.cumpleaños ? data.cumpleaños.split('T')[0] : '',
-                        fechadesactivacion: data.fechadesactivacion ? data.fechadesactivacion.split('T')[0] : '',
-                        saldo: data.saldo || '',
-                        nick: data.nick || '',
-                        plataforma: data.plataforma || 'PlayStation',
-                        region: data.region || 'US',
-                        semilla: data.semilla || '',
-                        codigos2FA: data.codigos2FA || '',
-                        direccion: parsedDir,
-                        juegos: data.juegos || [],
-                        tieneFacturas: !!data.tiene_facturas
-                    });
+                    await fetchAccountDetails(API_URL);
                 }
             } catch (err) {
-                console.error("Error cargando datos:", err);
+                console.error("Error cargando datos iniciales:", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchData();
+        fetchInitialData();
     }, [id, isEditing]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         if (name === 'correoID') {
             const selectedCorreo = correos.find(c => String(c.id) === String(value));
-            setFormData(prev => ({ 
-                ...prev, 
+            setFormData(prev => ({
+                ...prev,
                 correoID: value,
                 correoDireccion: selectedCorreo ? selectedCorreo.direccionCorreo : prev.correoDireccion
             }));
@@ -195,14 +199,14 @@ export default function CuentaJuegosForm({ id = null }) {
         );
     }
 
-    const filteredJuegos = allJuegos.filter(j => 
+    const filteredJuegos = allJuegos.filter(j =>
         j.titulo.toLowerCase().includes(searchJuego.toLowerCase())
     );
 
     return (
         <MainLayout>
             <Head title={isEditing ? 'Editar Cuenta' : 'Nueva Cuenta'} />
-            
+
             <PageHeader
                 title={isEditing ? 'Configurar Cuenta' : 'Nueva Cuenta'}
                 description={isEditing ? "Modificando cuenta existente." : "Registro de nueva cuenta."}
@@ -213,14 +217,14 @@ export default function CuentaJuegosForm({ id = null }) {
                 ]}
             >
                 <div className="flex items-center gap-3 w-full md:w-auto">
-                    <Button 
+                    <Button
                         variant="secondary"
                         icon={(isEditing && !success) ? X : ArrowLeft}
                         onClick={() => globalThis.history.back()}
                     >
                         {(isEditing && !success) ? 'Descartar' : 'Volver'}
                     </Button>
-                    <Button 
+                    <Button
                         variant="primary"
                         icon={Save}
                         loading={submitting}
@@ -236,17 +240,17 @@ export default function CuentaJuegosForm({ id = null }) {
                 {(error || success) && (
                     <div className="lg:col-span-12 animate-in slide-in-from-top-4 duration-300">
                         {error && (
-                            <Alert 
-                                variant="danger" 
-                                message={error} 
-                                onClose={() => setError(null)} 
+                            <Alert
+                                variant="danger"
+                                message={error}
+                                onClose={() => setError(null)}
                             />
                         )}
                         {success && (
-                            <Alert 
-                                variant="success" 
-                                message={success} 
-                                onClose={() => setSuccess(null)} 
+                            <Alert
+                                variant="success"
+                                message={success}
+                                onClose={() => setSuccess(null)}
                             />
                         )}
                     </div>
@@ -263,23 +267,23 @@ export default function CuentaJuegosForm({ id = null }) {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
+
                             {/* Correo Matriz Asociado */}
                             <div className="md:col-span-2 space-y-4">
                                 <div className="p-6 bg-[#0b0d12]/50 border border-white/5 rounded-2xl shadow-inner space-y-4">
-                                    <Input 
+                                    <Input
                                         label="Vículo de Correo Principal"
                                         placeholder="Buscar correo..."
                                         icon={Mail}
                                         value={formData.searchCorreo || ''}
-                                        onChange={(e) => setFormData(p => ({...p, searchCorreo: e.target.value}))}
+                                        onChange={(e) => setFormData(p => ({ ...p, searchCorreo: e.target.value }))}
                                         variant="dark"
                                         required
                                     />
-                                    <QuickSelectList 
-                                        items={correos.filter(c => c.direccionCorreo.toLowerCase().includes((formData.searchCorreo || '').toLowerCase()))}
+                                    <QuickSelectList
+                                        items={correos.filter(c => c.direccionCorreo?.toLowerCase().includes((formData.searchCorreo || '').toLowerCase()))}
                                         selectedId={formData.correoID}
-                                        onSelect={(c) => handleChange({target: {name: 'correoID', value: c.id}})}
+                                        onSelect={(c) => handleChange({ target: { name: 'correoID', value: c.id } })}
                                         getLabel={(c) => c.direccionCorreo}
                                         getSublabel={(c) => c.nombre || 'Personal'}
                                         height="h-44"
@@ -290,7 +294,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             </div>
 
                             {/* Nickname */}
-                            <Input 
+                            <Input
                                 label="Nickname (ID Público)"
                                 icon={User}
                                 name="nick"
@@ -302,7 +306,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             />
 
                             {/* Contraseña */}
-                            <Input 
+                            <Input
                                 label="Contraseña"
                                 icon={Key}
                                 name="clave"
@@ -323,7 +327,7 @@ export default function CuentaJuegosForm({ id = null }) {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 overflow-visible">
                             {/* Fecha de nacimiento */}
-                            <Input 
+                            <Input
                                 label="Cumpleaños"
                                 type="date"
                                 icon={Calendar}
@@ -335,7 +339,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             />
 
                             {/* Fecha de desactivación */}
-                            <Input 
+                            <Input
                                 label="Desactivación"
                                 type="date"
                                 icon={Shield}
@@ -346,7 +350,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             />
 
                             {/* Saldo */}
-                            <Input 
+                            <Input
                                 label="Saldo"
                                 icon={DollarSign}
                                 name="saldo"
@@ -357,7 +361,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             />
 
                             {/* Plataforma */}
-                            <Select 
+                            <Select
                                 label="Plataforma"
                                 name="plataforma"
                                 value={formData.plataforma}
@@ -373,7 +377,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             />
 
                             {/* Region */}
-                            <Input 
+                            <Input
                                 label="Región"
                                 icon={Globe}
                                 name="region"
@@ -407,14 +411,14 @@ export default function CuentaJuegosForm({ id = null }) {
                 {/* Panel Derecho: Juegos y Seguridad */}
                 <div className="lg:col-span-4 space-y-8">
                     <Card className="p-6 flex flex-col min-h-[450px]">
-                        
+
                         <div className="flex items-center justify-between mb-6">
                             {/* Icono y titulo */}
                             <div className="flex items-center gap-2">
                                 <Gamepad2 className="w-4 h-4 text-indigo-400" />
                                 <h2 className="text-[10px] font-black text-white uppercase tracking-widest italic">Títulos</h2>
                             </div>
-                            
+
                             {/* Contador de juegos */}
                             <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded-lg border border-indigo-500/10">
                                 {formData.juegos.length}
@@ -423,7 +427,7 @@ export default function CuentaJuegosForm({ id = null }) {
 
                         {/* Contenedor Unificado de Catálogo */}
                         <div className="flex-1 p-6 bg-[#0b0d12]/50 border border-white/5 rounded-2xl shadow-inner space-y-4 overflow-hidden">
-                            <Input 
+                            <Input
                                 icon={Search}
                                 placeholder="Buscar título en boveda..."
                                 value={searchJuego}
@@ -433,7 +437,7 @@ export default function CuentaJuegosForm({ id = null }) {
                             />
 
                             <div className="overflow-hidden">
-                                <QuickSelectList 
+                                <QuickSelectList
                                     items={filteredJuegos}
                                     multiSelect={true}
                                     selectedIds={formData.juegos}
@@ -459,7 +463,7 @@ export default function CuentaJuegosForm({ id = null }) {
                         <div className="space-y-4">
 
                             {/* Semilla (Codigo Base) */}
-                            <Input 
+                            <Input
                                 label="Semilla (Código Base)"
                                 icon={Key}
                                 name="semilla"
@@ -474,7 +478,7 @@ export default function CuentaJuegosForm({ id = null }) {
                                 <label htmlFor="codigos2FA" className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-1 flex items-center gap-2">
                                     Historial Códigos
                                 </label>
-                                <textarea 
+                                <textarea
                                     id="codigos2FA"
                                     name="codigos2FA"
                                     value={formData.codigos2FA}
@@ -488,7 +492,7 @@ export default function CuentaJuegosForm({ id = null }) {
 
                     {/* Boton de eliminar cuenta */}
                     {isEditing && (
-                        <Card 
+                        <Card
                             title="Operaciones Críticas"
                             icon={Trash2}
                             variant="danger"
@@ -498,14 +502,14 @@ export default function CuentaJuegosForm({ id = null }) {
                                     <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest">Zona de Peligro</h4>
                                     <p className="text-[10px] text-gray-600 font-bold mt-1 uppercase tracking-tight">Acción Irreversible</p>
                                 </div>
-                                
+
                                 <p className="text-[10px] text-gray-500 font-bold leading-relaxed">
-                                    {formData.tieneFacturas 
+                                    {formData.tieneFacturas
                                         ? "Esta cuenta no puede ser eliminada porque existen facturas emitidas que dependen de ella."
                                         : "La eliminación de esta cuenta es permanente y afectará a todas las facturas vinculadas."}
                                 </p>
 
-                                <Button 
+                                <Button
                                     variant={formData.tieneFacturas ? "secondary" : "danger"}
                                     icon={formData.tieneFacturas ? Shield : Trash2}
                                     loading={submitting}
@@ -522,4 +526,10 @@ export default function CuentaJuegosForm({ id = null }) {
             </div>
         </MainLayout>
     );
-}
+};
+
+CuentaJuegosForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
+
+export default CuentaJuegosForm;

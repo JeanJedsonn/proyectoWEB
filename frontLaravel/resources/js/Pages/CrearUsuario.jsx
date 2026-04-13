@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { UserPlus, Mail, Lock, ShieldQuestion, Loader2, Info } from 'lucide-react';
 import MainLayout from '../Layouts/MainLayout';
@@ -36,7 +36,7 @@ export default function CrearUsuario() {
 
         try {
             const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
-            const response = await axios.post(`${urlNode}/auth/crear`, formData);
+            await axios.post(`${urlNode}/auth/crear`, formData);
 
             setSuccessMsg('Usuario creado exitosamente.');
             setFormData({
@@ -50,7 +50,7 @@ export default function CrearUsuario() {
             });
         } catch (error) {
             console.error('Error al crear usuario:', error);
-            if (error.response && error.response.data && error.response.data.mensaje) {
+            if (error.response?.data?.mensaje) {
                 setErrorMsg(error.response.data.mensaje);
             } else {
                 setErrorMsg('Error de conexión con el servidor. Intenta más tarde.');
@@ -67,7 +67,7 @@ export default function CrearUsuario() {
             <div className="max-w-3xl mx-auto flex flex-col items-center justify-center py-10 font-sans">
                 <div className="w-full bg-[#161821] border border-emerald-500/10 p-8 rounded-3xl shadow-2xl relative z-10">
                     <div className="flex flex-col items-center mb-8">
-                        <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 mb-4 shadow-lg shadow-emerald-500/20 shadow-inner border border-emerald-500/30">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 mb-4 shadow-lg shadow-emerald-500/20 border border-emerald-500/30">
                             <UserPlus className="w-6 h-6" />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-white">Registrar Nuevo Usuario</h1>
@@ -143,6 +143,7 @@ export default function CrearUsuario() {
                                 value={formData.level_admin}
                                 onChange={(e) => setFormData(prev => ({ ...prev, level_admin: Number.parseInt(e.target.value, 10) }))}
                                 className="bg-[#0b0d12] border border-white/10 rounded-xl py-2 px-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all cursor-pointer"
+                                aria-label="Nivel de Acceso"
                             >
                                 <option value={0}>👤 Normal — Solo lectura</option>
                                 <option value={1}>🛡️ Admin — Editar y borrar</option>
@@ -193,7 +194,7 @@ export default function CrearUsuario() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white py-3.5 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
+                                className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white py-3.5 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
                             >
                                 {loading ? (
                                     <Loader2 className="w-5 h-5 animate-spin" />

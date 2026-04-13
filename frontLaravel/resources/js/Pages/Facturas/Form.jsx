@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
     FileText, Save, X, DollarSign, Calendar, Search,
-    Gamepad2, ShieldCheck, Mail, KeyRound, Key
+    Gamepad2, ShieldCheck, Mail, Key
 } from 'lucide-react';
 
 // Componentes UI Atómicos
@@ -17,7 +18,7 @@ import Select from '@/Components/UI/Select';
 import DataCopyBox from '@/Components/UI/DataCopyBox';
 import QuickSelectList from '@/Components/UI/QuickSelectList';
 
-export default function FacturaForm({ id = null }) {
+const FacturaForm = ({ id = null }) => {
     const isEditing = !!id;
     const [loading, setLoading] = useState(isEditing);
     const [submitting, setSubmitting] = useState(false);
@@ -120,13 +121,13 @@ export default function FacturaForm({ id = null }) {
     };
 
     const filteredClientes = clientes.filter(c => 
-        c.nombre.toLowerCase().includes(searchCliente.toLowerCase()) || 
-        (c.red && c.red.toLowerCase().includes(searchCliente.toLowerCase()))
+        c.nombre?.toLowerCase().includes(searchCliente.toLowerCase()) || 
+        c.red?.toLowerCase().includes(searchCliente.toLowerCase())
     );
 
     const filteredCuentas = cuentas.filter(c => 
-        (c.direccionCorreo && c.direccionCorreo.toLowerCase().includes(searchCuenta.toLowerCase())) || 
-        (c.clave && c.clave.toLowerCase().includes(searchCuenta.toLowerCase()))
+        c.direccionCorreo?.toLowerCase().includes(searchCuenta.toLowerCase()) || 
+        c.clave?.toLowerCase().includes(searchCuenta.toLowerCase())
     );
 
     const handleSubmit = async (e) => {
@@ -155,20 +156,6 @@ export default function FacturaForm({ id = null }) {
             setSubmitting(false);
         }
     };
-
-    const handleDelete = async () => {
-        if (!globalThis.confirm("¿Estás seguro de que deseas eliminar esta factura? Esta acción es irreversible y altera el contable.")) return;
-        setSubmitting(true);
-        try {
-            setErrorMsg("La eliminación de facturas requiere aprobación administrativa (Función restringida).");
-        } catch (err) {
-            console.error("Error eliminando cuenta:", err);
-            setErrorMsg("Error al procesar la solicitud.");
-        } finally {
-            setSubmitting(false);
-        }
-    };
-    
     
     // Retorna el loading mientras carga los datos
     if (loading) {
@@ -423,4 +410,10 @@ export default function FacturaForm({ id = null }) {
             </form>
         </MainLayout>
     );
-}
+};
+
+FacturaForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
+
+export default FacturaForm;

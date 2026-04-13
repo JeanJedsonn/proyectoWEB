@@ -196,7 +196,7 @@ export default function Dashboard() {
                         
                         <div className="relative w-48 h-48 mx-auto mb-8">
                             {/* Base estática que simula el dónut */}
-                            <div className="absolute inset-0 rounded-full border-[16px] border-[#161821] shadow-[0_0_0_2px_rgba(255,255,255,0.05)]"></div>
+                            <div className="absolute inset-0 rounded-full border-16 border-[#161821] shadow-[0_0_0_2px_rgba(255,255,255,0.05)]"></div>
                             <div className="absolute inset-0 rounded-full flex items-center justify-center overflow-hidden">
                                     <svg viewBox="0 0 36 36" className="w-[110%] h-[110%] absolute">
                                     {/* Primarias */}

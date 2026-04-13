@@ -9,6 +9,7 @@ import Toast from '@/Components/UI/Toast';
 import Button from '@/Components/UI/Button';
 import FacturaReceipt from '@/Components/Facturas/FacturaReceipt';
 import PageHeader from '@/Components/UI/PageHeader';
+import PropTypes from 'prop-types';
 
 export default function FacturaShow({ id }) {
     const [factura, setFactura] = useState(null);
@@ -158,4 +159,8 @@ export default function FacturaShow({ id }) {
             />
         </MainLayout>
     );
-}
+};
+
+FacturaShow.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * QuickSelectList component for standardized selection lists (e.g., Buyers, Accounts).
@@ -39,7 +40,7 @@ export default function QuickSelectList({
                             >
                                 <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-indigo-400 shadow-[0_0_10px_rgba(129,140,248,0.5)]' : 'bg-indigo-800/10 border border-indigo-500/10'}`}></div>
                                 <span className="truncate flex-1">{getLabel(item)}</span>
-                                {getSublabel && getSublabel(item) && (
+                                {getSublabel?.(item) && (
                                     <span className={`opacity-30 uppercase tracking-tighter shrink-0 ${sublabelClassName}`}>
                                         {getSublabel(item)}
                                     </span>
@@ -56,3 +57,16 @@ export default function QuickSelectList({
         </div>
     );
 }
+
+QuickSelectList.propTypes = {
+    items: PropTypes.arrayOf(PropTypes.object),
+    selectedId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    onSelect: PropTypes.func.isRequired,
+    getLabel: PropTypes.func,
+    getSublabel: PropTypes.func,
+    emptyMessage: PropTypes.string,
+    height: PropTypes.string,
+    multiSelect: PropTypes.bool,
+    selectedIds: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+    sublabelClassName: PropTypes.string
+};

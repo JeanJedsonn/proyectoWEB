@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Loader2, Database } from 'lucide-react';
 
 /**
@@ -14,7 +15,7 @@ import { Loader2, Database } from 'lucide-react';
  * @param {React.ReactNode} emptyIcon - Icon to display in empty state
  * @param {function} renderRow - Function that returns a <tr> element for each data item
  */
-export default function GenericTable({ 
+const GenericTable = ({ 
     columns = [], 
     data = [], 
     loading = false, 
@@ -22,7 +23,7 @@ export default function GenericTable({
     emptySubMessage = "",
     emptyIcon = <Database className="w-12 h-12 mb-4 opacity-20" />,
     renderRow
-}) {
+}) => {
     const renderTableContent = () => {
         if (loading) {
             return (
@@ -59,9 +60,9 @@ export default function GenericTable({
             <table className="w-full text-left border-collapse">
                 <thead>
                     <tr className="bg-white/5">
-                        {columns.map((col, index) => (
+                        {columns.map((col, idx) => (
                             <th 
-                                key={index} 
+                                key={col.header || idx} 
                                 className={`px-6 py-4 text-xs font-bold uppercase tracking-wider text-gray-400 border-b border-white/5 ${col.className || ''}`}
                             >
                                 {col.header}
@@ -75,4 +76,19 @@ export default function GenericTable({
             </table>
         </div>
     );
-}
+};
+
+GenericTable.propTypes = {
+    columns: PropTypes.arrayOf(PropTypes.shape({
+        header: PropTypes.string,
+        className: PropTypes.string
+    })).isRequired,
+    data: PropTypes.array.isRequired,
+    loading: PropTypes.bool,
+    emptyMessage: PropTypes.string,
+    emptySubMessage: PropTypes.string,
+    emptyIcon: PropTypes.node,
+    renderRow: PropTypes.func.isRequired
+};
+
+export default GenericTable;
