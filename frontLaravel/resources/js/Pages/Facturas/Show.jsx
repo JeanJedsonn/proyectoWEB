@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
-    Printer, ArrowLeft, Loader2, ShieldAlert, Eye
+    Printer, ArrowLeft, Loader2, ShieldAlert, Eye, Download, FileCheck
 } from 'lucide-react';
 import Toast from '@/Components/UI/Toast';
 import Button from '@/Components/UI/Button';
 import FacturaReceipt from '@/Components/Facturas/FacturaReceipt';
+import PageHeader from '@/Components/UI/PageHeader';
 
 export default function FacturaShow({ id }) {
     const [factura, setFactura] = useState(null);
@@ -45,7 +46,7 @@ export default function FacturaShow({ id }) {
     };
 
     const handlePrint = () => {
-        window.print();
+        globalThis.print();
     };
 
     const toggleViewMode = () => {
@@ -79,7 +80,7 @@ export default function FacturaShow({ id }) {
         }
 
         return (
-            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700 max-w-4xl mx-auto">
+            <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
                 <style>{`
                     @media print {
                         body { background: white !important; }
@@ -90,39 +91,54 @@ export default function FacturaShow({ id }) {
                     }
                 `}</style>
                 
-                {/* Controles de página, ocultos en impresión */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 print-hide">
-                    <div className="flex items-center gap-3 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">
-                        <Link href="/facturas" className="hover:text-indigo-400 transition-colors">Directorio Histórico</Link>
-                        <span>/</span>
-                        <span className="text-white opacity-40">Recibo #{String(factura.id).padStart(4, '0')}</span>
-                    </div>
-                    
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                        <button 
-                            onClick={toggleViewMode}
-                            className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                                viewMode === 'admin' 
-                                ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20' 
-                                : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
-                            }`}
-                        >
-                            <Eye className="w-4 h-4" />
-                            {viewMode === 'admin' ? 'Modo: Vendedor (Completo)' : 'Modo: Cliente (Reducido)'}
-                        </button>
+                {/* Cabecera Estandarizada: Alineada con el layout global */}
+                <PageHeader
+                    title={`Recibo Digital #${String(factura.id).padStart(4, '0')}`}
+                    description="Resumen detallado de transacción y reporte de margen neto."
+                    icon={FileCheck}
+                    breadcrumbs={[
+                        { label: 'Facturas', href: '/facturas' },
+                        { label: 'Visualización' }
+                    ]}
+                    className="print-hide"
+                >
+                    <Button 
+                        variant="secondary" 
+                        icon={ArrowLeft} 
+                        onClick={() => router.visit('/facturas')}
+                    >
+                        Volver
+                    </Button>
 
-                        <Button variant="secondary" icon={Printer} onClick={handlePrint}>
-                            Imprimir
-                        </Button>
-                    </div>
+                    <button 
+                        onClick={toggleViewMode}
+                        className={`flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                            viewMode === 'admin' 
+                            ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20' 
+                            : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'
+                        }`}
+                    >
+                        <Eye className="w-4 h-4" />
+                        {viewMode === 'admin' ? 'Vendedor' : 'Cliente'}
+                    </button>
+
+                    <Button variant="secondary" icon={Printer} onClick={handlePrint}>
+                        Imprimir
+                    </Button>
+
+                    <Button variant="primary" icon={Download} onClick={handlePrint}>
+                        PDF
+                    </Button>
+                </PageHeader>
+
+                {/* Recibo Centrado */}
+                <div className="max-w-4xl mx-auto pb-20">
+                    <FacturaReceipt 
+                        factura={factura} 
+                        viewMode={viewMode} 
+                        onCopy={handleCopy} 
+                    />
                 </div>
-
-                {/* Componente Modular de la Factura */}
-                <FacturaReceipt 
-                    factura={factura} 
-                    viewMode={viewMode} 
-                    onCopy={handleCopy} 
-                />
             </div>
         );
     };

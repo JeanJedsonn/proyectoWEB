@@ -14,6 +14,7 @@ import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
 import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
+import QuickSelectList from '@/Components/UI/QuickSelectList';
 
 export default function FacturaForm({ id = null }) {
     const isEditing = !!id;
@@ -165,10 +166,8 @@ export default function FacturaForm({ id = null }) {
         }
     };
     
-    // Inyectar handleDelete logic if needed, but for now we remove it if unused.
-    // Actually, I'll just remove the unused assignment as requested.
-    // Wait, the linter says "Remove this useless assignment".
     
+    // Retorna el loading mientras carga los datos
     if (loading) {
         return (
             <MainLayout>
@@ -180,6 +179,7 @@ export default function FacturaForm({ id = null }) {
         );
     }
 
+    // Retorna el formulario de factura
     return (
         <MainLayout>
             <Head title={isEditing ? 'Editar Factura' : 'Registrar Factura'} />
@@ -193,6 +193,7 @@ export default function FacturaForm({ id = null }) {
                     { label: isEditing ? 'Editar' : 'Nueva' }
                 ]}
             >
+                {/* Botones de acción */}
                 <div className="flex items-center gap-3">
                     <Button 
                         variant="secondary"
@@ -208,11 +209,12 @@ export default function FacturaForm({ id = null }) {
                         loading={submitting}
                         icon={Save}
                     >
-                        {isEditing ? 'Guardar Cambios' : 'Emitir Recibo'}
+                        {isEditing ? 'Guardar Cambios' : 'Emitir Factura'}
                     </Button>
                 </div>
             </PageHeader>
 
+            {/* Mensajes de error y éxito */}
             <div className="max-w-6xl mx-auto space-y-6">
                 {errorMsg && (
                     <Alert 
@@ -230,11 +232,16 @@ export default function FacturaForm({ id = null }) {
                 )}
             </div>
 
+            {/* Formulario de factura */}
             <form id="facturaForm" onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-20 max-w-6xl mx-auto">
                 {/* Columna 1: Datos Financieros y Cliente */}
                 <div className="space-y-8">
-                    <Card title="Métricas Comerciales" icon={DollarSign}>
+
+                    {/* Datos Comerciales */}
+                    <Card title="Datos Comerciales" icon={DollarSign}>
                         <div className="space-y-8 p-2">
+                            
+                            {/* Inputs de datos comerciales */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
                                 <Input
                                     label="Inversión Base (Costo)"
@@ -268,12 +275,16 @@ export default function FacturaForm({ id = null }) {
                                 variant="dark"
                             />
                             
+                            {/* Cliente */}
                             <div className="space-y-3 pt-4">
                                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest flex justify-between px-1">
                                     <span>Identidad del Comprador <span className="text-red-500 ml-1">●</span></span>
                                     <Link href="/clientes/nuevo" className="text-indigo-400 hover:text-white transition-colors">Registrar Nuevo</Link>
                                 </label>
+                                
+                                {/* Buscador de clientes */}
                                 <div className="bg-[#0b0d12]/50 border border-white/5 rounded-2xl p-6 space-y-4 shadow-inner">
+                                    {/* Input para buscar clientes */}
                                     <Input 
                                         type="text"
                                         placeholder="Filtrar por nombre..."
@@ -283,28 +294,16 @@ export default function FacturaForm({ id = null }) {
                                         className="space-y-0"
                                         variant="dark"
                                     />
-                                    <div className="relative bg-[#161821] border border-white/5 rounded-xl overflow-hidden shadow-2xl">
-                                        <div className="w-full h-44 overflow-y-auto custom-scrollbar p-2">
-                                            {filteredClientes.map(cl => {
-                                                const isSelected = String(formData.clienteID) === String(cl.id);
-                                                return (
-                                                    <button 
-                                                        key={cl.id} 
-                                                        type="button"
-                                                        onClick={() => handleChange({target: {name: 'clienteID', value: cl.id}})}
-                                                        className={`w-full text-left p-3 text-[11px] font-black transition-all mb-1 last:mb-0 rounded-lg flex items-center gap-3 border ${isSelected ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'text-gray-500 hover:bg-white/5 hover:text-white border-transparent'}`}
-                                                    >
-                                                        <div className={`w-2 h-2 rounded-full ${isSelected ? 'bg-indigo-400 shadow-[0_0_10px_rgba(129,140,248,0.5)]' : 'bg-gray-800'}`}></div>
-                                                        <span className="truncate flex-1">{cl.nombre}</span>
-                                                        <span className="opacity-30 uppercase tracking-tighter shrink-0">{cl.red || 'S/R'}</span>
-                                                    </button>
-                                                )
-                                            })}
-                                            {filteredClientes.length === 0 && (
-                                                <div className="p-8 text-center text-[10px] font-black text-gray-700 uppercase tracking-widest">Sin coincidencias</div>
-                                            )}
-                                        </div>
-                                    </div>
+
+                                    {/* Lista de clientes */}
+                                    <QuickSelectList 
+                                        items={filteredClientes}
+                                        selectedId={formData.clienteID}
+                                        onSelect={(cl) => handleChange({target: {name: 'clienteID', value: cl.id}})}
+                                        getLabel={(cl) => cl.nombre}
+                                        getSublabel={(cl) => cl.red}
+                                        height="h-44"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -313,22 +312,25 @@ export default function FacturaForm({ id = null }) {
 
                 {/* Columna 2: Activo Digital y Snapshot */}
                 <div className="space-y-8">
-                    <Card title="Catálogo de Entrega" icon={Gamepad2}>
+                    <Card title="Juego Vendido" icon={Gamepad2}>
                         <div className="space-y-8 p-2">
+                            
+                            {/* Juego */}
                             <Select 
-                                label="Título Licenciado"
+                                label="Título del Juego"
                                 name="juego_id" required
                                 value={formData.juego_id}
                                 onChange={handleChange}
-                                placeholder="Bibliotecas Registradas..."
+                                placeholder="Juegos Registrados..."
                                 options={juegos.map(jg => ({ value: jg.id, label: jg.titulo }))}
                                 icon={Gamepad2}
                                 variant="dark"
                             />
 
+                            {/* Plataforma */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <Select 
-                                    label="Plataforma Matriz"
+                                    label="Plataforma"
                                     name="plataforma" required
                                     value={formData.plataforma}
                                     onChange={handleChange}
@@ -336,19 +338,21 @@ export default function FacturaForm({ id = null }) {
                                         {value: "PS4", label: "PlayStation 4"},
                                         {value: "PS5", label: "PlayStation 5"},
                                         {value: "Xbox", label: "Xbox Server"},
-                                        {value: "Nintendo", label: "Nintendo Switch"}
+                                        {value: "Nintendo", label: "Nintendo Switch"},
+                                        {value: "PC", label: "Steam PC"}
                                     ]}
                                     variant="dark"
                                 />
 
+                                {/* Tipo de Cuenta */}
                                 <Select 
-                                    label="Modo de Cuenta"
+                                    label="Tipo de Cuenta"
                                     name="tipo" required
                                     value={formData.tipo}
                                     onChange={handleChange}
                                     options={[
-                                        {value: "Primaria", label: "Primaria (Global)"},
-                                        {value: "Secundaria", label: "Secundaria (Lock)"}
+                                        {value: "Primaria", label: "Primaria"},
+                                        {value: "Secundaria", label: "Secundaria"}
                                     ]}
                                     variant="dark"
                                 />
@@ -356,12 +360,17 @@ export default function FacturaForm({ id = null }) {
 
                             {/* Snapshot Histórico */}
                             <div className="pt-8 border-t border-white/5 space-y-4">
+                                
+                                {/* Identificador de Cuenta */}
                                 <div className="flex items-center gap-2 mb-2">
                                     <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Snapshot de Cuenta Origen</span>
+                                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Identificador de Cuenta</span>
                                 </div>
-
+                                
+                                {/* Buscador de Cuentas */}
                                 <div className="bg-[#0b0d12]/50 border border-white/5 rounded-2xl p-6 space-y-4 shadow-inner">
+                                    
+                                    {/* Input de búsqueda */}
                                     <Input 
                                         type="text"
                                         placeholder="Email o Clave de la cuenta..."
@@ -371,34 +380,22 @@ export default function FacturaForm({ id = null }) {
                                         className="space-y-0"
                                         variant="dark"
                                     />
-                                    <div className="relative bg-[#161821] border border-white/5 rounded-xl overflow-hidden shadow-2xl">
-                                        <div className="w-full h-36 overflow-y-auto custom-scrollbar p-2">
-                                            <button 
-                                                type="button"
-                                                onClick={() => handleCuentaSelect({target: {value: ''}})}
-                                                className={`w-full text-left p-3 text-[10px] font-black uppercase tracking-widest transition-all mb-1 rounded-lg ${!selectedCuentaId ? 'bg-white/5 text-gray-300' : 'text-gray-700 hover:bg-white/5'}`}
-                                            >
-                                                -- Selector Manual --
-                                            </button>
-                                            {filteredCuentas.map(ct => {
-                                                const isSelected = String(selectedCuentaId) === String(ct.id);
-                                                return (
-                                                    <button 
-                                                        key={ct.id} 
-                                                        type="button"
-                                                        onClick={() => handleCuentaSelect({target: {value: ct.id}})}
-                                                        className={`w-full text-left p-3 text-[11px] font-black transition-all mb-1 last:mb-0 rounded-lg flex flex-col gap-0.5 border ${isSelected ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'text-gray-500 hover:bg-white/5 hover:text-white border-transparent'}`}
-                                                    >
-                                                        <span className="truncate">{ct.direccionCorreo}</span>
-                                                        <span className="opacity-30 font-mono text-[9px]">CLAVE: {ct.clave}</span>
-                                                    </button>
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
-                                </div>
 
+                                    {/* Lista de Cuentas */}
+                                    <QuickSelectList 
+                                        items={filteredCuentas}
+                                        selectedId={selectedCuentaId}
+                                        onSelect={(ct) => handleCuentaSelect({target: {value: ct.id}})}
+                                        getLabel={(ct) => ct.direccionCorreo}
+                                        getSublabel={(ct) => ct.clave}
+                                        height="h-44"
+                                    />
+                                </div>
+                                
+                                {/* Datos Extraídos */}
                                 <div className="grid grid-cols-1 gap-3">
+                                    
+                                    {/* Email Extraído */}
                                     <div className="flex items-center gap-4 bg-black/40 border border-white/5 rounded-2xl p-5 shadow-2xl group transition-all hover:border-indigo-500/30">
                                         <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-700 group-hover:text-indigo-400 transition-colors">
                                             <Mail className="w-5 h-5" />
@@ -410,6 +407,8 @@ export default function FacturaForm({ id = null }) {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Clave Extraída */}
                                     <div className="flex items-center gap-4 bg-black/40 border border-white/5 rounded-2xl p-5 shadow-2xl group transition-all hover:border-indigo-500/30">
                                         <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-700 group-hover:text-indigo-400 transition-colors">
                                             <KeyRound className="w-5 h-5" />
@@ -421,7 +420,9 @@ export default function FacturaForm({ id = null }) {
                                             </div>
                                         </div>
                                     </div>
+
                                 </div>
+
                             </div>
                         </div>
                     </Card>
