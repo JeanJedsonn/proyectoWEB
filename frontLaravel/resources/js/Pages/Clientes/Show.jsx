@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
-    ArrowLeft, Loader2, Phone, Mail, MessageSquare, 
-    Clipboard, Pencil, Shield, Activity, FileText, 
-    ExternalLink, Calendar, DollarSign, Wallet
+    ArrowLeft, MessageSquare, 
+    Copy, Pencil, Shield, Activity, FileText, 
+    Calendar, DollarSign, Wallet, Loader2,
+    User
 } from 'lucide-react';
+
+// Componentes UI Atómicos
+import PageHeader from '@/Components/UI/PageHeader';
+import Button from '@/Components/UI/Button';
+import Card from '@/Components/UI/Card';
+import Badge from '@/Components/UI/Badge';
+import Toast from '@/Components/UI/Toast';
 
 export default function ClienteShow({ id }) {
     const [cliente, setCliente] = useState(null);
@@ -23,43 +31,25 @@ export default function ClienteShow({ id }) {
                 setCliente(res.data);
             } catch (err) {
                 console.error("Error cargando cliente:", err);
-                setError("No se pudo cargar la información del cliente.");
+                setError("No se pudo localizar el registro maestro del cliente.");
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) {
-            fetchCliente();
-        }
+        if (id) fetchCliente();
     }, [id]);
 
     const handleCopy = (text) => {
+        if (!text) return;
         navigator.clipboard.writeText(text).then(() => {
             setShowCopyMsg(true);
             setTimeout(() => setShowCopyMsg(false), 2000);
         });
     };
 
-    // Abre la factura extrayendo los datos de manera SEGURA con cabeceras Bearer
-    const handleVerFacturaSegura = async (id_factura) => {
-        try {
-            const res = await axios.get(`http://localhost:3000/facturas/leer_factura/${id_factura}`);
-            
-            // Si el objetivo es solo visualizar la data (o en el futuro renderizar un componente),
-            // creamos un archivo en crudo local y lo abrimos en otra pestaña.
-            const dataStr = JSON.stringify(res.data, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const temporaryUrl = URL.createObjectURL(blob);
-            
-            window.open(temporaryUrl, '_blank');
-        } catch (error) {
-            console.error("No se pudo cargar la factura:", error);
-            alert("No tienes permisos o el servidor falló al consultar esta factura.");
-        }
-    };
-
     const formatDate = (dateString) => {
+        if (!dateString) return 'No especificada';
         const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', { 
             day: 'numeric', 
@@ -68,248 +58,217 @@ export default function ClienteShow({ id }) {
         });
     };
 
-    const getRedBadgeStyle = (red) => {
+    const getRedBadgeVariant = (red) => {
         const lowerRed = red?.toLowerCase() || '';
-        if (lowerRed.includes('whatsapp') || lowerRed.includes('ws')) {
-            return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-        }
-        if (lowerRed.includes('instagram') || lowerRed.includes('ig')) {
-            return 'bg-pink-500/10 text-pink-400 border-pink-500/20';
-        }
-        return 'bg-white/5 text-gray-300 border-white/10';
+        if (lowerRed.includes('whatsapp')) return 'success';
+        if (lowerRed.includes('instagram')) return 'danger';
+        if (lowerRed.includes('facebook') || lowerRed.includes('x')) return 'indigo';
+        return 'secondary';
     };
 
-    const renderContent = () => {
-        if (loading) {
-            return (
-                <div className="flex flex-col items-center justify-center min-h-[500px]">
-                    <Loader2 className="w-10 h-10 animate-spin text-indigo-500 mb-4" />
-                    <p className="text-gray-400 font-medium">Cargando perfil del cliente...</p>
-                </div>
-            );
-        }
-
-        if (error || !cliente) {
-            return (
-                <div className="bg-[#161821] border border-white/5 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
-                    <Shield className="w-12 h-12 text-red-500 mb-4 opacity-20" />
-                    <h3 className="text-xl font-bold text-white mb-2">Error al Cargar</h3>
-                    <p className="text-gray-400 max-w-sm mb-6 leading-relaxed">
-                        {error || "Los datos del cliente no están disponibles."}
-                    </p>
-                    <Link href="/clientes" className="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-medium transition-colors">
-                        Volver al Directorio
-                    </Link>
-                </div>
-            );
-        }
-
-        const initials = cliente.nombre?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '??';
-
+    if (loading) {
         return (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                {/* Header */}
-                <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                    <div>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4 font-medium">
-                            <Link href="/clientes" className="hover:text-white transition-colors">Directorio Clientes</Link>
-                            <span>/</span>
-                            <span className="text-indigo-400">Perfil #{String(cliente.id).padStart(3, '0')}</span>
-                        </div>
-                        <div className="flex items-center gap-5">
-                            <div className="w-16 h-16 rounded-full bg-linear-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-xl font-black text-white shadow-xl shadow-emerald-500/20">
-                                {initials}
-                            </div>
-                            <div>
-                                <h1 className="text-3xl font-extrabold text-white tracking-tight leading-none mb-2">
-                                    {cliente.nombre}
-                                </h1>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                    <p className="text-gray-400 text-sm font-medium">Cliente Activo • Registrado en el sistema</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <Link 
-                        href={`/clientes/${cliente.id}/editar`}
-                        className="flex items-center gap-2 bg-[#161821] hover:bg-white/5 border border-white/5 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg"
-                    >
-                        <Pencil className="w-4 h-4" />
-                        Editar Perfil
-                    </Link>
-                </header>
-
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Left Column */}
-                    <div className="lg:col-span-8 space-y-8">
-                        {/* Medios de Contacto */}
-                        <div className="bg-[#161821] border border-white/5 rounded-2xl p-8 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-8 opacity-5">
-                                <Phone className="w-32 h-32 text-white" />
-                            </div>
-                            
-                            <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-8 relative z-10 font-mono tracking-tight uppercase">
-                                <Phone className="w-5 h-5 text-emerald-400" />
-                                Medios de Contacto
-                            </h2>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
-                                <div className="space-y-2">
-                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-widest block">Teléfono Primario</span>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-lg font-bold text-white">{cliente.telefono}</span>
-                                        <button 
-                                            onClick={() => handleCopy(cliente.telefono)}
-                                            className="p-1.5 hover:bg-white/5 rounded-lg text-gray-500 hover:text-white transition-colors"
-                                        >
-                                            <Clipboard className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-widest block">Canal de Venta</span>
-                                    <div className="pt-1">
-                                        <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${getRedBadgeStyle(cliente.red)}`}>
-                                            {cliente.red}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-widest block">Correo Electrónico</span>
-                                    <div className="flex items-center gap-2 text-white font-medium">
-                                        <Mail className="w-4 h-4 text-gray-500" />
-                                        {cliente.correo || '-'}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="mt-10 pt-8 border-t border-white/5">
-                                <button 
-                                    className="inline-flex items-center gap-3 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-500/20 group"
-                                    onClick={() => window.open(`https://wa.me/${cliente.telefono?.replace(/\D/g, '')}`, '_blank')}
-                                >
-                                    <MessageSquare className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                    Abrir Chat Directo (WhatsApp)
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Notas */}
-                        <div className="bg-[#161821] border border-white/5 rounded-2xl p-8 relative overflow-hidden">
-                             <div className="absolute top-0 right-0 p-8 opacity-5">
-                                <FileText className="w-32 h-32 text-white" />
-                            </div>
-                            
-                            <h2 className="text-lg font-bold text-white flex items-center gap-2 mb-6 relative z-10 font-mono tracking-tight uppercase">
-                                <FileText className="w-5 h-5 text-indigo-400" />
-                                Evaluación y Notas Comerciales
-                            </h2>
-
-                            <div className="bg-white/2 border border-white/5 rounded-2xl p-6 text-gray-300 leading-relaxed text-sm italic min-h-[120px] relative z-10">
-                                {cliente.notas || "Este cliente no posee notas u observaciones especiales registradas hasta el momento."}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Right Column: Facturación */}
-                    <div className="lg:col-span-4">
-                        <div className="bg-[#161821] border border-white/5 rounded-2xl p-6 h-full border-t-4 border-t-indigo-500 flex flex-col">
-                            <div className="flex items-center justify-between mb-8">
-                                <h2 className="text-xl font-black text-white flex items-center gap-2">
-                                    <Activity className="w-5 h-5 text-indigo-400" />
-                                    Facturación ({cliente.facturas?.length || 0})
-                                </h2>
-                                <button className="bg-indigo-600 hover:bg-indigo-500 text-white p-2 rounded-lg transition-colors shadow-lg shadow-indigo-500/20">
-                                    <FileText className="w-5 h-5" />
-                                </button>
-                            </div>
-
-                            <p className="text-xs text-gray-500 mb-6 font-medium">
-                                Historial completo de ventas generadas a favor de este perfil.
-                            </p>
-
-                            <div className="space-y-4 flex-1 overflow-y-auto pr-1 custom-scrollbar max-h-[600px]">
-                                {(!cliente.facturas || cliente.facturas.length === 0) ? (
-                                    <div className="py-20 border-2 border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center text-center">
-                                        <Wallet className="w-12 h-12 text-gray-800 mb-4" />
-                                        <p className="text-gray-500 font-bold">Sin facturación</p>
-                                        <p className="text-[10px] text-gray-600 px-4 mt-1 uppercase tracking-tighter">Este contacto aún no registra compras en nuestro sistema.</p>
-                                    </div>
-                                ) : (
-                                    cliente.facturas.map((factura) => (
-                                        <div 
-                                            key={factura.id}
-                                            className="bg-white/2 border border-white/5 rounded-2xl p-4 cursor-pointer hover:border-indigo-500/30 transition-all group border-l-4 border-l-indigo-500"
-                                            onClick={() => handleVerFacturaSegura(factura.id)}
-                                        >
-                                            <div className="flex justify-between items-start mb-3">
-                                                <h4 className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors line-clamp-1">
-                                                    {factura.titulo}
-                                                </h4>
-                                                <span className="bg-white/5 text-[10px] font-mono text-gray-500 px-2 py-0.5 rounded border border-white/5">
-                                                    #{factura.id}
-                                                </span>
-                                            </div>
-                                            
-                                            <div className="flex items-center gap-2 text-[11px] text-gray-500 mb-4 font-medium uppercase tracking-tight">
-                                                <Calendar className="w-3.5 h-3.5" />
-                                                {formatDate(factura.fechaVenta)}
-                                            </div>
-
-                                            <div className="flex items-center justify-between bg-[#0b0d12] p-2.5 rounded-xl border border-white/5 shadow-inner">
-                                                <span className="text-[10px] font-black uppercase text-indigo-400 letter spacing-widest">
-                                                    {factura.tipo}
-                                                </span>
-                                                <span className="text-sm font-black text-emerald-400 flex items-center">
-                                                    <DollarSign className="w-3.5 h-3.5" />
-                                                    {factura.precio}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                            
-                            <div className="mt-8">
-                                <button className="w-full bg-[#0b0d12] hover:bg-white/5 border border-white/5 text-gray-400 hover:text-white px-4 py-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2">
-                                    Ver todas las facturas del cliente
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            <MainLayout>
+                <div className="flex flex-col items-center justify-center min-h-[500px]">
+                    <Loader2 className="w-12 h-12 animate-spin text-indigo-500 mb-4" />
+                    <p className="text-gray-500 font-black uppercase tracking-widest text-[10px]">Accediendo a Base de Datos...</p>
                 </div>
-            </div>
+            </MainLayout>
         );
-    };
+    }
+
+    if (error || !cliente) {
+        return (
+            <MainLayout>
+                <Card variant="premium" className="max-w-2xl mx-auto p-16 text-center shadow-2xl">
+                    <Shield className="w-16 h-16 text-red-500/20 mx-auto mb-6" />
+                    <h3 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter">Error de Localización</h3>
+                    <p className="text-gray-500 mb-10 leading-relaxed font-medium">
+                        {error || "El perfil solicitado no existe o ha sido removido del directorio activo."}
+                    </p>
+                    <Button variant="secondary" icon={ArrowLeft} onClick={() => router.visit('/clientes')}>
+                        Regresar al Directorio
+                    </Button>
+                </Card>
+            </MainLayout>
+        );
+    }
+
+    const initials = cliente.nombre?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '??';
 
     return (
         <MainLayout>
-            <Head title={`Perfil de ${cliente?.nombre || 'Cliente'}`} />
+            <Head title={`Perfil: ${cliente.nombre}`} />
             
-            <div className="mb-6">
-                <Link 
-                    href="/clientes" 
-                    className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors group bg-[#161821] px-4 py-2 rounded-xl border border-white/5"
-                >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Volver al directorio
-                </Link>
+            <PageHeader
+                title={cliente.nombre}
+                description="Informacion del cliente."
+                icon={User}
+                breadcrumbs={[
+                    { label: 'Clientes', href: '/clientes' },
+                    { label: `ID #${id}` }
+                ]}
+            >
+                <div className="flex flex-wrap items-center gap-3">
+                    <Button variant="secondary" icon={ArrowLeft} onClick={() => globalThis.history.back()}>
+                        Volver
+                    </Button>
+                    <Link href={`/clientes/${cliente.id}/editar`}>
+                        <Button variant="primary" icon={Pencil}>
+                            Editar Perfil
+                        </Button>
+                    </Link>
+                </div>
+            </PageHeader>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
+                {/* Panel Central: Información de Contacto */}
+                <div className="lg:col-span-8 space-y-8">
+                    
+                    {/* Tarjeta de Identidad */}
+                    <Card variant="premium" className="p-8 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-8 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
+                            <User className="w-48 h-48 text-white" />
+                        </div>
+
+                        <div className="flex flex-col md:flex-row gap-8 items-start md:items-center mb-10 relative z-10">
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-3xl font-black text-white tracking-tighter uppercase">{cliente.nombre}</h2>
+                                    <Badge variant="indigo">ID #{String(cliente.id).padStart(3, '0')}</Badge>
+                                </div>
+                                <div className="flex flex-wrap gap-4 text-xs font-bold text-gray-500">
+                                    <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5 text-indigo-400" /> Miembro del sistema</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+                            <div 
+                                role="button"
+                                tabIndex={0}
+                                className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-emerald-500/30 outline-none focus:ring-2 focus:ring-emerald-500/50" 
+                                onClick={() => handleCopy(cliente.telefono)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleCopy(cliente.telefono)}
+                            >
+                                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between items-center">
+                                    Teléfono Primario
+                                    <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-emerald-400" />
+                                </p>
+                                <p className="text-sm font-bold text-white">{cliente.telefono || 'No disponible'}</p>
+                            </div>
+
+                            <div className="p-4 bg-black/40 rounded-2xl border border-white/5">
+                                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1">Medio de Contacto</p>
+                                <div className="pt-1">
+                                    <Badge variant={getRedBadgeVariant(cliente.red)} className="uppercase tracking-tighter px-3">
+                                        {cliente.red}
+                                    </Badge>
+                                </div>
+                            </div>
+
+                            <div 
+                                role="button"
+                                tabIndex={0}
+                                className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-indigo-500/30 outline-none focus:ring-2 focus:ring-indigo-500/50" 
+                                onClick={() => handleCopy(cliente.correo)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleCopy(cliente.correo)}
+                            >
+                                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between items-center">
+                                    Correo Electrónico
+                                    <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-indigo-400" />
+                                </p>
+                                <p className="text-sm font-bold text-white truncate">{cliente.correo || 'No registrado'}</p>
+                            </div>
+                        </div>
+
+                        {cliente.telefono && (
+                            <div className="mt-8 flex gap-4 relative z-10">
+                                <Button 
+                                    variant="success" 
+                                    icon={MessageSquare} 
+                                    className="flex-1 md:flex-none shadow-lg shadow-emerald-500/10"
+                                    onClick={() => window.open(`https://wa.me/${cliente.telefono?.replaceAll(/\D/g, '')}`, '_blank')}
+                                >
+                                    WhatsApp Directo
+                                </Button>
+                            </div>
+                        )}
+                    </Card>
+
+                    {/* Notas Comerciales */}
+                    <Card className="p-8">
+                        <div className="flex items-center gap-3 mb-6">
+                            <FileText className="w-4 h-4 text-indigo-400" />
+                            <h2 className="text-xs font-black text-white uppercase tracking-widest">Observaciones del Cliente</h2>
+                        </div>
+                        <div className="p-6 bg-black/20 rounded-2xl border border-white/5 min-h-[120px]">
+                            <p className="text-gray-400 leading-relaxed text-sm">
+                                {cliente.notas || "No se han registrado observaciones comerciales o notas preventivas para este perfil."}
+                            </p>
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Panel Lateral: Historial de Ventas */}
+                <div className="lg:col-span-4 space-y-8">
+                    <Card className="p-6 h-full flex flex-col border-t-4 border-t-indigo-500">
+                        <div className="flex items-center justify-between mb-8">
+                            <div className="flex items-center gap-2">
+                                <Activity className="w-4 h-4 text-indigo-400" />
+                                <h2 className="text-[12px] font-black text-white uppercase tracking-widest">Facturación</h2>
+                            </div>
+                            <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-black rounded-lg border border-indigo-500/10">
+                                {cliente.facturas?.length || 0}
+                            </span>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto space-y-1 pr-1 custom-scrollbar max-h-[600px]">
+                            {(!cliente.facturas || cliente.facturas.length === 0) ? (
+                                <div className="h-full flex flex-col items-center justify-center text-center opacity-30 py-20">
+                                    <Wallet className="w-12 h-12 mb-4" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest">Sin histórico de ventas</p>
+                                </div>
+                            ) : (
+                                cliente.facturas.map((factura) => (
+                                    <div 
+                                        key={factura.id}
+                                        className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer group transition-all"
+                                        onClick={() => router.visit(`/facturas/${factura.id}`)}
+                                    >
+                                        <div className="flex flex-col gap-0.5 min-w-0">
+                                            <h4 className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors truncate">
+                                                {factura.titulo}
+                                            </h4>
+                                            <div className="flex items-center gap-2 text-[10px] text-gray-600 font-bold uppercase tracking-tighter">
+                                                <span className="text-indigo-500/60 font-mono">#{factura.id}</span>
+                                                <span>•</span>
+                                                <span>{formatDate(factura.fechaVenta)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col items-end shrink-0 pl-4">
+                                            <span className="text-sm font-black text-emerald-500 flex items-center">
+                                                <DollarSign className="w-3.5 h-3.5" />
+                                                {factura.precio}
+                                            </span>
+                                            <span className="text-[8px] font-black text-gray-700 uppercase">
+                                                {factura.tipo}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </Card>
+                </div>
             </div>
 
-            {renderContent()}
-
-            {/* Copy Notification */}
-            {showCopyMsg && (
-                <div className="fixed bottom-8 right-8 z-[100] animate-in fade-in slide-in-from-right-8">
-                    <div className="bg-indigo-600 text-white px-6 py-3 rounded-2xl shadow-xl font-bold flex items-center gap-3">
-                        <Clipboard className="w-4 h-4" />
-                        Copiado al portapapeles
-                    </div>
-                </div>
-            )}
+            <Toast 
+                show={showCopyMsg}
+                message="Copiado al portapapeles"
+                variant="copy"
+                onClose={() => setShowCopyMsg(false)}
+            />
         </MainLayout>
     );
 }

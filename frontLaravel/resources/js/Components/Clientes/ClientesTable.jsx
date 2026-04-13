@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link, router } from '@inertiajs/react';
-import { Mail, Copy, Eye, Users } from 'lucide-react';
+import { Mail, Eye, Users } from 'lucide-react';
 import GenericTable from '@/Components/UI/GenericTable';
 
 /**
  * Reusable table component for Customers.
  * Uses GenericTable to match the requested styling.
  */
-export default function ClientesTable({ clientes, loading, onCopy }) {
+export default function ClientesTable({ clientes, loading }) {
     const getBadgeStyle = (red) => {
         const lowerRed = red?.toLowerCase() || '';
         if (lowerRed.includes('whatsapp') || lowerRed.includes('ws')) {
@@ -66,13 +66,6 @@ export default function ClientesTable({ clientes, loading, onCopy }) {
             </td>
             <td className="px-6 py-4">
                 <div className="flex items-center gap-2 justify-end" onClick={(e) => e.stopPropagation()}>
-                    <button 
-                        onClick={() => onCopy && onCopy(cliente.telefono || cliente.nombre)}
-                        className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all border border-white/5"
-                        title="Copiar contacto"
-                    >
-                        <Copy className="w-4 h-4" />
-                    </button>
                     <Link 
                         href={`/clientes/${cliente.id}`}
                         className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all border border-white/5"
