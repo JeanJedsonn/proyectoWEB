@@ -52,6 +52,8 @@ const CuentaJuegosForm = ({ id = null }) => {
     });
 
     useEffect(() => {
+        const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+
         const parseDireccion = (rawDir) => {
             let base = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
             try {
@@ -68,32 +70,35 @@ const CuentaJuegosForm = ({ id = null }) => {
             }
         };
 
-        const fetchAccountDetails = async (API_URL) => {
-            const resCuenta = await axios.get(`${API_URL}/cuentas/form_cuenta/${id}`);
-            const data = resCuenta.data;
+        const fetchAccountDetails = async () => {
+            try {
+                const resCuenta = await axios.get(`${API_URL}/cuentas/form_cuenta/${id}`);
+                const data = resCuenta.data;
 
-            setFormData(prev => ({
-                ...prev,
-                correoID: data.correoID || '',
-                correoDireccion: data.correoDireccion || '',
-                clave: data.clave || '',
-                cumpleaños: data.cumpleaños ? data.cumpleaños.split('T')[0] : '',
-                fechadesactivacion: data.fechadesactivacion ? data.fechadesactivacion.split('T')[0] : '',
-                saldo: data.saldo || '',
-                nick: data.nick || '',
-                plataforma: data.plataforma || 'PlayStation',
-                region: data.region || 'US',
-                semilla: data.semilla || '',
-                codigos2FA: data.codigos2FA || '',
-                direccion: parseDireccion(data.direccion),
-                juegos: (data.juegos || []).map(j => typeof j === 'object' ? j.id : j),
-                tieneFacturas: !!data.tiene_facturas
-            }));
+                setFormData(prev => ({
+                    ...prev,
+                    correoID: data.correoID || '',
+                    correoDireccion: data.correoDireccion || '',
+                    clave: data.clave || '',
+                    cumpleaños: data.cumpleaños ? data.cumpleaños.split('T')[0] : '',
+                    fechadesactivacion: data.fechadesactivacion ? data.fechadesactivacion.split('T')[0] : '',
+                    saldo: data.saldo || '',
+                    nick: data.nick || '',
+                    plataforma: data.plataforma || 'PlayStation',
+                    region: data.region || 'US',
+                    semilla: data.semilla || '',
+                    codigos2FA: data.codigos2FA || '',
+                    direccion: parseDireccion(data.direccion),
+                    juegos: (data.juegos || []).map(j => typeof j === 'object' ? j.id : j),
+                    tieneFacturas: !!data.tiene_facturas
+                }));
+            } catch (err) {
+                console.error("Error cargando detalles de la cuenta:", err);
+            }
         };
 
         const fetchInitialData = async () => {
             try {
-                const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
                 // 1. Fetch available Correos
                 const resCorreos = await axios.get(`${API_URL}/correos/correos_por_pagina/1000/num_pagina/1`);
                 setCorreos(resCorreos.data.data || []);
@@ -103,7 +108,7 @@ const CuentaJuegosForm = ({ id = null }) => {
                 setAllJuegos(resJuegos.data.data || []);
 
                 if (isEditing) {
-                    await fetchAccountDetails(API_URL);
+                    await fetchAccountDetails();
                 }
             } catch (err) {
                 console.error("Error cargando datos iniciales:", err);
@@ -179,6 +184,7 @@ const CuentaJuegosForm = ({ id = null }) => {
         setSubmitting(true);
         const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
         try {
+            const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             await axios.delete(`${API_URL}/cuentas/form_cuenta/${id}`);
             router.visit('/cuentas_juego');
         } catch (err) {

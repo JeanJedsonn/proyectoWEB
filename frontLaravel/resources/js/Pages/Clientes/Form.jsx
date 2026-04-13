@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { 
     User, Phone, Mail, FileText, Save, X, 
@@ -14,6 +14,7 @@ import Card from '@/Components/UI/Card';
 import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
 import Alert from '@/Components/UI/Alert';
+import PropTypes from 'prop-types';
 
 export default function ClienteForm({ id = null }) {
     const isEdit = !!id;
@@ -69,6 +70,7 @@ export default function ClienteForm({ id = null }) {
 
         const API_URL = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
         try {
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
                 await axios.patch(`${API_URL}/clientes/form_cliente/${id}`, {
                     id: id,
@@ -115,7 +117,7 @@ export default function ClienteForm({ id = null }) {
                 ]}
             >
                 <div className="flex gap-3">
-                    <Button variant="secondary" icon={successMsg ? ArrowLeft : X} onClick={() => window.history.back()}>
+                    <Button variant="secondary" icon={successMsg ? ArrowLeft : X} onClick={() => globalThis.history.back()}>
                         {successMsg ? 'Volver' : 'Descartar'}
                     </Button>
                     <Button 
@@ -244,6 +246,6 @@ export default function ClienteForm({ id = null }) {
     );
 }
 
-const Pencil = ({ className }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-);
+ClienteForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};

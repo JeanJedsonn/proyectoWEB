@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, FileText, Users, Mail, Gamepad2, PackageSearch, Settings, Menu, X, LogOut, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, Mail, Gamepad2, PackageSearch, Menu, X, LogOut, ShieldCheck } from 'lucide-react';
 
 export default function MainLayout({ children }) {
     const { url } = usePage();
@@ -93,18 +94,6 @@ export default function MainLayout({ children }) {
                                 <span className="font-medium text-sm">Administrar Usuarios</span>
                             </Link>
                         )}
-                        <Link 
-                            href="/opciones"
-                            onClick={() => setIsSidebarOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                                url.startsWith('/opciones') 
-                                ? 'bg-indigo-500/10 text-indigo-400' 
-                                : 'text-gray-400 hover:bg-white/5 hover:text-gray-200'
-                            }`}
-                        >
-                            <Settings className="w-5 h-5" />
-                            <span className="font-medium text-sm">Opciones Globales</span>
-                        </Link>
                         
                         <button 
                             onClick={(e) => {
@@ -112,7 +101,7 @@ export default function MainLayout({ children }) {
                                 localStorage.removeItem('token');
                                 localStorage.removeItem('is_admin');
                                 localStorage.removeItem('level_admin');
-                                window.location.href = '/login';
+                                globalThis.location.href = '/login';
                             }}
                             className="w-full mt-1 flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-gray-400 hover:bg-red-500/10 hover:text-red-400"
                         >
@@ -144,3 +133,7 @@ export default function MainLayout({ children }) {
         </div>
     );
 }
+
+MainLayout.propTypes = {
+    children: PropTypes.node.isRequired
+};

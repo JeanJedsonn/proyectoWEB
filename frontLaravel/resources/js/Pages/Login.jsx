@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router, Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { Lock, Mail, Loader2, ArrowRight } from 'lucide-react';
 
@@ -28,13 +28,13 @@ export default function Login() {
                 localStorage.setItem('token', token);
                 localStorage.setItem('level_admin', usuario.level_admin);
                 
-                // Redirigimos usando window.location para forzar recarga y asegurarnos 
+                // Redirigimos usando globalThis.location para forzar recarga y asegurarnos 
                 // de que los nuevos interceptores atrapen el token para la primer consulta indexada
-                window.location.href = '/'; 
+                globalThis.location.href = '/'; 
             }
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
-            if (error.response && error.response.status === 401) {
+            if (error.response?.status === 401) {
                 setErrorMsg('Credenciales inválidas. Verifica tu correo y contraseña.');
             } else {
                 setErrorMsg('Error de conexión con el servidor. Intenta más tarde.');
@@ -55,7 +55,7 @@ export default function Login() {
 
             <div className="w-full max-w-md bg-[#161821] border border-white/5 p-8 rounded-3xl shadow-2xl relative z-10">
                 <div className="flex flex-col items-center mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-500 mb-4 shadow-lg shadow-indigo-500/20 shadow-inner border border-indigo-500/30">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-500 mb-4 shadow-lg shadow-indigo-500/20 border border-indigo-500/30">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                         </svg>

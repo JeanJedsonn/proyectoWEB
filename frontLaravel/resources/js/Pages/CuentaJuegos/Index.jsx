@@ -65,33 +65,16 @@ export default function CuentaJuegosIndex() {
     }, [page, perPage, searchTerm, searchField]);
 
     const handleCopy = (e, text, msg = 'Copiado al portapapeles') => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         
         const triggerSuccess = () => {
             setCopiedAlert(true);
             setTimeout(() => setCopiedAlert(false), 1500);
         };
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text)
-                .then(triggerSuccess)
-                .catch(err => console.error("Fallo al copiar: ", err));
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "absolute";
-            textArea.style.left = "-999999px";
-            document.body.prepend(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                triggerSuccess();
-            } catch (error) {
-                console.error("Fallo clipboard fallback:", error);
-            } finally {
-                textArea.remove();
-            }
-        }
+        navigator.clipboard?.writeText(text)
+            .then(triggerSuccess)
+            .catch(err => console.error("Fallo al copiar: ", err));
     };
 
     return (

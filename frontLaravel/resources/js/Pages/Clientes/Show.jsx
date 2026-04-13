@@ -15,6 +15,7 @@ import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
 import Badge from '@/Components/UI/Badge';
 import Toast from '@/Components/UI/Toast';
+import PropTypes from 'prop-types';
 
 export default function ClienteShow({ id }) {
     const [cliente, setCliente] = useState(null);
@@ -95,8 +96,6 @@ export default function ClienteShow({ id }) {
         );
     }
 
-    const initials = cliente.nombre?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '??';
-
     return (
         <MainLayout>
             <Head title={`Perfil: ${cliente.nombre}`} />
@@ -145,19 +144,17 @@ export default function ClienteShow({ id }) {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
-                            <div 
-                                role="button"
-                                tabIndex={0}
-                                className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-emerald-500/30 outline-none focus:ring-2 focus:ring-emerald-500/50" 
+                            <button 
+                                type="button"
+                                className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-emerald-500/30 text-left w-full outline-none focus:ring-2 focus:ring-emerald-500/50" 
                                 onClick={() => handleCopy(cliente.telefono)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleCopy(cliente.telefono)}
                             >
                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between items-center">
                                     Teléfono Primario
                                     <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-emerald-400" />
                                 </p>
                                 <p className="text-sm font-bold text-white">{cliente.telefono || 'No disponible'}</p>
-                            </div>
+                            </button>
 
                             <div className="p-4 bg-black/40 rounded-2xl border border-white/5">
                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1">Medio de Contacto</p>
@@ -168,19 +165,17 @@ export default function ClienteShow({ id }) {
                                 </div>
                             </div>
 
-                            <div 
-                                role="button"
-                                tabIndex={0}
-                                className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-indigo-500/30 outline-none focus:ring-2 focus:ring-indigo-500/50" 
+                            <button 
+                                type="button"
+                                className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-indigo-500/30 text-left w-full outline-none focus:ring-2 focus:ring-indigo-500/50" 
                                 onClick={() => handleCopy(cliente.correo)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleCopy(cliente.correo)}
                             >
                                 <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between items-center">
                                     Correo Electrónico
                                     <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-indigo-400" />
                                 </p>
                                 <p className="text-sm font-bold text-white truncate">{cliente.correo || 'No registrado'}</p>
-                            </div>
+                            </button>
                         </div>
 
                         {cliente.telefono && (
@@ -232,9 +227,10 @@ export default function ClienteShow({ id }) {
                                 </div>
                             ) : (
                                 cliente.facturas.map((factura) => (
-                                    <div 
+                                    <button 
                                         key={factura.id}
-                                        className="flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer group transition-all"
+                                        type="button"
+                                        className="w-full flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer group transition-all text-left outline-none focus:ring-2 focus:ring-indigo-500/50"
                                         onClick={() => router.visit(`/facturas/${factura.id}`)}
                                     >
                                         <div className="flex flex-col gap-0.5 min-w-0">
@@ -256,7 +252,7 @@ export default function ClienteShow({ id }) {
                                                 {factura.tipo}
                                             </span>
                                         </div>
-                                    </div>
+                                    </button>
                                 ))
                             )}
                         </div>
@@ -273,3 +269,7 @@ export default function ClienteShow({ id }) {
         </MainLayout>
     );
 }
+
+ClienteShow.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};

@@ -8,6 +8,7 @@ import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
 import Alert from '@/Components/UI/Alert';
 import Card from '@/Components/UI/Card';
+import PropTypes from 'prop-types';
 
 export default function JuegoForm({ id = null }) 
 {
@@ -259,3 +260,7 @@ export default function JuegoForm({ id = null })
         </MainLayout>
     );
 }
+
+JuegoForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};

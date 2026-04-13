@@ -45,7 +45,7 @@ export default function FacturasIndex() {
                 let url = `${API_URL}/facturas/factura_por_pagina/${perPage}/num_pagina/${page}`;
                 
                 if (searchTerm && searchTerm.trim() !== '') {
-                    url = `${API_URL}/campo/${searchField}/buscar/${searchTerm}/factura_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${API_URL}/facturas/campo/${searchField}/buscar/${searchTerm}/factura_por_pagina/${perPage}/num_pagina/${page}`;
                 }
 
                 const res = await axios.get(url);
