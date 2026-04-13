@@ -17,6 +17,7 @@ import Card from '@/Components/UI/Card';
 import Badge from '@/Components/UI/Badge';
 import Alert from '@/Components/UI/Alert';
 import DataCopyBox from '@/Components/UI/DataCopyBox';
+import JuegoNavButton from '@/Components/UI/JuegoNavButton';
 
 const CuentaJuegosShow = ({ id }) => {
     const [cuenta, setCuenta] = useState(null);
@@ -242,6 +243,8 @@ const CuentaJuegosShow = ({ id }) => {
                     
                     {/* Lista de Juegos */}
                     <Card className="p-6 flex flex-col h-[400px]">
+                        
+                        {/* Titulo de la seccion */}
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
                                 <LayoutGrid className="w-4 h-4 text-indigo-400" />
@@ -251,27 +254,12 @@ const CuentaJuegosShow = ({ id }) => {
                                 {cuenta.juegos?.length || 0}
                             </span>
                         </div>
+
+                        {/* Lista de juegos */}
                         <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                             {cuenta.juegos && cuenta.juegos.length > 0 ? (
                                 cuenta.juegos.map((juego, idx) => (
-                                    <button 
-                                        key={juego.id || idx} 
-                                        type="button"
-                                        onClick={() => juego.id && router.visit(`/juegos/${juego.id}`)}
-                                        className="w-full flex items-center gap-4 p-3 bg-white/2 rounded-2xl border border-white/5 group hover:bg-white/5 hover:border-indigo-500/20 hover:scale-[1.02] transition-all cursor-pointer shadow-lg active:scale-95 text-left"
-                                    >
-                                        <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
-                                            <Gamepad2 className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex-1 overflow-hidden">
-                                            <p className="text-[11px] font-black text-gray-300 truncate leading-tight group-hover:text-white transition-colors uppercase">{juego.titulo}</p>
-                                            <div className="flex items-center gap-3 mt-1">
-                                                <span className="text-[9px] font-bold text-gray-700 uppercase tracking-widest flex items-center gap-1 group-hover:text-indigo-400/50 transition-colors">
-                                                    ID: #{juego.id || 'N/A'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </button>
+                                    <JuegoNavButton key={juego.id || idx} item={juego} />
                                 ))
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20">

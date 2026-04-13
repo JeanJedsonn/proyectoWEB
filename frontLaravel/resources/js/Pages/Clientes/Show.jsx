@@ -16,6 +16,7 @@ import Card from '@/Components/UI/Card';
 import Badge from '@/Components/UI/Badge';
 import Toast from '@/Components/UI/Toast';
 import PropTypes from 'prop-types';
+import JuegoNavButton from '@/Components/UI/JuegoNavButton';
 
 export default function ClienteShow({ id }) {
     const [cliente, setCliente] = useState(null);
@@ -209,6 +210,8 @@ export default function ClienteShow({ id }) {
                 {/* Panel Lateral: Historial de Ventas */}
                 <div className="lg:col-span-4 space-y-8">
                     <Card className="p-6 h-full flex flex-col border-t-4 border-t-indigo-500">
+                        
+                        {/* Titulo de la seccion */}
                         <div className="flex items-center justify-between mb-8">
                             <div className="flex items-center gap-2">
                                 <Activity className="w-4 h-4 text-indigo-400" />
@@ -219,7 +222,8 @@ export default function ClienteShow({ id }) {
                             </span>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto space-y-1 pr-1 custom-scrollbar max-h-[600px]">
+                        {/* Lista de facturas */}
+                        <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar max-h-[600px]">
                             {(!cliente.facturas || cliente.facturas.length === 0) ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center opacity-30 py-20">
                                     <Wallet className="w-12 h-12 mb-4" />
@@ -227,32 +231,29 @@ export default function ClienteShow({ id }) {
                                 </div>
                             ) : (
                                 cliente.facturas.map((factura) => (
-                                    <button 
+                                    <JuegoNavButton 
                                         key={factura.id}
-                                        type="button"
-                                        className="w-full flex items-center justify-between p-3 hover:bg-white/5 rounded-xl cursor-pointer group transition-all text-left outline-none focus:ring-2 focus:ring-indigo-500/50"
-                                        onClick={() => router.visit(`/facturas/${factura.id}`)}
-                                    >
-                                        <div className="flex flex-col gap-0.5 min-w-0">
-                                            <h4 className="text-xs font-bold text-gray-300 group-hover:text-white transition-colors truncate">
-                                                {factura.titulo}
-                                            </h4>
-                                            <div className="flex items-center gap-2 text-[10px] text-gray-600 font-bold uppercase tracking-tighter">
+                                        item={factura}
+                                        icon={FileText}
+                                        routePrefix="/facturas"
+                                        subtitle={(
+                                            <div className="flex items-center gap-2">
                                                 <span className="text-indigo-500/60 font-mono">#{factura.id}</span>
                                                 <span>•</span>
-                                                <span>{formatDate(factura.fechaVenta)}</span>
+                                                <span className="flex items-center gap-1">
+                                                    <Calendar className="w-2.5 h-2.5" />
+                                                    {formatDate(factura.fechaVenta)}
+                                                </span>
                                             </div>
-                                        </div>
-                                        <div className="flex flex-col items-end shrink-0 pl-4">
-                                            <span className="text-sm font-black text-emerald-500 flex items-center">
+                                        )}
+                                        rightContent={(
+                                            <div className="flex items-center">
                                                 <DollarSign className="w-3.5 h-3.5" />
                                                 {factura.precio}
-                                            </span>
-                                            <span className="text-[8px] font-black text-gray-700 uppercase">
-                                                {factura.tipo}
-                                            </span>
-                                        </div>
-                                    </button>
+                                            </div>
+                                        )}
+                                        extraBadge={factura.tipo}
+                                    />
                                 ))
                             )}
                         </div>

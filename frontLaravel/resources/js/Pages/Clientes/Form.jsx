@@ -83,7 +83,8 @@ export default function ClienteForm({ id = null }) {
             }
         } catch (err) {
             console.error("Error al guardar cliente:", err);
-            setErrorMsg(err.response?.data?.mensaje || "Error crítico al procesar el registro.");
+            const msg = err.response?.data?.error || err.response?.data?.mensaje || "Error crítico al procesar el registro.";
+            setErrorMsg(msg);
         } finally {
             setSaving(false);
         }
