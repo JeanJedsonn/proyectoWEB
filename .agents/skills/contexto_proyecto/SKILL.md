@@ -40,10 +40,10 @@ El proyecto es un sistema de administración / dashboard (CRM de ventas para jue
 - `Show.jsx`: Detalles técnicos y semilla de recuperación.
 - `Form.jsx`: Asignación multiselect de juegos y regionalización.
 
-### 🧾 Módulo de Facturas (Refactorizado con UI Components)
+### 🧾 Módulo de Facturas (Finalizado - 100% Atómico)
 - `Index.jsx`: Historial de ventas paginado con filtros avanzados. (100% Componentes Atómicos)
-- `Show.jsx`: Vista de Recibo Imprimible (Receipt Layout) con modo Vendedor/Cliente dinámico y CSS de `@media print`.
-- `Form.jsx`: Generación de facturas con multi-fetch, buscador integrado de clientes, y selector de extracción de snapshot histórico (Correo/Clave) de Cuentas Matrices.
+- `Show.jsx`: Vista de Recibo Imprimible (Receipt Layout) con modo Vendedor/Cliente dinámico, exportación a PDF y CSS de `@media print` optimizado. Incluye PageHeader estandarizado.
+- `Form.jsx`: Generación de facturas con multi-fetch, buscador integrado de clientes mediante **`QuickSelectList`**, y selector de extracción de snapshot histórico (Correo/Clave) de Cuentas Matrices.
 
 ## 📍 3. Sistema de Componentes UI (Atomic Design)
 
@@ -60,6 +60,7 @@ Se ha establecido un sistema de componentes atómicos para garantizar la consist
 | **`Select.jsx`** | Selectores personalizados de alta fidelidad | Paginación, Opciones de formulario |
 | **`PageHeader.jsx`** | Encabezado de página unificado (Breadcrumbs + Título + Acciones) | Todas las vistas principales |
 | **`Pagination.jsx`** | Control de navegación de datos | Listados paginados (Index) |
+| **`QuickSelectList.jsx`** | Listas de búsqueda rápida con dot indicator y sublabels | Selector de Clientes y Cuentas en Facturas |
 
 > [!TIP]
 > **Campos Obligatorios:** Los componentes `Input` y `Select` incluyen automáticamente un punto rojo (`●`) junto al label cuando el atributo `required` está presente, mejorando la usabilidad sin recargar el diseño.
@@ -108,7 +109,7 @@ El sistema implementa una arquitectura moderna de seguridad separada entre Node.
    - En lugar de redirigir la ventana del explorador nativo para leer archivos, el frontend utiliza `Axios` para descargar Blobs y generar un `URL.createObjectURL(blob)`, manteniendo los tokens 100% ocultos en los headers y garantizando cero fugas en el historial.
 
 ---
-*Última actualización: Estandarización de Zona de Peligro y Revisión Final del Módulo Correos.*
+*Última actualización: Estandarización Total y Finalización del Módulo Facturas.*
 
 ## 🔔 7. Sistema de Notificaciones y Feedback Visual
 

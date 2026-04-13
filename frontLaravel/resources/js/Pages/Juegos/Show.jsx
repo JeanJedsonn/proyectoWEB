@@ -103,7 +103,7 @@ export default function JuegoShow({ id }) {
                             variant="default"
                         >
                             <p className="text-[13px] text-gray-400 mb-6 mt-[-20px]">
-                                Esta lista se genera automáticamente buscando este título en las cuentas registradas.
+                                Lista de las cuentas que tienen este juego adquirido
                             </p>
                             
                             <div className="flex flex-col gap-3 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar flex-1">
@@ -195,7 +195,7 @@ export default function JuegoShow({ id }) {
                                 variant="outline"
                                 icon={Ticket}
                                 className="w-full mt-6 flex justify-center"
-                                onClick={() => router.visit('/facturas')}
+                                onClick={() => router.visit(`/facturas?search=${encodeURIComponent(juego.titulo)}&field=titulo_juego`)}
                             >
                                 Ver Facturas de este Juego
                             </Button>

@@ -6,7 +6,7 @@ import {
     Gamepad2, ArrowLeft, Save, 
     Trash2, Database, Key, 
     DollarSign, Calendar, Loader2, Globe, User,
-    Search, Check, Shield, MapPin, X
+    Search, Shield, MapPin, X, Mail
 } from 'lucide-react';
 
 // Componentes UI
@@ -16,6 +16,7 @@ import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
 import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
+import QuickSelectList from '@/Components/UI/QuickSelectList';
 
 export default function CuentaJuegosForm({ id = null }) {
     const isEditing = !!id;
@@ -258,20 +259,31 @@ export default function CuentaJuegosForm({ id = null }) {
                             <h2 className="text-xs font-black text-white uppercase tracking-widest italic">Credenciales</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 overflow-visible">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             
                             {/* Correo Matriz Asociado */}
-                            <div className="md:col-span-2">
-                                <Select 
-                                    label="Correo Electronico"
-                                    name="correoID"
-                                    value={formData.correoID}
-                                    onChange={handleChange}
-                                    required
-                                    options={correos.map(c => ({ value: c.id, label: c.direccionCorreo }))}
-                                    placeholder="Selecciona un correo..."
-                                    variant="dark"
-                                />
+                            <div className="md:col-span-2 space-y-4">
+                                <div className="p-6 bg-[#0b0d12]/50 border border-white/5 rounded-2xl shadow-inner space-y-4">
+                                    <Input 
+                                        label="Vículo de Correo Principal"
+                                        placeholder="Buscar correo..."
+                                        icon={Mail}
+                                        value={formData.searchCorreo || ''}
+                                        onChange={(e) => setFormData(p => ({...p, searchCorreo: e.target.value}))}
+                                        variant="dark"
+                                        required
+                                    />
+                                    <QuickSelectList 
+                                        items={correos.filter(c => c.direccionCorreo.toLowerCase().includes((formData.searchCorreo || '').toLowerCase()))}
+                                        selectedId={formData.correoID}
+                                        onSelect={(c) => handleChange({target: {name: 'correoID', value: c.id}})}
+                                        getLabel={(c) => c.direccionCorreo}
+                                        getSublabel={(c) => c.nombre || 'Personal'}
+                                        height="h-44"
+                                        multiSelect={false}
+                                        variant="transparent"
+                                    />
+                                </div>
                             </div>
 
                             {/* Nickname */}
@@ -391,7 +403,7 @@ export default function CuentaJuegosForm({ id = null }) {
 
                 {/* Panel Derecho: Juegos y Seguridad */}
                 <div className="lg:col-span-4 space-y-8">
-                    <Card className="p-6 flex flex-col h-[500px]">
+                    <Card className="p-6 flex flex-col min-h-[450px]">
                         
                         <div className="flex items-center justify-between mb-6">
                             {/* Icono y titulo */}
@@ -406,40 +418,28 @@ export default function CuentaJuegosForm({ id = null }) {
                             </span>
                         </div>
 
-                        {/* Input de busqueda de juegos */}
-                        <Input 
-                            icon={Search}
-                            placeholder="Buscar juego..."
-                            value={searchJuego}
-                            onChange={(e) => setSearchJuego(e.target.value)}
-                            className="mb-4"
-                            variant="dark"
-                        />
+                        {/* Contenedor Unificado de Catálogo */}
+                        <div className="flex-1 p-6 bg-[#0b0d12]/50 border border-white/5 rounded-2xl shadow-inner space-y-4 overflow-hidden">
+                            <Input 
+                                icon={Search}
+                                placeholder="Buscar título en boveda..."
+                                value={searchJuego}
+                                onChange={(e) => setSearchJuego(e.target.value)}
+                                variant="dark"
+                                className="space-y-0"
+                            />
 
-                        {/* Lista de juegos */}
-                        <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                            {filteredJuegos.map(juego => {
-                                const isSelected = formData.juegos.includes(juego.id);
-                                
-                                // Boton de juego (con icono y texto)
-                                return (
-                                    // Estilos del boton de juego
-                                    <button
-                                        key={juego.id}
-                                        type="button"
-                                        onClick={() => toggleJuego(juego.id)}
-                                        className={`w-full flex items-center justify-between p-3 rounded-xl border transition-all text-left ${
-                                            isSelected 
-                                            ? 'bg-indigo-500/10 border-indigo-500/30 text-white' 
-                                            : 'bg-black/20 border-white/5 text-gray-400 hover:border-white/10 hover:text-gray-200'
-                                        }`}
-                                    >
-                                        {/* Icono y titulo del juego */}
-                                        <span className="text-xs font-bold truncate max-w-[200px]">{juego.titulo}</span>
-                                        {isSelected && <Check className="w-3 h-3 text-indigo-400 shrink-0" />}
-                                    </button>
-                                );
-                            })}
+                            <div className="overflow-hidden">
+                                <QuickSelectList 
+                                    items={filteredJuegos}
+                                    multiSelect={true}
+                                    selectedIds={formData.juegos}
+                                    onSelect={(j) => toggleJuego(j.id)}
+                                    getLabel={(j) => j.titulo}
+                                    height="h-[340px]"
+                                    variant="transparent"
+                                />
+                            </div>
                         </div>
                     </Card>
 

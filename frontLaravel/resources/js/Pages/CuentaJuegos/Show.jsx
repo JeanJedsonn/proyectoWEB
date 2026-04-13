@@ -4,9 +4,9 @@ import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
     Gamepad2, Mail, ArrowLeft, Pencil, 
-    Copy, ExternalLink, MapPin, 
+    ExternalLink, MapPin, 
     Database, LayoutGrid, DollarSign, 
-    Loader2, User, ShieldAlert, Shield, Check
+    Loader2, User, ShieldAlert, Shield
 } from 'lucide-react';
 
 // Componentes UI
@@ -14,6 +14,8 @@ import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
 import Badge from '@/Components/UI/Badge';
+import Alert from '@/Components/UI/Alert';
+import DataCopyBox from '@/Components/UI/DataCopyBox';
 
 export default function CuentaJuegosShow({ id }) {
     const [cuenta, setCuenta] = useState(null);
@@ -148,35 +150,38 @@ export default function CuentaJuegosShow({ id }) {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-4">
+                            <div className="space-y-6">
                                 <div>
-                                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-2">Nickname / ID Público</p>
+                                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-2 px-1">público / nick</p>
                                     <div className="flex items-center gap-3">
-                                        <User className="w-4 h-4 text-gray-500" />
+                                        <User className="w-4 h-4 text-indigo-500" />
                                         <span className="text-lg font-black text-white italic">{cuenta.nick || 'Sin Nickname'}</span>
                                     </div>
                                 </div>
-                                <div className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-indigo-500/30" onClick={() => handleCopy(cuenta.Correo?.correoDireccion)}>
-                                    <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between">
-                                        Correo Electronico
-                                        <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-indigo-400" />
-                                    </p>
-                                    <p className="text-sm font-bold text-white truncate">{cuenta.Correo?.correoDireccion}</p>
-                                </div>
+                                
+                                <DataCopyBox
+                                    label="Correo Electrónico"
+                                    value={cuenta.Correo?.correoDireccion}
+                                    icon={Mail}
+                                    onCopy={handleCopy}
+                                    variant="emerald"
+                                />
                             </div>
 
-                            <div className="space-y-4 text-right md:text-left">
+                            <div className="space-y-6">
                                 <div>
-                                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-2">Plataforma de Red</p>
+                                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest mb-2 px-1">Plataforma</p>
                                     <Badge variant="indigo" className="text-base py-1 px-4">{cuenta.plataforma}</Badge>
                                 </div>
-                                <div className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer transition-all hover:border-indigo-500/30" onClick={() => handleCopy(cuenta.clave)}>
-                                    <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between">
-                                        Contraseña
-                                        <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-indigo-400" />
-                                    </p>
-                                    <p className="text-sm font-mono font-bold text-white tracking-widest">{cuenta.clave}</p>
-                                </div>
+
+                                <DataCopyBox
+                                    label="Contraseña"
+                                    value={cuenta.clave}
+                                    icon={Shield}
+                                    onCopy={handleCopy}
+                                    variant="indigo"
+                                    mono={true}
+                                />
                             </div>
                         </div>
                     </Card>
@@ -258,7 +263,7 @@ export default function CuentaJuegosShow({ id }) {
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
                                 <LayoutGrid className="w-4 h-4 text-indigo-400" />
-                                <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Catálogo</h2>
+                                <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Juegos Adquiridos</h2>
                             </div>
                             <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded-lg border border-indigo-500/10">
                                 {cuenta.juegos?.length || 0}
@@ -267,17 +272,24 @@ export default function CuentaJuegosShow({ id }) {
                         <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                             {cuenta.juegos && cuenta.juegos.length > 0 ? (
                                 cuenta.juegos.map((juego, idx) => (
-                                    <div key={idx} className="flex items-center gap-4 p-3 bg-white/2 rounded-2xl border border-white/5 group hover:bg-white/5 transition-all">
+                                    <button 
+                                        key={juego.id || idx} 
+                                        type="button"
+                                        onClick={() => juego.id && router.visit(`/juegos/${juego.id}`)}
+                                        className="w-full flex items-center gap-4 p-3 bg-white/2 rounded-2xl border border-white/5 group hover:bg-white/5 hover:border-indigo-500/20 hover:scale-[1.02] transition-all cursor-pointer shadow-lg active:scale-95 text-left"
+                                    >
                                         <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
                                             <Gamepad2 className="w-5 h-5" />
                                         </div>
                                         <div className="flex-1 overflow-hidden">
-                                            <p className="text-[11px] font-black text-gray-300 truncate leading-tight group-hover:text-white transition-colors">{juego.titulo}</p>
-                                            <a href={juego.url} target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-gray-700 hover:text-indigo-400 flex items-center gap-1 transition-colors uppercase tracking-widest">
-                                                Ver Ficha <ExternalLink className="w-2.5 h-2.5" />
-                                            </a>
+                                            <p className="text-[11px] font-black text-gray-300 truncate leading-tight group-hover:text-white transition-colors uppercase">{juego.titulo}</p>
+                                            <div className="flex items-center gap-3 mt-1">
+                                                <span className="text-[9px] font-bold text-gray-700 uppercase tracking-widest flex items-center gap-1 group-hover:text-indigo-400/50 transition-colors">
+                                                    ID: #{juego.id || 'N/A'}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </button>
                                 ))
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center opacity-20">
@@ -294,35 +306,38 @@ export default function CuentaJuegosShow({ id }) {
                             <h2 className="text-[10px] font-black text-white uppercase tracking-widest italic">Seguridad 2FA</h2>
                         </div>
                         <div className="space-y-4">
-                            <div className="p-4 bg-black/40 rounded-2xl border border-white/5 relative group/copy cursor-pointer" onClick={() => handleCopy(cuenta.semilla2FA)}>
-                                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between">
-                                    Semilla (Seed)
-                                    <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-indigo-400" />
-                                </p>
-                                <p className="text-xs font-mono font-bold text-white tracking-widest break-all">
-                                    {cuenta.semilla2FA || '---'}
-                                </p>
-                            </div>
-                            <div className="p-4 bg-black/40 rounded-2xl border border-white/5 group/copy cursor-pointer" onClick={() => handleCopy(cuenta.codigos2FA)}>
-                                <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-1 flex justify-between">
-                                    Bóveda de Códigos
-                                    <Copy className="w-3 h-3 opacity-0 group-hover/copy:opacity-100 transition-opacity text-indigo-400" />
-                                </p>
-                                <pre className="text-[10px] font-mono font-bold text-gray-400 whitespace-pre-wrap leading-relaxed py-2 max-h-32 overflow-y-auto custom-scrollbar">
-                                    {cuenta.codigos2FA || 'No hay códigos de seguridad registrados.'}
-                                </pre>
-                            </div>
+                            <DataCopyBox
+                                label="Semilla (Seed)"
+                                value={cuenta.semilla2FA}
+                                
+                                onCopy={handleCopy}
+                                variant="gray"
+                                mono={true}
+                                placeholder="Sin semilla registrada"
+                            />
+                            <DataCopyBox
+                                label="Lista de Códigos"
+                                value={cuenta.codigos2FA}
+                                
+                                onCopy={handleCopy}
+                                variant="gray"
+                                mono={true}
+                                multiline={true}
+                                placeholder="No hay códigos de seguridad registrados."
+                            />
                         </div>
                     </Card>
                 </div>
             </div>
 
-            {/* Custom Minimal Alert for Copy */}
+            {/* Alert de Copiado Estacional */}
             {copiedAlert && (
-                <div className="fixed bottom-10 right-10 z-100 bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
-                    <Check className="w-4 h-4" />
-                    Copiado al Portapapeles
-                </div>
+                <Alert 
+                    variant="success"
+                    message="Información copiada al portapapeles exitosamente."
+                    className="fixed bottom-10 right-10 z-50 shadow-2xl max-w-xs border-white/10"
+                    onClose={() => setCopiedAlert(false)}
+                />
             )}
         </MainLayout>
     );

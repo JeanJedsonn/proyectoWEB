@@ -386,9 +386,9 @@ const leerCuentaJuego = async (req, res) => {
                 cj.semilla AS "semilla2FA",
                 cj.codigos2AF AS "codigos2FA",
                 cj.direccion AS "Direccion",
-                -- Subconsulta para obtener los juegos con sus URLs
+                -- Subconsulta para obtener los juegos con sus URLs e IDs
                 COALESCE(
-                    (SELECT json_agg(json_build_object('titulo', j.titulo, 'url', j.url))
+                    (SELECT json_agg(json_build_object('id', j.id, 'titulo', j.titulo, 'url', j.url))
                      FROM Juego j
                      WHERE j.id = ANY(cj.juegos_comprados_id)
                     ), '[]'
