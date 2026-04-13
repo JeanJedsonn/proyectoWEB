@@ -3,7 +3,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
-    Gamepad2, Mail, ArrowLeft, Save, 
+    Gamepad2, ArrowLeft, Save, 
     Trash2, Database, Key, 
     DollarSign, Calendar, Loader2, Globe, User,
     Search, Check, Shield, MapPin, X
@@ -201,7 +201,7 @@ export default function CuentaJuegosForm({ id = null }) {
             
             <PageHeader
                 title={isEditing ? 'Configurar Cuenta' : 'Nueva Cuenta'}
-                description={isEditing ? "Modificando parámetros de credenciales existentes." : "Registro de nueva matriz en la bóveda de inventario."}
+                description={isEditing ? "Modificando cuenta existente." : "Registro de nueva cuenta."}
                 icon={Gamepad2}
                 breadcrumbs={[
                     { label: 'Inventario', href: '/cuentas_juego' },
@@ -222,7 +222,7 @@ export default function CuentaJuegosForm({ id = null }) {
                         loading={submitting}
                         onClick={handleSubmit}
                     >
-                        {isEditing ? 'Guardar Cambios' : 'Registrar Matriz'}
+                        {isEditing ? 'Guardar Cambios' : 'Registrar Cuenta'}
                     </Button>
                 </div>
             </PageHeader>
@@ -468,10 +468,11 @@ export default function CuentaJuegosForm({ id = null }) {
 
                             {/* Historial de codigos */}
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-1 flex items-center gap-2">
+                                <label htmlFor="codigos2FA" className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-1 flex items-center gap-2">
                                     Historial Códigos
                                 </label>
                                 <textarea 
+                                    id="codigos2FA"
                                     name="codigos2FA"
                                     value={formData.codigos2FA}
                                     onChange={handleChange}
@@ -484,26 +485,34 @@ export default function CuentaJuegosForm({ id = null }) {
 
                     {/* Boton de eliminar cuenta */}
                     {isEditing && (
-                        <Card variant="danger" className="p-6">
-                            <div className="flex items-center gap-2 mb-4">
-                                <Trash2 className="w-4 h-4 text-red-400" />
-                                <h3 className="text-[10px] font-black text-red-400 uppercase tracking-widest italic">Zona de Peligro</h3>
+                        <Card 
+                            title="Operaciones Críticas"
+                            icon={Trash2}
+                            variant="danger"
+                        >
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest">Zona de Peligro</h4>
+                                    <p className="text-[10px] text-gray-600 font-bold mt-1 uppercase tracking-tight">Acción Irreversible</p>
+                                </div>
+                                
+                                <p className="text-[10px] text-gray-500 font-bold leading-relaxed">
+                                    {formData.tieneFacturas 
+                                        ? "Esta cuenta no puede ser eliminada porque existen facturas emitidas que dependen de ella."
+                                        : "La eliminación de esta cuenta es permanente y afectará a todas las facturas vinculadas."}
+                                </p>
+
+                                <Button 
+                                    variant={formData.tieneFacturas ? "secondary" : "danger"}
+                                    icon={formData.tieneFacturas ? Shield : Trash2}
+                                    loading={submitting}
+                                    onClick={handleDelete}
+                                    className="w-full"
+                                    disabled={formData.tieneFacturas}
+                                >
+                                    {formData.tieneFacturas ? "Acción Bloqueada" : "Eliminar Cuenta"}
+                                </Button>
                             </div>
-                            <p className="text-[10px] font-bold text-gray-500 mb-6 leading-relaxed">
-                                {formData.tieneFacturas 
-                                    ? "Esta cuenta no puede ser eliminada porque existen facturas emitidas que dependen de ella."
-                                    : "La eliminación de esta cuenta es permanente y afectará a todas las facturas vinculadas."}
-                            </p>
-                            <Button 
-                                variant={formData.tieneFacturas ? "secondary" : "danger"}
-                                className="w-full"
-                                icon={formData.tieneFacturas ? Shield : Trash2}
-                                onClick={handleDelete}
-                                loading={submitting}
-                                disabled={formData.tieneFacturas}
-                            >
-                                {formData.tieneFacturas ? "Acción Bloqueada" : "Eliminar Cuenta"}
-                            </Button>
                         </Card>
                     )}
                 </div>

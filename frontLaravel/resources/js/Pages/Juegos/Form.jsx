@@ -7,6 +7,7 @@ import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
 import Alert from '@/Components/UI/Alert';
+import Card from '@/Components/UI/Card';
 
 export default function JuegoForm({ id = null }) 
 {
@@ -48,7 +49,7 @@ export default function JuegoForm({ id = null })
 
     // Eliminar juego
     const handleDelete = async () => {
-        if (!window.confirm("¿Estás seguro de que deseas eliminar este juego del catálogo? Esta acción no se puede deshacer.")) {
+        if (!globalThis.confirm("¿Estás seguro de que deseas eliminar este juego del catálogo? Esta acción no se puede deshacer.")) {
             return;
         }
 
@@ -132,7 +133,7 @@ export default function JuegoForm({ id = null })
                     <Button 
                         variant="secondary"
                         icon={isEdit ? X : ArrowLeft}
-                        onClick={() => window.history.back()}
+                        onClick={() => globalThis.history.back()}
                     >
                         {isEdit ? 'Descartar' : 'Volver'}
                     </Button>
@@ -221,35 +222,35 @@ export default function JuegoForm({ id = null })
                 </div>
 
                 {isEdit && (
-                    <div className={`border rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-300 ${form.tiene_cuentas ? 'bg-[#161821] border-white/5' : 'bg-red-500/5 border-red-500/20'}`}>
-                        <div>
-                            <h3 className={`${form.tiene_cuentas ? 'text-gray-400' : 'text-red-400'} font-bold flex items-center gap-2 mb-1`}>
-                                {form.tiene_cuentas ? <Shield className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
-                                Zona de Peligro
-                            </h3>
-                            <p className="text-xs text-gray-400 max-w-lg leading-relaxed">
+                    <Card 
+                        title="Operaciones Críticas"
+                        icon={Trash2}
+                        variant="danger"
+                    >
+                        <div className="space-y-6">
+                            <div>
+                                <h4 className="text-[10px] font-black text-red-500 uppercase tracking-widest">Zona de Peligro</h4>
+                                <p className="text-[10px] text-gray-600 font-bold mt-1 uppercase tracking-tight">Acción Irreversible</p>
+                            </div>
+                            
+                            <p className="text-[10px] text-gray-500 font-bold leading-relaxed">
                                 {form.tiene_cuentas 
-                                    ? "La eliminación de este juego no está permitida debido a que existen Cuentas asociadas en la base de datos que dependen de él."
+                                    ? "La eliminación de este juego no está permitida debido a que existen cuentas asociadas en la base de datos que dependen de él."
                                     : "Al eliminar este título, se quitará del catálogo base permanentemente."}
                             </p>
-                        </div>
-                        {!form.tiene_cuentas ? (
+
                             <Button 
-                                variant="danger"
-                                icon={Trash2}
+                                variant={form.tiene_cuentas ? "secondary" : "danger"}
+                                icon={form.tiene_cuentas ? Shield : Trash2}
                                 loading={saving}
                                 onClick={handleDelete}
-                                className="w-full md:w-auto"
+                                className="w-full"
+                                disabled={form.tiene_cuentas}
                             >
-                                Eliminar del Catálogo
+                                {form.tiene_cuentas ? "Acción Bloqueada" : "Eliminar del Catálogo"}
                             </Button>
-                        ) : (
-                            <div className="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-gray-500 text-sm font-medium flex items-center gap-2 w-full md:w-auto justify-center cursor-not-allowed">
-                                <Shield className="w-4 h-4 opacity-50" />
-                                Acción Bloqueada
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    </Card>
                 )}
             </div>
         </MainLayout>

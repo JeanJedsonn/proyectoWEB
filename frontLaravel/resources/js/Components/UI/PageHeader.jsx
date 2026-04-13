@@ -25,7 +25,7 @@ export default function PageHeader({
                         <>
                             <span className="mx-1 text-gray-800">/</span>
                             {breadcrumbs.map((crumb, idx) => (
-                                <React.Fragment key={idx}>
+                                <React.Fragment key={`${crumb.label}-${idx}`}>
                                     {crumb.href ? (
                                         <a href={crumb.href} className="hover:text-indigo-400 transition-colors">{crumb.label}</a>
                                     ) : (
@@ -38,12 +38,12 @@ export default function PageHeader({
                     )}
                 </div>
                 
-                <h1 className="text-4xl font-extrabold text-white tracking-tighter leading-none">
+                <h1 className="text-2xl font-extrabold text-white tracking-tighter leading-none">
                     {title}
                 </h1>
                 
                 {description && (
-                    <p className="text-gray-400 text-sm mt-3 font-medium italic">
+                    <p className="text-gray-400 text-sm mt-3 font-medium">
                         {description}
                     </p>
                 )}
