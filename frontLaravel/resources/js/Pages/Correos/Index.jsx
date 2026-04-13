@@ -32,10 +32,11 @@ export default function CorreosIndex() {
         const fetchCorreos = async () => {
             setLoading(true);
             try {
-                let url = `http://localhost:3000/correos/correos_por_pagina/${perPage}/num_pagina/${page}`;
+                const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                let url = `${urlNode}/correos/correos_por_pagina/${perPage}/num_pagina/${page}`;
                 
                 if (searchTerm) {
-                    url = `http://localhost:3000/correos/campo/direccion/buscar/${searchTerm}/correos_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${urlNode}/correos/campo/direccion/buscar/${searchTerm}/correos_por_pagina/${perPage}/num_pagina/${page}`;
                 }
 
                 const res = await axios.get(url);
@@ -104,9 +105,10 @@ export default function CorreosIndex() {
                     {correo.facturas} {correo.facturas === 1 ? 'Factura' : 'Facturas'}
                 </Badge>
             </td>
-            <td className="px-6 py-4">
-                <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+            <td className="px-6 py-4 text-right">
+                <div className="flex items-center justify-end gap-2 text-right">
                     <Link 
+                        onClick={(e) => e.stopPropagation()}
                         href={`/correos/${correo.id}`}
                         className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all border border-white/5"
                         title="Ver detalles"

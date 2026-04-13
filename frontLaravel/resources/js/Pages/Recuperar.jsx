@@ -15,6 +15,12 @@ export default function Recuperar() {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const renderHeaderIcon = () => {
+        if (fase === 3) return <CheckCircle2 className="w-7 h-7 text-emerald-400" />;
+        if (fase === 2) return <KeyRound className="w-7 h-7" />;
+        return <ShieldCheck className="w-7 h-7" />;
+    };
+
     const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
 
     // Fase 1: Pedir las preguntas al servidor
@@ -64,7 +70,7 @@ export default function Recuperar() {
             // Éxito, ocultar el form y mostrar feedback
             setFase(3);
             setTimeout(() => {
-                window.location.href = '/login';
+                globalThis.location.href = '/login';
             }, 3000);
 
         } catch (error) {
@@ -89,7 +95,7 @@ export default function Recuperar() {
                 {/* Header */}
                 <div className="flex flex-col items-center mb-8 text-center">
                     <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-5 shadow-lg shadow-indigo-500/20 border border-indigo-500/30">
-                        {fase === 1 ? <ShieldCheck className="w-7 h-7" /> : fase === 2 ? <KeyRound className="w-7 h-7" /> : <CheckCircle2 className="w-7 h-7 text-emerald-400" />}
+                        {renderHeaderIcon()}
                     </div>
                     <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white mb-2">
                         {fase === 1 && "Recuperación de Acceso"}
@@ -195,8 +201,9 @@ export default function Recuperar() {
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wide">Nueva Contraseña</label>
+                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wide" htmlFor="newPassword">Nueva Contraseña</label>
                                     <input
+                                        id="newPassword"
                                         type="password"
                                         value={newPassword}
                                         onChange={(e) => setNewPassword(e.target.value)}
@@ -206,8 +213,9 @@ export default function Recuperar() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wide">Confirmar Contraseña</label>
+                                    <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wide" htmlFor="confirmPassword">Confirmar Contraseña</label>
                                     <input
+                                        id="confirmPassword"
                                         type="password"
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}

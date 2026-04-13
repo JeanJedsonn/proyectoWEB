@@ -37,7 +37,8 @@ const CorreoForm = ({ id = null }) => {
             const fetchCorreo = async () => {
                 setLoading(true);
                 try {
-                    const res = await axios.get(`http://localhost:3000/correos/form_correo/${id}`);
+                    const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                    const res = await axios.get(`${urlNode}/correos/form_correo/${id}`);
                     const data = res.data;
                     // Format birthday for input type="date" (YYYY-MM-DD)
                     if (data.cumpleanos) {
@@ -70,14 +71,15 @@ const CorreoForm = ({ id = null }) => {
         setSuccess(null);
 
         try {
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
-                await axios.patch(`http://localhost:3000/correos/form_correo/${id}`, {
+                await axios.patch(`${urlNode}/correos/form_correo/${id}`, {
                     id: id,
                     ...form
                 });
                 setSuccess("¡Credenciales del correo actualizadas correctamente!");
             } else {
-                await axios.post('http://localhost:3000/correos/form_correo/', form);
+                await axios.post(`${urlNode}/correos/form_correo/`, form);
                 setSuccess("¡Nuevo correo base registrado exitosamente!");
                 setForm({ direccion: '', clave: '', nombres: '', cumpleanos: '', recuperacion: '', redireccion: '' });
             }
@@ -98,7 +100,8 @@ const CorreoForm = ({ id = null }) => {
         setError(null);
 
         try {
-            await axios.delete(`http://localhost:3000/correos/form_correo/${id}`);
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+            await axios.delete(`${urlNode}/correos/form_correo/${id}`);
             router.visit('/correos');
         } catch (err) {
             console.error("Error al eliminar correo:", err);

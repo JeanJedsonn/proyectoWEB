@@ -56,21 +56,23 @@ const FacturaForm = ({ id = null }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                
                 // 1. Fetch available Clientes
-                const resClientes = await axios.get('http://localhost:3000/clientes/clientes_por_pagina/500/num_pagina/1');
+                const resClientes = await axios.get(`${urlNode}/clientes/clientes_por_pagina/500/num_pagina/1`);
                 setClientes(resClientes.data.data || []);
 
                 // 2. Fetch available Juegos
-                const resJuegos = await axios.get('http://localhost:3000/juegos/juegos_por_pagina/500/num_pagina/1');
+                const resJuegos = await axios.get(`${urlNode}/juegos/juegos_por_pagina/500/num_pagina/1`);
                 setJuegos(resJuegos.data.data || []);
 
                 // 3. Fetch available Cuentas de Juego (Para el snapshot)
-                const resCuentas = await axios.get('http://localhost:3000/cuentas/cuentas_por_pagina/500/num_pagina/1');
+                const resCuentas = await axios.get(`${urlNode}/cuentas/cuentas_por_pagina/500/num_pagina/1`);
                 setCuentas(resCuentas.data.data || []);
 
                 // 4. If editing, fetch facture details
                 if (isEditing) {
-                    const resFactura = await axios.get(`http://localhost:3000/facturas/form_factura/${id}`);
+                    const resFactura = await axios.get(`${urlNode}/facturas/form_factura/${id}`);
                     const data = resFactura.data;
 
                     setFormData({
@@ -141,10 +143,11 @@ const FacturaForm = ({ id = null }) => {
 
             const payload = { ...formData, fecha: fechaIso };
 
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEditing) {
-                await axios.patch(`http://localhost:3000/facturas/form_factura/${id}`, payload);
+                await axios.patch(`${urlNode}/facturas/form_factura/${id}`, payload);
             } else {
-                await axios.post(`http://localhost:3000/facturas/form_factura`, payload);
+                await axios.post(`${urlNode}/facturas/form_factura`, payload);
             }
             router.visit('/facturas');
         } catch (err) {

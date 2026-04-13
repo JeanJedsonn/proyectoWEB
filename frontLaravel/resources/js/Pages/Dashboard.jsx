@@ -19,7 +19,8 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchDashboardData = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/dashboard');
+                const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                const res = await axios.get(`${urlNode}/dashboard`);
                 setData(res.data);
             } catch (error) {
                 console.error("Dashboard error conectando a Node:", error);
@@ -66,9 +67,10 @@ export default function Dashboard() {
 
         // Si no hay datos, muestra un mensaje de error (en caso de que falle la conexión con el backend)
         if (!data) {
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             return (
                 <div className="flex items-center justify-center h-64 bg-[#161821] rounded-2xl border border-white/5 text-gray-400">
-                    Error al cargar datos desde http://localhost:3000/dashboard
+                    Error al cargar datos desde {urlNode}/dashboard
                 </div>
             );
         }

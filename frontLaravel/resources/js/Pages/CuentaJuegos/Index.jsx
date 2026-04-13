@@ -35,10 +35,11 @@ export default function CuentaJuegosIndex() {
         const fetchCuentas = async () => {
             setLoading(true);
             try {
-                let url = `http://localhost:3000/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
+                const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                let url = `${urlNode}/cuentas/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
                 
                 if (searchTerm.trim() !== '') {
-                    url = `http://localhost:3000/cuentas/campo/${searchField}/buscar/${searchTerm}/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
+                    url = `${urlNode}/cuentas/campo/${searchField}/buscar/${searchTerm}/cuentas_por_pagina/${perPage}/num_pagina/${page}`;
                 }
 
                 const res = await axios.get(url);
@@ -64,33 +65,16 @@ export default function CuentaJuegosIndex() {
     }, [page, perPage, searchTerm, searchField]);
 
     const handleCopy = (e, text, msg = 'Copiado al portapapeles') => {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         
         const triggerSuccess = () => {
             setCopiedAlert(true);
             setTimeout(() => setCopiedAlert(false), 1500);
         };
 
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text)
-                .then(triggerSuccess)
-                .catch(err => console.error("Fallo al copiar: ", err));
-        } else {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "absolute";
-            textArea.style.left = "-999999px";
-            document.body.prepend(textArea);
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                triggerSuccess();
-            } catch (error) {
-                console.error("Fallo clipboard fallback:", error);
-            } finally {
-                textArea.remove();
-            }
-        }
+        navigator.clipboard?.writeText(text)
+            .then(triggerSuccess)
+            .catch(err => console.error("Fallo al copiar: ", err));
     };
 
     return (

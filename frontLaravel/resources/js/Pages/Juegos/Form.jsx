@@ -8,6 +8,7 @@ import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
 import Alert from '@/Components/UI/Alert';
 import Card from '@/Components/UI/Card';
+import PropTypes from 'prop-types';
 
 export default function JuegoForm({ id = null }) 
 {
@@ -30,7 +31,8 @@ export default function JuegoForm({ id = null })
             const fetchJuego = async () => {
                 setLoading(true);
                 try {
-                    const res = await axios.get(`http://localhost:3000/juegos/form_juego/${id}`);
+                    const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                    const res = await axios.get(`${urlNode}/juegos/form_juego/${id}`);
                     setForm({
                         nombre: res.data.nombre || '',
                         url: res.data.url || '',
@@ -57,7 +59,8 @@ export default function JuegoForm({ id = null })
         setError(null);
 
         try {
-            await axios.delete(`http://localhost:3000/juegos/form_juego/${id}`);
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+            await axios.delete(`${urlNode}/juegos/form_juego/${id}`);
             router.visit('/juegos');
         } catch (err) {
             console.error("Error al eliminar juego:", err);
@@ -81,15 +84,16 @@ export default function JuegoForm({ id = null })
         }
 
         try {
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
-                await axios.patch(`http://localhost:3000/juegos/form_juego/${id}`, {
+                await axios.patch(`${urlNode}/juegos/form_juego/${id}`, {
                     id: id,
                     ...form
                 });
                 setSuccess("¡Juego actualizado correctamente!");
 
             } else {
-                await axios.post('http://localhost:3000/juegos/form_juego/', form);
+                await axios.post(`${urlNode}/juegos/form_juego/`, form);
                 setSuccess("¡Juego registrado correctamente!");     
                 setForm({ nombre: '', url: '' });                   // Limpiar formulario después de la creación
 
@@ -256,3 +260,7 @@ export default function JuegoForm({ id = null })
         </MainLayout>
     );
 }
+
+JuegoForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};

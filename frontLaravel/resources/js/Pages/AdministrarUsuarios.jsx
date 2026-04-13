@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Head, Link } from '@inertiajs/react';
 import axios from 'axios';
 import { ShieldCheck, UserPlus, Trash2, Loader2, RefreshCw, Crown, Shield, User, Info, AlertTriangle } from 'lucide-react';
@@ -25,6 +26,10 @@ function NivelBadge({ nivel }) {
         </span>
     );
 }
+
+NivelBadge.propTypes = {
+    nivel: PropTypes.number.isRequired
+};
 
 export default function AdministrarUsuarios() {
     const [usuarios, setUsuarios] = useState([]);
@@ -66,7 +71,7 @@ export default function AdministrarUsuarios() {
     useEffect(() => {
         // Protección client-side: redirigir si no es Usuario Maestro
         if (localStorage.getItem('level_admin') !== '3') {
-            window.location.href = '/';
+            globalThis.location.href = '/';
             return;
         }
         fetchUsuarios();
@@ -136,7 +141,6 @@ export default function AdministrarUsuarios() {
 
                 {/* Tabla de usuarios */}
                 <div className="bg-[#161821] border border-white/5 rounded-3xl overflow-hidden shadow-xl">
-
                     {/* Leyenda de niveles */}
                     <div className="px-6 py-4 border-b border-white/5 flex flex-wrap gap-3 text-xs text-gray-500">
                         <span className="font-semibold text-gray-400 mr-1">Niveles:</span>
@@ -145,97 +149,108 @@ export default function AdministrarUsuarios() {
                         <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5 text-gray-400" /> Normal (0) — Solo lectura</span>
                     </div>
 
-                    {loading ? (
-                        <div className="flex items-center justify-center py-20 gap-3 text-gray-500">
-                            <Loader2 className="w-6 h-6 animate-spin" />
-                            <span className="text-sm">Cargando usuarios...</span>
-                        </div>
-                    ) : usuarios.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 text-gray-600">
-                            <User className="w-10 h-10 mb-3" />
-                            <p className="text-sm">No hay usuarios registrados.</p>
-                        </div>
-                    ) : (
-                        <div className="divide-y divide-white/5">
-                            {usuarios.map((u) => {
-                                const esMiCuenta = u.id === miId;
-                                const esElUnico = u.level_admin === 3 && usuarios.filter(x => x.level_admin === 3).length === 1;
-                                const puedeEliminar = !esMiCuenta;
+                    {(() => {
+                        if (loading) {
+                            return (
+                                <div className="flex items-center justify-center py-20 gap-3 text-gray-500">
+                                    <Loader2 className="w-6 h-6 animate-spin" />
+                                    <span className="text-sm">Cargando usuarios...</span>
+                                </div>
+                            );
+                        }
 
-                                return (
-                                    <div key={u.id} className="flex items-center gap-4 px-6 py-4 hover:bg-white/[0.02] transition-colors group">
-                                        {/* Avatar */}
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${
-                                            u.level_admin === 3 ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
-                                            u.level_admin === 1 ? 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/20' :
-                                            'bg-white/5 text-gray-400 border border-white/10'
-                                        }`}>
-                                            {u.correo.charAt(0).toUpperCase()}
-                                        </div>
+                        if (usuarios.length === 0) {
+                            return (
+                                <div className="flex flex-col items-center justify-center py-20 text-gray-600">
+                                    <User className="w-10 h-10 mb-3" />
+                                    <p className="text-sm">No hay usuarios registrados.</p>
+                                </div>
+                            );
+                        }
 
-                                        {/* Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <span className="text-white text-sm font-medium truncate">{u.correo}</span>
-                                                {esMiCuenta && (
-                                                    <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-indigo-400 text-[10px] font-bold uppercase tracking-wide">
-                                                        Tú
+                        return (
+                            <div className="divide-y divide-white/5">
+                                {usuarios.map((u) => {
+                                    const esMiCuenta = u.id === miId;
+                                    const puedeEliminar = !esMiCuenta;
+
+                                    const getAvatarStyles = () => {
+                                        if (u.level_admin === 3) return 'bg-amber-500/15 text-amber-400 border border-amber-500/20';
+                                        if (u.level_admin === 1) return 'bg-indigo-500/15 text-indigo-400 border border-indigo-500/20';
+                                        return 'bg-white/5 text-gray-400 border border-white/10';
+                                    };
+
+                                    return (
+                                        <div key={u.id} className="flex items-center gap-4 px-6 py-4 hover:bg-white/2 transition-colors group">
+                                            {/* Avatar */}
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shrink-0 ${getAvatarStyles()}`}>
+                                                {u.correo.charAt(0).toUpperCase()}
+                                            </div>
+
+                                            {/* Info */}
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="text-white text-sm font-medium truncate">{u.correo}</span>
+                                                    {esMiCuenta && (
+                                                        <span className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-indigo-400 text-[10px] font-bold uppercase tracking-wide">
+                                                            Tú
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-gray-600 text-xs mt-0.5">ID #{u.id}</p>
+                                            </div>
+
+                                            {/* Nivel */}
+                                            <NivelBadge nivel={u.level_admin} />
+
+                                            {/* Acción */}
+                                            {confirmDelete === u.id ? (
+                                                <div className="flex items-center gap-2 animate-in fade-in duration-200">
+                                                    <span className="text-xs text-red-400 flex items-center gap-1">
+                                                        <AlertTriangle className="w-3.5 h-3.5" /> ¿Confirmar?
                                                     </span>
-                                                )}
-                                            </div>
-                                            <p className="text-gray-600 text-xs mt-0.5">ID #{u.id}</p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleEliminar(u.id)}
+                                                        disabled={deletingId === u.id}
+                                                        className="px-3 py-1.5 bg-red-500/15 border border-red-500/30 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/25 transition-all disabled:opacity-50"
+                                                    >
+                                                        {deletingId === u.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Sí, eliminar'}
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setConfirmDelete(null)}
+                                                        className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-400 rounded-lg text-xs font-semibold hover:bg-white/10 transition-all"
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => puedeEliminar && setConfirmDelete(u.id)}
+                                                    disabled={!puedeEliminar || deletingId !== null}
+                                                    title={esMiCuenta ? 'No puedes eliminar tu propia cuenta' : `Eliminar a ${u.correo}`}
+                                                    className={`p-2 rounded-xl transition-all ${
+                                                        puedeEliminar
+                                                            ? 'text-gray-600 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100'
+                                                            : 'text-gray-700 cursor-not-allowed'
+                                                    } disabled:opacity-30`}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            )}
                                         </div>
-
-                                        {/* Nivel */}
-                                        <NivelBadge nivel={u.level_admin} />
-
-                                        {/* Acción */}
-                                        {confirmDelete === u.id ? (
-                                            <div className="flex items-center gap-2 animate-in fade-in duration-200">
-                                                <span className="text-xs text-red-400 flex items-center gap-1">
-                                                    <AlertTriangle className="w-3.5 h-3.5" /> ¿Confirmar?
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleEliminar(u.id)}
-                                                    disabled={deletingId === u.id}
-                                                    className="px-3 py-1.5 bg-red-500/15 border border-red-500/30 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/25 transition-all disabled:opacity-50"
-                                                >
-                                                    {deletingId === u.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Sí, eliminar'}
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setConfirmDelete(null)}
-                                                    className="px-3 py-1.5 bg-white/5 border border-white/10 text-gray-400 rounded-lg text-xs font-semibold hover:bg-white/10 transition-all"
-                                                >
-                                                    Cancelar
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={() => puedeEliminar && setConfirmDelete(u.id)}
-                                                disabled={!puedeEliminar || deletingId !== null}
-                                                title={esMiCuenta ? 'No puedes eliminar tu propia cuenta' : `Eliminar a ${u.correo}`}
-                                                className={`p-2 rounded-xl transition-all ${
-                                                    puedeEliminar
-                                                        ? 'text-gray-600 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100'
-                                                        : 'text-gray-700 cursor-not-allowed'
-                                                } disabled:opacity-30`}
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )}
+                                    );
+                                })}
+                            </div>
+                        );
+                    })()}
 
                     {/* Footer con conteo */}
                     {!loading && usuarios.length > 0 && (
                         <div className="px-6 py-3 border-t border-white/5 text-xs text-gray-600 flex items-center justify-between">
-                            <span>{usuarios.length} usuario{usuarios.length !== 1 ? 's' : ''} en total</span>
+                            <span>{usuarios.length} usuario{usuarios.length === 1 ? '' : 's'} en total</span>
                             <span className="text-gray-700">Hover sobre una fila para ver las acciones</span>
                         </div>
                     )}
