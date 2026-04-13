@@ -18,106 +18,69 @@ El proyecto es un sistema de administración / dashboard (CRM de ventas para jue
 - **Backend Data (API):** Node.js Server (`localhost:3000`) para persistencia y lógica de negocio.
 - **Frontend:** React 18/19, Tailwind CSS v4, Lucide React icons, Axios.
 
-## 📁 2. Módulos Implementados (Estado Actual)
+## 📁 2. Módulos Implementados (Arquitectura de Grids y Tarjetas)
 
-### 🎮 Módulo de Juegos (Refactorizado con UI Components)
-- `Index.jsx`: Catálogo en grid responsivo. **Referencia actual para la nueva arquitectura de componentes.**
-- `Show.jsx`: Métricas de venta, listado de cuentas asignadas vinculadas activamente mediante Inertia y navegación controlada.
-- `Form.jsx`: CRUD con validación de nombre, y "Zona de Peligro" inteligente (bloquea la eliminación mostrando razones y deshabilitando botones si detecta la bandera `tiene_cuentas` en la BBDD).
+El proyecto ha migrado de un sistema basado en tablas a una interfaz moderna de **Grids Responsivos** utilizando tarjetas modulares con diseño premium.
 
-### 👥 Módulo de Clientes (Refactorizado con UI Components)
-- `Index.jsx`: Tablas dinámicas con filtros por origen. (100% Componentes Atómicos)
-- `Show.jsx`: Perfil detallado con historial de compras e interacción social.
-- `Form.jsx`: Creación/Edición con validaciones.
+### 🎮 Módulo de Juegos
+- `Index.jsx`: Catálogo en grid responsivo de 6 columnas (xl). Utiliza `GameCard`.
+- `Show.jsx`: Métricas de venta y navegación mediante el componente global **`JuegoNavButton`**.
+- `Form.jsx`: CRUD con validación y "Zona de Peligro" inteligente.
 
-### 📧 Módulo de Correos (Refactorizado con UI Components)
-- `Index.jsx`: Bóveda de correos base con iconos por proveedor y selector de densidad de datos (10, 25, 50 registros).
-- `Show.jsx`: Visualización técnica de credenciales sin botones de copiado innecesarios para mantener la limpieza visual.
-- `Form.jsx`: Gestión de claves con validación de dependencias (bloquea la eliminación si existen cuentas vinculadas) y migración completa a componentes atómicos.
+### 👥 Módulo de Clientes
+- `Index.jsx`: Grid responsivo de **`ClienteCard`**. Incluye filtros avanzados por red social y búsqueda debounced.
+- `Show.jsx`: Perfil detallado con historial de facturación integrado mediante `JuegoNavButton`.
+- `Form.jsx`: Gestión de perfiles con **validación condicional** (WhatsApp requiere teléfono obligatorio en Backend y Frontend).
 
-### 🔑 Módulo de Cuenta Juegos (Refactorizado con UI Components)
-- `Index.jsx`: Inventario de cuentas por plataforma. (100% Componentes Atómicos)
-- `Show.jsx`: Detalles técnicos y semilla de recuperación.
-- `Form.jsx`: Asignación multiselect de juegos y regionalización.
+### 📧 Módulo de Correos
+- `Index.jsx`: Bóveda de correos en grid de **`CorreoCard`** con detección automática de iconos por proveedor (Gmail, Outlook, etc.).
+- `Show.jsx`: Visualización técnica de credenciales.
+- `Form.jsx`: CRUD con bloqueo de eliminación preventiva si existen dependencias.
 
-### 🧾 Módulo de Facturas (Finalizado - 100% Atómico)
-- `Index.jsx`: Historial de ventas paginado con filtros avanzados. (100% Componentes Atómicos)
-- `Show.jsx`: Vista de Recibo Imprimible (Receipt Layout) con modo Vendedor/Cliente dinámico, exportación a PDF y CSS de `@media print` optimizado. Incluye PageHeader estandarizado.
-- `Form.jsx`: Generación de facturas con multi-fetch, buscador integrado de clientes mediante **`QuickSelectList`**, y selector de extracción de snapshot histórico (Correo/Clave) de Cuentas Matrices.
+### 🧾 Módulo de Facturas
+- `Index.jsx`: Historial de ventas en grid de **`FacturaCard`**. Soporta 12 registros por página para un layout equilibrado.
+- `Show.jsx`: Recibo imprimible optimizado.
+- `Form.jsx`: Generación de facturas con snapshot histórico y búsqueda rápida.
 
-## 📍 3. Sistema de Componentes UI (Atomic Design)
+### 📊 Dashboard Operativo
+- **Métricas KPI**: Tarjetas de estadísticas con diseño ultra-premium, reflejando ingresos del mes, clientes y stock.
+- **Actividad Reciente**: Grid dinámico de las últimas 5 ventas utilizando `FacturaCard` en su variante **`dark`**.
+- **Distribución**: Gráfico de dónut animado para ventas por tipo (Primaria/Secundaria).
 
-Se ha establecido un sistema de componentes atómicos para garantizar la consistencia visual y reducir la redundancia de código.
+## 📍 3. Sistema de Componentes UI
 
-**Ubicación:** `frontLaravel/resources/js/Components/UI/`
+### 🧱 Componentes Atómicos (UI Library)
+Ubicación: `frontLaravel/resources/js/Components/UI/`
 
-| Componente | Descripción | Uso Principal |
-| :--- | :--- | :--- |
-| **`Badge.jsx`** | Etiquetas de estado y plataformas | Tabla de cuentas, Detail views |
-| **`Button.jsx`** | Botones con variantes y estados de carga | Acciones globales, Formularios |
-| **`Card.jsx`** | Contenedor estándar con bordes inteligentes | Paneles de información, Grids |
-| **`Input.jsx`** | Campos de texto con soporte para iconos | Búsqueda, Formularios CRUD |
-| **`Select.jsx`** | Selectores personalizados de alta fidelidad | Paginación, Opciones de formulario |
-| **`PageHeader.jsx`** | Encabezado de página unificado (Breadcrumbs + Título + Acciones) | Todas las vistas principales |
-| **`Pagination.jsx`** | Control de navegación de datos | Listados paginados (Index) |
-| **`QuickSelectList.jsx`** | Listas de búsqueda rápida con dot indicator y sublabels | Selector de Clientes y Cuentas en Facturas |
+| Componente | Descripción |
+| :--- | :--- |
+| **`PageHeader.jsx`** | Encabezado unificado con breadcrumbs y acciones. |
+| **`Button.jsx`** | Acciones con variantes (primary, secondary, danger) y estados de carga. |
+| **`Input.jsx` / `Select.jsx`** | Entradas de datos con soporte de iconos y validación visual. |
+| **`Pagination.jsx`** | Control de navegación estandarizado para grids. |
+| **`JuegoNavButton.jsx`** | Botón genérico de navegación con soporte para iconos, badges y subtítulos. |
 
-> [!TIP]
-> **Campos Obligatorios:** Los componentes `Input` y `Select` incluyen automáticamente un punto rojo (`●`) junto al label cuando el atributo `required` está presente, mejorando la usabilidad sin recargar el diseño.
+### 🎴 Componentes de Negocio (Cards)
+Ubicación: `frontLaravel/resources/js/Components/[Modulo]/`
 
-## 🎨 4. Paleta de Colores y Estética UI
+- **`GameCard.jsx`**: Portada visual del juego con overlay de acciones.
+- **`FacturaCard.jsx`**: Ficha contable con fallbacks para múltiples formatos de API y variante `dark`.
+- **`ClienteCard.jsx`**: Perfil de contacto con acceso directo a WhatsApp y badges sociales.
+- **`CorreoCard.jsx`**: Identificador de cuenta con distinción visual de proveedores.
 
-Basado en un esquema **Ultra-Dark Premium**, la paleta se rige por transparencias y bordes definidos:
+## 🎨 4. Estética y Reglas de Diseño
 
-| Categoría | Tailwind / Hex | Aplicación |
-| :--- | :--- | :--- |
-| **Base Fondo** | `#0b0d12` | Fondo de body y zonas de contraste |
-| **Card Fondo** | `#161821` | Contenedores principales y cards |
-| **Índigo (Accent)** | `indigo-500/10` | Fondos de badges y botones secundarios |
-| **Índigo (Accent)** | `indigo-500/20` | Bordes de elementos activos o seleccionados |
-| **Esmeralda (Success)** | `emerald-500/10` | Fondos de badges de estado "Activo" |
-| **Esmeralda (Success)** | `emerald-500/20` | Bordes de confirmación o éxito |
-| **Rojo (Danger)** | `red-500/10` | Fondos de botones de eliminación o errores |
-| **Rojo (Danger)** | `red-500/20` | Bordes de zonas de peligro y alertas rápidas |
-| **Neutros** | `white/5` | Bordes estándar de tarjetas y inputs (sutil) |
-| **Neutros** | `gray-500` | Bordes de dropdowns y selectores abiertos |
-| **Tipografía** | `gray-400/500` | Textos secundarios, hints y labels |
+1. **Ultra-Dark Premium**: Fondo base en `#0b0d12` y contenedores en `#161821`.
+2. **Geometría**: Uso de radios de borde curvos (**`rounded-3xl`** para cards, **`rounded-4xl`** para contenedores maestros).
+3. **Feedback de Datos**: Los cards deben implementar "fallbacks" inteligentes (operadores OR `||`) para manejar inconsistencias en los nombres de campos de la API (ej: `titulo_juego || titulo`).
+4. **Interactividad**: Efectos de hover con bordes `indigo-500/50` y sombras difuminadas.
 
-## 🛠️ 5. Reglas y Convenciones de Desarrollo
+## 🛠️ 5. Convenciones de Backend (Node.js)
 
-1. **Diseño Premium:** Uso estricto de transparencias y bordes de 1px.
-2. **Redondez (Borders):** El radio predeterminado para componentes atómicos e inputs es **`2xl`**. Las tarjetas de información de gran tamaño pueden escalar a **`4xl`**.
-3. **Navegación:** Uso de `Link` y `router` de `@inertiajs/react` para mantener el estado de SPA.
-4. **Componentización:** Al crear o modificar vistas, se DEBEN utilizar los componentes de `Components/UI/` en lugar de clases ad-hoc de Tailwind.
-5. **Modern JS:** Preferir el uso de `globalThis`, `Number.parseInt` y `Number.isNaN` para compatibilidad y consistencia técnica en Backend y Frontend.
-
-## 🔒 6. Seguridad y Autenticación
-
-El sistema implementa una arquitectura moderna de seguridad separada entre Node.js y React:
-
-1. **JWT y Autenticación:**
-   - Node.js emite un JWT (1 hora de validez) tras validar el login (`authController.js`).
-   - El token se guarda en `localStorage('token')` del lado de React (`Login.jsx`).
-   - **Axios Global Interceptors:** En `bootstrap.js` toda petición saliente inyecta dinámicamente el `Bearer Token`. Si Node devuelve un `401 Unauthorized` por expiración, el interceptor expulsa limpia y automáticamente al usuario al `/login`.
-
-2. **Recuperación de Contraseñas (Zero-Mail):**
-   - El ecosistema incluye un Wizard estético de 2 fases en `Recuperar.jsx`.
-   - Modela 3 preguntas secretas en la Base de Datos.
-   - **Case Insensitivity:** Node corrige errores (espacios, mayúsculas) y verifica estrictamente contra Hashes Matemáticos de `bcrypt`. El texto plano jamás se guarda.
-
-3. **Manejo Seguro de Archivos / Raw JSON:**
-   - En lugar de redirigir la ventana del explorador nativo para leer archivos, el frontend utiliza `Axios` para descargar Blobs y generar un `URL.createObjectURL(blob)`, manteniendo los tokens 100% ocultos en los headers y garantizando cero fugas en el historial.
+1. **Persistencia**: Uso estricto de `pool.query` con parámetros indexados para prevenir SQL Injection.
+2. **Validaciones**: Las reglas de negocio deben duplicarse en el controlador (Backend). Ej: Si la red es WhatsApp, el teléfono no puede ser nulo.
+3. **Joins**: Preferir `LEFT JOIN` para obtener títulos y metadatos relacionados en lugar de subconsultas costosas.
+4. **Consistencia**: Los controladores de obtención por página deben retornar siempre el objeto con `data`, `current_page`, `last_page`, `per_page` y `total`.
 
 ---
-*Última actualización: Estandarización Total y Finalización del Módulo Facturas.*
-
-## 🔔 7. Sistema de Notificaciones y Feedback Visual
-
-El proyecto ha desautorizado el uso de componentes de tipo "Toast" emergentes globales, optando por no recargar visualmente la interfaz y mantener la estética Premium.
-
-1. **Acciones Rápidas (Ej: Copiar al portapapeles):** Se utiliza una notificación minimalista estandarizada que aparece en la parte inferior derecha (`fixed bottom-10 right-10`). Debe ser una caja con fondo blanco, texto negro (`bg-white text-black`), bordes muy redondeados (`rounded-2xl`), tipografía técnica (`font-black uppercase text-[10px]`) y una sombra intensa (`shadow-[0_20px_50px_rgba(255,255,255,0.2)]`). 
-    - **Contenido:** Icono `Check` + texto "Copiado al Portapapeles".
-    - **Regla técnica:** Toda interacción con el portapapeles debe incorporar un mecanismo de respaldo (*fallback*) usando `document.execCommand('copy')` sobre un `textarea` invisible para garantizar funcionalidad en contextos HTTP o locales.
-2. **Alertas y Errores (Formularios/Listados):** Se renderizan de forma **inline** e incrustadas directamente dentro de la interfaz mediante el componente `Alert`, usando fondos atenuados y animaciones suaves. 
-3. **Zona de Peligro (Operaciones Críticas):** Se ha unificado el diseño bajo el componente `Card variant="danger"`. 
-    - **Comportamiento:** Si un registro no puede eliminarse (por dependencias en BBDD), el botón de acción se renderiza en estilo `secondary`, con el icono `Shield`, deshabilitado, y un mensaje explicativo sobre la razón del bloqueo técnico (Ej. *"No se puede eliminar: Existen cuentas vinculadas..."*). Esto previene errores de integridad referencial y mejora el UX.
+*Última actualización: Modernización completa del Frontend a arquitectura basada en Grids y Cards.*
