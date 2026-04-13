@@ -71,7 +71,7 @@ const buscarFacturas = async (req, res) => {
 
         // Mapeo de alias a nombres reales de tabla/columna
         if (campoReal === 'cliente') {
-            campoReal = 'cl.nombre';
+            campoReal = 'cl.nombre'; 
         } else if (campoReal === 'fecha') {
             campoReal = 'f.fecha_venta';
         } else if (campoReal === 'juego' || campoReal === 'titulo_juego') {

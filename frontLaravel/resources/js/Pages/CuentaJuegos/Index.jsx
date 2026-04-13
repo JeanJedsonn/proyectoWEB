@@ -189,7 +189,7 @@ export default function CuentaJuegosIndex() {
             </div>
 
             {copiedAlert && (
-                <div className="fixed bottom-10 right-10 z-[100] bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
+                <div className="fixed bottom-10 right-10 z-100 bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
                     <Check className="w-4 h-4" />
                     Copiado al Portapapeles
                 </div>

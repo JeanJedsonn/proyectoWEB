@@ -5,9 +5,8 @@ import axios from 'axios';
 import { 
     Gamepad2, Mail, ArrowLeft, Pencil, 
     Copy, ExternalLink, MapPin, 
-    Smartphone, Database, LayoutGrid, Key, 
-    DollarSign, Calendar, Loader2, Globe, User,
-    ShieldAlert, Shield, Check
+    Database, LayoutGrid, DollarSign, 
+    Loader2, User, ShieldAlert, Shield, Check
 } from 'lucide-react';
 
 // Componentes UI
@@ -213,19 +212,19 @@ export default function CuentaJuegosShow({ id }) {
                         <Card className="p-6">
                             <div className="flex items-center gap-3 mb-6">
                                 <MapPin className="w-4 h-4 text-indigo-400" />
-                                <h2 className="text-xs font-black text-white uppercase tracking-widest italic">Direccion</h2>
+                                <h2 className="text-xs font-black text-white uppercase tracking-widest">Direccion</h2>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center py-2 border-b border-white/5">
-                                    <span className="text-[10px] font-bold text-gray-600 uppercase uppercase">Región / País</span>
+                                    <span className="text-[10px] font-bold text-gray-600 uppercase">Región / País</span>
                                     <span className="text-xs font-black text-white">{cuenta.region || 'Desconocida'}</span>
                                 </div>
-                                <div className="text-[10px] text-gray-500 italic leading-relaxed">
-                                    {cuenta.Direccion ? (
-                                        typeof cuenta.Direccion === 'string' 
-                                            ? cuenta.Direccion 
-                                            : `${cuenta.Direccion.calle || ''}, ${cuenta.Direccion.ciudad || ''} (${cuenta.Direccion.codigoPostal || ''})`
-                                    ) : 'Sin dirección de facturación registrada.'}
+                                <div className="text-[10px] text-gray-500 leading-relaxed">
+                                    {(() => {
+                                        if (!cuenta.Direccion) return 'Sin dirección de facturación registrada.';
+                                        if (typeof cuenta.Direccion === 'string') return cuenta.Direccion;
+                                        return `${cuenta.Direccion.calle || ''}, ${cuenta.Direccion.ciudad || ''} (${cuenta.Direccion.codigoPostal || ''})`;
+                                    })()}
                                 </div>
                             </div>
                         </Card>
@@ -233,15 +232,15 @@ export default function CuentaJuegosShow({ id }) {
                         <Card className="p-6">
                             <div className="flex items-center gap-3 mb-6">
                                 <DollarSign className="w-4 h-4 text-indigo-400" />
-                                <h2 className="text-xs font-black text-white uppercase tracking-widest italic">Estado Financiero</h2>
+                                <h2 className="text-xs font-black text-white uppercase tracking-widest">Estado Financiero</h2>
                             </div>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center py-2 border-b border-white/5">
                                     <span className="text-[10px] font-bold text-gray-600 uppercase">Saldo en Cuenta</span>
-                                    <span className="text-lg font-black text-emerald-400 italic">${cuenta.saldo || '0.00'}</span>
+                                    <span className="text-lg font-black text-emerald-400">${cuenta.saldo || '0.00'}</span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[10px] font-bold text-gray-600 uppercase italic">Fecha Desactivación</span>
+                                    <span className="text-[10px] font-bold text-gray-600 uppercase">Fecha Desactivación</span>
                                     <span className={`text-[10px] font-bold ${isDeactivated ? 'text-red-400' : 'text-gray-500'}`}>
                                         {formatDate(cuenta.fechaDesactivacion)}
                                     </span>
@@ -259,7 +258,7 @@ export default function CuentaJuegosShow({ id }) {
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-2">
                                 <LayoutGrid className="w-4 h-4 text-indigo-400" />
-                                <h2 className="text-[10px] font-black text-white uppercase tracking-widest italic">Catálogo</h2>
+                                <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Catálogo</h2>
                             </div>
                             <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 text-[10px] font-bold rounded-lg border border-indigo-500/10">
                                 {cuenta.juegos?.length || 0}
@@ -281,7 +280,7 @@ export default function CuentaJuegosShow({ id }) {
                                     </div>
                                 ))
                             ) : (
-                                <div className="h-full flex flex-col items-center justify-center opacity-20 italic">
+                                <div className="h-full flex flex-col items-center justify-center opacity-20">
                                     <p className="text-[10px] font-bold uppercase">Sin juegos asignados</p>
                                 </div>
                             )}
@@ -320,7 +319,7 @@ export default function CuentaJuegosShow({ id }) {
 
             {/* Custom Minimal Alert for Copy */}
             {copiedAlert && (
-                <div className="fixed bottom-10 right-10 z-[100] bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
+                <div className="fixed bottom-10 right-10 z-100 bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
                     <Check className="w-4 h-4" />
                     Copiado al Portapapeles
                 </div>
