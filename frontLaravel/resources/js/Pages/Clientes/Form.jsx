@@ -6,6 +6,8 @@ import {
     User, Phone, Mail, FileText, Save, X, 
     Share2, ArrowLeft
 } from 'lucide-react';
+import { validateEmail, validatePhone } from '@/utils/validators';
+
 
 // Componentes UI Atómicos
 import PageHeader from '@/Components/UI/PageHeader';
@@ -30,6 +32,8 @@ export default function ClienteForm({ id = null }) {
         correo: '',
         notas: ''
     });
+    const [fieldErrors, setFieldErrors] = useState({});
+
 
     useEffect(() => {
         if (isEdit) {
@@ -62,11 +66,30 @@ export default function ClienteForm({ id = null }) {
         setErrorMsg(null);
         setSuccessMsg(null);
 
-        if (form.red === 'WhatsApp' && !form.telefono) {
-            setErrorMsg("Para contactos por WhatsApp, el número de teléfono es obligatorio.");
+        // Validación por campo
+        const errors = {};
+
+        if (!form.nombre.trim()) {
+            errors.nombre = 'El nombre es obligatorio.';
+        }
+
+        const phoneRequired = form.red === 'WhatsApp';
+        const phoneError = validatePhone(form.telefono, phoneRequired);
+        if (phoneError) errors.telefono = phoneError;
+
+        if (form.correo) {
+            const emailError = validateEmail(form.correo, false);
+            if (emailError) errors.correo = emailError;
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setErrorMsg('Por favor corrige los campos marcados en rojo.');
             setSaving(false);
             return;
         }
+
+        setFieldErrors({});
 
         try {
             const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
@@ -89,6 +112,7 @@ export default function ClienteForm({ id = null }) {
             setSaving(false);
         }
     };
+
 
 
 
@@ -198,11 +222,16 @@ export default function ClienteForm({ id = null }) {
                             <Input 
                                 label="Número de Teléfono"
                                 value={form.telefono}
-                                onChange={(e) => setForm({...form, telefono: e.target.value})}
-                                placeholder="+00 000 0000000"
+                                onChange={(e) => {
+                                    setForm({...form, telefono: e.target.value});
+                                    if (fieldErrors.telefono) setFieldErrors(p => ({...p, telefono: null}));
+                                }}
+                                placeholder="+591 74047460"
                                 icon={Phone}
                                 variant="dark"
                                 required={form.red === 'WhatsApp'}
+                                error={fieldErrors.telefono}
+                                hint={fieldErrors.telefono ? undefined : 'Formatos: +591 74047460 · +58 416-1571491 · +1 (703) 282-1084'}
                             />
 
                             <div className="md:col-span-2">
@@ -210,11 +239,15 @@ export default function ClienteForm({ id = null }) {
                                     label="Correo Electrónico (Opcional)"
                                     type="email"
                                     value={form.correo}
-                                    onChange={(e) => setForm({...form, correo: e.target.value})}
+                                    onChange={(e) => {
+                                        setForm({...form, correo: e.target.value});
+                                        if (fieldErrors.correo) setFieldErrors(p => ({...p, correo: null}));
+                                    }}
                                     placeholder="correo@ejemplo.com"
                                     icon={Mail}
-                                    hint="Utilizado para el envío automático de comprobantes."
+                                    hint={fieldErrors.correo ? undefined : 'Utilizado para el envío automático de comprobantes.'}
                                     variant="dark"
+                                    error={fieldErrors.correo}
                                 />
                             </div>
                         </div>

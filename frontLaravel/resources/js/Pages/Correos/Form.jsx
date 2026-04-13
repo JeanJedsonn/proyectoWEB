@@ -7,6 +7,8 @@ import {
     ArrowLeft, Loader2, Trash2, KeyRound, UserCircle, Shield
 } from 'lucide-react';
 import axios from 'axios';
+import { validateEmail } from '@/utils/validators';
+
 
 // Componentes UI Atómicos
 import PageHeader from '@/Components/UI/PageHeader';
@@ -21,6 +23,8 @@ const CorreoForm = ({ id = null }) => {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
+
 
     const [form, setForm] = useState({
         direccion: '',
@@ -70,6 +74,28 @@ const CorreoForm = ({ id = null }) => {
         setError(null);
         setSuccess(null);
 
+        // Validación de correos
+        const errors = {};
+        const dirError = validateEmail(form.direccion, true);
+        if (dirError) errors.direccion = dirError;
+
+        if (form.recuperacion) {
+            const recError = validateEmail(form.recuperacion, false);
+            if (recError) errors.recuperacion = recError;
+        }
+        if (form.redireccion) {
+            const redError = validateEmail(form.redireccion, false);
+            if (redError) errors.redireccion = redError;
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setError('Por favor corrige los campos de correo marcados.');
+            setSaving(false);
+            return;
+        }
+        setFieldErrors({});
+
         try {
             const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
@@ -90,6 +116,7 @@ const CorreoForm = ({ id = null }) => {
             setSaving(false);
         }
     };
+
 
     const handleDelete = async () => {
         if (!globalThis.confirm("¿Estás seguro de que deseas eliminar este correo? Se perderán las credenciales base.")) {
@@ -181,10 +208,14 @@ const CorreoForm = ({ id = null }) => {
                                 type="email" 
                                 required 
                                 value={form.direccion}
-                                onChange={(e) => setForm({...form, direccion: e.target.value})}
+                                onChange={(e) => {
+                                    setForm({...form, direccion: e.target.value});
+                                    if (fieldErrors.direccion) setFieldErrors(p => ({...p, direccion: null}));
+                                }}
                                 placeholder="ej. usuario@plataforma.com"
                                 icon={Mail}
                                 variant="dark"
+                                error={fieldErrors.direccion}
                             />
                             <Input 
                                 label="Contraseña Base"
@@ -230,22 +261,30 @@ const CorreoForm = ({ id = null }) => {
                                 id="recuperacion"
                                 type="text" 
                                 value={form.recuperacion}
-                                onChange={(e) => setForm({...form, recuperacion: e.target.value})}
+                                onChange={(e) => {
+                                    setForm({...form, recuperacion: e.target.value});
+                                    if (fieldErrors.recuperacion) setFieldErrors(p => ({...p, recuperacion: null}));
+                                }}
                                 placeholder="Backup email/tlf"
                                 icon={RefreshCcw}
                                 variant="dark"
                                 required
+                                error={fieldErrors.recuperacion}
                             />
                             <Input 
-                                label="Redirección"
+                                label="Redireccion"
                                 id="redireccion"
                                 type="text" 
                                 value={form.redireccion}
-                                onChange={(e) => setForm({...form, redireccion: e.target.value})}
+                                onChange={(e) => {
+                                    setForm({...form, redireccion: e.target.value});
+                                    if (fieldErrors.redireccion) setFieldErrors(p => ({...p, redireccion: null}));
+                                }}
                                 placeholder="Correo de reenvío"
                                 icon={Info}
                                 variant="dark"
                                 required
+                                error={fieldErrors.redireccion}
                             />
                         </div>
                     </Card>
