@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { UserPlus, Mail, Lock, ShieldQuestion, Loader2, Info } from 'lucide-react';
 import MainLayout from '../Layouts/MainLayout';
@@ -36,7 +36,7 @@ export default function CrearUsuario() {
 
         try {
             const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
-            const response = await axios.post(`${urlNode}/auth/crear`, formData);
+            await axios.post(`${urlNode}/auth/crear`, formData);
 
             setSuccessMsg('Usuario creado exitosamente.');
             setFormData({
@@ -50,7 +50,7 @@ export default function CrearUsuario() {
             });
         } catch (error) {
             console.error('Error al crear usuario:', error);
-            if (error.response && error.response.data && error.response.data.mensaje) {
+            if (error.response?.data?.mensaje) {
                 setErrorMsg(error.response.data.mensaje);
             } else {
                 setErrorMsg('Error de conexión con el servidor. Intenta más tarde.');
@@ -67,7 +67,7 @@ export default function CrearUsuario() {
             <div className="max-w-3xl mx-auto flex flex-col items-center justify-center py-10 font-sans">
                 <div className="w-full bg-[#161821] border border-emerald-500/10 p-8 rounded-3xl shadow-2xl relative z-10">
                     <div className="flex flex-col items-center mb-8">
-                        <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 mb-4 shadow-lg shadow-emerald-500/20 shadow-inner border border-emerald-500/30">
+                        <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 mb-4 shadow-lg shadow-emerald-500/20 border border-emerald-500/30">
                             <UserPlus className="w-6 h-6" />
                         </div>
                         <h1 className="text-2xl font-bold tracking-tight text-white">Registrar Nuevo Usuario</h1>
@@ -145,6 +145,7 @@ export default function CrearUsuario() {
                                     checked={formData.is_admin} 
                                     onChange={handleChange} 
                                     className="sr-only peer" 
+                                    aria-label="Asignar privilegios de administrador"
                                 />
                                 <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                             </label>

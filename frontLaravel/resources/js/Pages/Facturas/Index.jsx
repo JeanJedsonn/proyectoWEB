@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
-import { FileText, Search, Filter, Plus } from 'lucide-react';
+import { FileText, Search, Plus } from 'lucide-react';
 import axios from 'axios';
 
 // Componentes Atómicos
@@ -26,7 +26,6 @@ export default function FacturasIndex() {
     
     const [searchTerm, setSearchTerm] = useState('');
     const [searchField, setSearchField] = useState('titulo_juego');
-    const [tipoFiltro, setTipoFiltro] = useState('');
 
     // Sincronizar con parámetros de URL al montar
     useEffect(() => {
@@ -68,7 +67,7 @@ export default function FacturasIndex() {
 
     useEffect(() => {
         setPage(1);
-    }, [searchTerm, searchField, tipoFiltro, perPage]);
+    }, [searchTerm, searchField, perPage]);
 
     return (
         <MainLayout>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
@@ -17,7 +18,7 @@ import Badge from '@/Components/UI/Badge';
 import Alert from '@/Components/UI/Alert';
 import DataCopyBox from '@/Components/UI/DataCopyBox';
 
-export default function CuentaJuegosShow({ id }) {
+const CuentaJuegosShow = ({ id }) => {
     const [cuenta, setCuenta] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -341,4 +342,10 @@ export default function CuentaJuegosShow({ id }) {
             )}
         </MainLayout>
     );
-}
+};
+
+CuentaJuegosShow.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};
+
+export default CuentaJuegosShow;

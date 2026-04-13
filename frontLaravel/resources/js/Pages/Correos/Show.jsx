@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
@@ -12,7 +13,6 @@ import {
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
-import Alert from '@/Components/UI/Alert';
 import DataCopyBox from '@/Components/UI/DataCopyBox';
 
 export default function CorreoShow({ id }) {
@@ -81,7 +81,20 @@ export default function CorreoShow({ id }) {
             );
         }
 
-        const countCuentas = Array.isArray(correo.cuentaJuegos) ? correo.cuentaJuegos.length : (correo.cuentaJuegos?.id ? 1 : 0);
+        const rawCuentas = correo.cuentaJuegos;
+        let cuentasRelacionadas = [];
+        if (Array.isArray(rawCuentas)) {
+            cuentasRelacionadas = rawCuentas;
+        } else if (rawCuentas) {
+            cuentasRelacionadas = [rawCuentas];
+        }
+        
+        const countCuentas = cuentasRelacionadas.length;
+
+        const breadcrumbs = [
+            { label: 'Correos Base', href: '/correos' },
+            { label: `Identificador #${String(correo.id).padStart(3, '0')}` }
+        ];
 
         return (
             <div>
@@ -89,10 +102,7 @@ export default function CorreoShow({ id }) {
                     title={correo.direccionCorreo}
                     description="Detalles técnicos y credenciales de acceso del correo maestro."
                     icon={Mail}
-                    breadcrumbs={[
-                        { label: 'Correos Base', href: '/correos' },
-                        { label: `Identificador #${String(correo.id).padStart(3, '0')}` }
-                    ]}
+                    breadcrumbs={breadcrumbs}
                 >
                     <div className="flex flex-wrap items-center gap-3">
                         <Button 
@@ -202,7 +212,7 @@ export default function CorreoShow({ id }) {
                                         <span className="text-[10px] uppercase font-black tracking-widest">Sin dependencias</span>
                                     </div>
                                 ) : (
-                                    (Array.isArray(correo.cuentaJuegos) ? correo.cuentaJuegos : [correo.cuentaJuegos]).map((cuenta) => (
+                                    cuentasRelacionadas.map((cuenta) => (
                                         <button 
                                             key={cuenta.id}
                                             className="w-full text-left bg-white/2 hover:bg-white/5 border border-white/5 rounded-3xl p-5 group cursor-pointer transition-all border-l-2 border-l-indigo-500/30 hover:border-l-indigo-500 shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
@@ -251,4 +261,8 @@ export default function CorreoShow({ id }) {
             {renderContent()}
         </MainLayout>
     );
-}
+};
+
+CorreoShow.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};

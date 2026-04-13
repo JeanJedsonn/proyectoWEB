@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
@@ -18,7 +19,7 @@ import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
 import QuickSelectList from '@/Components/UI/QuickSelectList';
 
-export default function CuentaJuegosForm({ id = null }) {
+const CuentaJuegosForm = ({ id = null }) => {
     const isEditing = !!id;
     const [loading, setLoading] = useState(isEditing);
     const [submitting, setSubmitting] = useState(false);
@@ -519,4 +520,10 @@ export default function CuentaJuegosForm({ id = null }) {
             </div>
         </MainLayout>
     );
-}
+};
+
+CuentaJuegosForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
+
+export default CuentaJuegosForm;

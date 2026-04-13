@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
-import { ArrowLeft, Loader2, Mail, User, Shield, Users, Trophy, Pencil, Activity, Server, Ticket, PackageSearch } from 'lucide-react';
+import { ArrowLeft, Loader2, Shield, Users, Pencil, Activity, Server, Ticket, PackageSearch } from 'lucide-react';
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
+import PropTypes from 'prop-types';
 
 export default function JuegoShow({ id }) {
     const [juego, setJuego] = useState(null);
@@ -212,4 +213,8 @@ export default function JuegoShow({ id }) {
             {renderContent()}
         </MainLayout>
     );
-}
+};
+
+JuegoShow.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+};
