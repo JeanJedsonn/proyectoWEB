@@ -3,7 +3,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import { 
     Search, Filter, 
-    Plus, Gamepad2, Check, Loader2, PackageSearch
+    Plus, Gamepad2, Loader2, PackageSearch, Copy
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -14,6 +14,7 @@ import Select from '@/Components/UI/Select';
 import Input from '@/Components/UI/Input';
 import Pagination from '@/Components/UI/Pagination';
 import CuentaJuegoCard from '@/Components/CuentaJuegos/CuentaJuegoCard';
+import Alert from '@/Components/UI/Alert';
 
 export default function CuentaJuegosIndex() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -66,14 +67,39 @@ export default function CuentaJuegosIndex() {
     const handleCopy = (e, text) => {
         if (e) e.stopPropagation();
         
-        const triggerSuccess = () => {
+        const performCopy = () => {
             setCopiedAlert(true);
-            setTimeout(() => setCopiedAlert(false), 1500);
+            setTimeout(() => setCopiedAlert(false), 2000);
         };
 
-        navigator.clipboard?.writeText(text)
-            .then(triggerSuccess)
-            .catch(err => console.error("Fallo al copiar: ", err));
+        if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(text)
+                .then(performCopy)
+                .catch(err => {
+                    console.error('Error al usar clipboard API:', err);
+                    fallbackCopy(text, performCopy);
+                });
+        } else {
+            fallbackCopy(text, performCopy);
+        }
+    };
+
+    const fallbackCopy = (text, callback) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) callback();
+        } catch (err) {
+            console.error('Fallback de copia falló:', err);
+        }
+        textArea.remove();
     };
 
     const renderContent = () => {
@@ -204,9 +230,15 @@ export default function CuentaJuegosIndex() {
             </div>
 
             {copiedAlert && (
-                <div className="fixed bottom-10 right-10 z-100 bg-white text-black px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 animate-in fade-in slide-in-from-bottom-5 duration-300">
-                    <Check className="w-4 h-4" />
-                    Copiado al Portapapeles
+                <div className="fixed bottom-10 right-10 z-100 animate-in fade-in slide-in-from-right-10">
+                    <Alert 
+                        variant="success"
+                        title="Portapapeles"
+                        message="Información copiada exitosamente."
+                        icon={Copy}
+                        onClose={() => setCopiedAlert(false)}
+                        className="shadow-[0_20px_50px_rgba(0,0,0,0.3)] min-w-[320px]"
+                    />
                 </div>
             )}
         </MainLayout>

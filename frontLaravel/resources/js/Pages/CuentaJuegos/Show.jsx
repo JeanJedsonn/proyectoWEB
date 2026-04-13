@@ -15,7 +15,6 @@ import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
 import Badge from '@/Components/UI/Badge';
-import Alert from '@/Components/UI/Alert';
 import DataCopyBox from '@/Components/UI/DataCopyBox';
 import JuegoNavButton from '@/Components/UI/JuegoNavButton';
 
@@ -23,7 +22,6 @@ const CuentaJuegosShow = ({ id }) => {
     const [cuenta, setCuenta] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [copiedAlert, setCopiedAlert] = useState(false);
 
     useEffect(() => {
         const fetchCuenta = async () => {
@@ -42,19 +40,6 @@ const CuentaJuegosShow = ({ id }) => {
 
         if (id) fetchCuenta();
     }, [id]);
-
-    const handleCopy = (text) => {
-        if (!text) return;
-        
-        if (navigator.clipboard?.writeText) {
-            navigator.clipboard.writeText(text)
-                .then(() => {
-                    setCopiedAlert(true);
-                    setTimeout(() => setCopiedAlert(false), 1500);
-                })
-                .catch(err => console.error("Fallo al copiar al portapapeles:", err));
-        }
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'No especificada';
@@ -146,7 +131,6 @@ const CuentaJuegosShow = ({ id }) => {
                                     label="Correo Electrónico"
                                     value={cuenta.Correo?.correoDireccion}
                                     icon={Mail}
-                                    onCopy={handleCopy}
                                     variant="emerald"
                                 />
                             </div>
@@ -161,7 +145,6 @@ const CuentaJuegosShow = ({ id }) => {
                                     label="Contraseña"
                                     value={cuenta.clave}
                                     icon={Shield}
-                                    onCopy={handleCopy}
                                     variant="indigo"
                                     mono={true}
                                 />
@@ -279,8 +262,6 @@ const CuentaJuegosShow = ({ id }) => {
                             <DataCopyBox
                                 label="Semilla (Seed)"
                                 value={cuenta.semilla2FA}
-                                
-                                onCopy={handleCopy}
                                 variant="gray"
                                 mono={true}
                                 placeholder="Sin semilla registrada"
@@ -288,27 +269,14 @@ const CuentaJuegosShow = ({ id }) => {
                             <DataCopyBox
                                 label="Lista de Códigos"
                                 value={cuenta.codigos2FA}
-                                
-                                onCopy={handleCopy}
                                 variant="gray"
                                 mono={true}
-                                multiline={true}
                                 placeholder="No hay códigos de seguridad registrados."
                             />
                         </div>
                     </Card>
                 </div>
             </div>
-
-            {/* Alert de Copiado Estacional */}
-            {copiedAlert && (
-                <Alert 
-                    variant="success"
-                    message="Información copiada al portapapeles exitosamente."
-                    className="fixed bottom-10 right-10 z-50 shadow-2xl max-w-xs border-white/10"
-                    onClose={() => setCopiedAlert(false)}
-                />
-            )}
         </MainLayout>
     );
 };

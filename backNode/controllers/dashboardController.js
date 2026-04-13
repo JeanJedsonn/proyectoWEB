@@ -3,7 +3,7 @@ const pool = require('../databaseCredentials');
 /**
  * Obtiene las estadísticas generales y las últimas ventas para el dashboard.
  * Retorna: facturasTotales, ingresosMes, clientesTotales, juegosEnCatalogo,
- * ultimasVentas (5), primarias (mes), secundarias (mes).
+ * ultimasVentas (6), primarias (mes), secundarias (mes).
  */
 const obtenerDashboard = async (req, res) => {
     try {
@@ -22,7 +22,7 @@ const obtenerDashboard = async (req, res) => {
             WHERE date_trunc('month', fecha_venta) = date_trunc('month', CURRENT_DATE)
         `;
 
-        // 3. Últimas 5 ventas (con Join para el nombre del cliente y títulos de juegos)
+        // 3. Últimas 6 ventas (con Join para el nombre del cliente y títulos de juegos)
         const ultimasVentasQuery = `
             SELECT 
                 f.id, 
@@ -36,7 +36,7 @@ const obtenerDashboard = async (req, res) => {
             LEFT JOIN Cliente cl ON f.Cliente_id = cl.id
             LEFT JOIN Juego j ON f.juego_id = j.id
             ORDER BY f.fecha_venta DESC, f.id DESC
-            LIMIT 5
+            LIMIT 6
         `;
 
         // Ejecutar todas las consultas en paralelo para mejorar el rendimiento

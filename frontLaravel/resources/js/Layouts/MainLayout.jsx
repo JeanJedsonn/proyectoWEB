@@ -12,7 +12,7 @@ export default function MainLayout({ children }) {
         { name: 'Facturas', href: '/facturas', icon: FileText },
         { name: 'Clientes', href: '/clientes', icon: Users },
         { name: 'Correos', href: '/correos', icon: Mail },
-        { name: 'Cuenta Juegos', href: '/cuentas_juego', icon: Gamepad2 },
+        { name: 'Cuentas', href: '/cuentas_juego', icon: Gamepad2 },
         { name: 'Juegos', href: '/juegos', icon: PackageSearch },
     ];
 
@@ -40,10 +40,14 @@ export default function MainLayout({ children }) {
                 {/* Logo y boton cerrar */}
                 <div className="p-6 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-500">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center overflow-hidden border border-white/5">
+                            <img 
+                                src="/logo.webp" 
+                                alt="PS VirtualStore" 
+                                className="w-full h-full object-contain p-0.5"
+                            />
                         </div>
-                        <span className="font-bold text-xl tracking-tight">GestVentas</span>
+                        <span className="font-bold text-lg tracking-tight">PS VirtualStore</span>
                     </div>
                     {/* Botón cerrar para móvil */}
                     <button 
@@ -123,7 +127,7 @@ export default function MainLayout({ children }) {
                     >
                         <Menu className="w-6 h-6" />
                     </button>
-                    <span className="font-bold text-lg tracking-tight">GestVentas</span>
+                    <span className="font-bold text-lg tracking-tight">PS VirtualStore</span>
                 </div>
 
                 <div className="p-4 md:p-8 flex-1 print:p-0 print:m-0">
