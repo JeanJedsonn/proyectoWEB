@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import axios from 'axios';
 import { 
     User, Phone, Mail, FileText, Save, X, 
@@ -14,6 +14,7 @@ import Card from '@/Components/UI/Card';
 import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
 import Alert from '@/Components/UI/Alert';
+import PropTypes from 'prop-types';
 
 export default function ClienteForm({ id = null }) {
     const isEdit = !!id;
@@ -35,7 +36,8 @@ export default function ClienteForm({ id = null }) {
             const fetchCliente = async () => {
                 setLoading(true);
                 try {
-                    const res = await axios.get(`http://localhost:3000/clientes/form_cliente/${id}`);
+                    const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                    const res = await axios.get(`${urlNode}/clientes/form_cliente/${id}`);
                     setForm({
                         nombre: res.data.nombre || '',
                         red: res.data.red || 'WhatsApp',
@@ -67,14 +69,15 @@ export default function ClienteForm({ id = null }) {
         }
 
         try {
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEdit) {
-                await axios.patch(`http://localhost:3000/clientes/form_cliente/${id}`, {
+                await axios.patch(`${urlNode}/clientes/form_cliente/${id}`, {
                     id: id,
                     ...form
                 });
                 setSuccessMsg("¡Perfil maestro actualizado correctamente!");
             } else {
-                await axios.post('http://localhost:3000/clientes/form_cliente/', form);
+                await axios.post(`${urlNode}/clientes/form_cliente/`, form);
                 setSuccessMsg("¡Nuevo cliente registrado en la base de datos!");
                 setForm({ nombre: '', red: 'WhatsApp', telefono: '', correo: '', notas: '' });
             }
@@ -113,7 +116,7 @@ export default function ClienteForm({ id = null }) {
                 ]}
             >
                 <div className="flex gap-3">
-                    <Button variant="secondary" icon={successMsg ? ArrowLeft : X} onClick={() => window.history.back()}>
+                    <Button variant="secondary" icon={successMsg ? ArrowLeft : X} onClick={() => globalThis.history.back()}>
                         {successMsg ? 'Volver' : 'Descartar'}
                     </Button>
                     <Button 
@@ -242,6 +245,6 @@ export default function ClienteForm({ id = null }) {
     );
 }
 
-const Pencil = ({ className }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-);
+ClienteForm.propTypes = {
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};

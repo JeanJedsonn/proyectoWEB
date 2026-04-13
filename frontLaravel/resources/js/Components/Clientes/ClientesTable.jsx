@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link, router } from '@inertiajs/react';
 import { Mail, Eye, Users } from 'lucide-react';
 import GenericTable from '@/Components/UI/GenericTable';
@@ -64,9 +65,10 @@ export default function ClientesTable({ clientes, loading }) {
                     {cliente.notas || 'Sin notas adicionales.'}
                 </p>
             </td>
-            <td className="px-6 py-4">
-                <div className="flex items-center gap-2 justify-end" onClick={(e) => e.stopPropagation()}>
+            <td className="px-6 py-4 text-right">
+                <div className="flex items-center gap-2 justify-end text-right">
                     <Link 
+                        onClick={(e) => e.stopPropagation()}
                         href={`/clientes/${cliente.id}`}
                         className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all border border-white/5"
                         title="Ver detalles"
@@ -90,3 +92,8 @@ export default function ClientesTable({ clientes, loading }) {
         />
     );
 }
+
+ClientesTable.propTypes = {
+    clientes: PropTypes.array.isRequired,
+    loading: PropTypes.bool.isRequired
+};

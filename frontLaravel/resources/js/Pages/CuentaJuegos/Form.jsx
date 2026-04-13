@@ -54,12 +54,14 @@ const CuentaJuegosForm = ({ id = null }) => {
     useEffect(() => {
         const fetchInitialData = async () => {
             try {
+                const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+                
                 // 1. Fetch available Correos
-                const resCorreos = await axios.get('http://localhost:3000/correos/correos_por_pagina/1000/num_pagina/1');
+                const resCorreos = await axios.get(`${urlNode}/correos/correos_por_pagina/1000/num_pagina/1`);
                 setCorreos(resCorreos.data.data || []);
 
                 // 2. Fetch available Juegos
-                const resJuegos = await axios.get('http://localhost:3000/juegos/juegos_por_pagina/1000/num_pagina/1');
+                const resJuegos = await axios.get(`${urlNode}/juegos/juegos_por_pagina/1000/num_pagina/1`);
                 setAllJuegos(resJuegos.data.data || []);
 
                 if (isEditing) {
@@ -73,7 +75,8 @@ const CuentaJuegosForm = ({ id = null }) => {
         };
 
         const fetchAccountDetails = async () => {
-            const resCuenta = await axios.get(`http://localhost:3000/cuentas/form_cuenta/${id}`);
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+            const resCuenta = await axios.get(`${urlNode}/cuentas/form_cuenta/${id}`);
             const data = resCuenta.data;
             
             let parsedDir = { pais: '', ciudad: '', codigoPostal: '', calle: '' };
@@ -154,11 +157,12 @@ const CuentaJuegosForm = ({ id = null }) => {
         setSuccess(null);
 
         try {
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
             if (isEditing) {
-                await axios.patch(`http://localhost:3000/cuentas/form_cuenta/${id}`, formData);
+                await axios.patch(`${urlNode}/cuentas/form_cuenta/${id}`, formData);
                 setSuccess("¡Los cambios en la cuenta se han sincronizado correctamente!");
             } else {
-                await axios.post(`http://localhost:3000/cuentas/form_cuenta`, formData);
+                await axios.post(`${urlNode}/cuentas/form_cuenta`, formData);
                 setSuccess("¡La nueva cuenta ha sido registrada con éxito en la bóveda!");
                 // Limpiar si es nuevo
                 setFormData({
@@ -180,7 +184,8 @@ const CuentaJuegosForm = ({ id = null }) => {
         if (!globalThis.confirm("¿Estás seguro de que deseas eliminar esta cuenta?")) return;
         setSubmitting(true);
         try {
-            await axios.delete(`http://localhost:3000/cuentas/form_cuenta/${id}`);
+            const urlNode = import.meta.env.VITE_NODE_API_URL || 'http://localhost:3000';
+            await axios.delete(`${urlNode}/cuentas/form_cuenta/${id}`);
             router.visit('/cuentas_juego');
         } catch (err) {
             console.error("Error eliminando cuenta:", err);
