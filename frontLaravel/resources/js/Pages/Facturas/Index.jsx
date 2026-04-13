@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
-import { FileText, Search, Plus } from 'lucide-react';
+import { FileText, Search, Plus, Loader2, PackageSearch } from 'lucide-react';
 import axios from 'axios';
 
 // Componentes Atómicos
@@ -10,17 +10,17 @@ import Button from '@/Components/UI/Button';
 import Select from '@/Components/UI/Select';
 import Input from '@/Components/UI/Input';
 import Pagination from '@/Components/UI/Pagination';
-import FacturasTable from '@/Components/Facturas/FacturasTable';
+import FacturaCard from '@/Components/Facturas/FacturaCard';
 
 export default function FacturasIndex() {
     const [facturas, setFacturas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
+    const [perPage, setPerPage] = useState(12);
     const [paginationInfo, setPaginationInfo] = useState({
         current_page: 1,
         last_page: 1,
-        per_page: 10,
+        per_page: 12,
         total: 0
     });
     
@@ -70,6 +70,52 @@ export default function FacturasIndex() {
         setPage(1);
     }, [searchTerm, searchField, perPage]);
 
+    // Lógica para renderizar el contenido principal
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <div className="bg-[#161821] border border-transparent rounded-4xl p-24 flex flex-col items-center justify-center min-h-[400px] shadow-2xl relative overflow-hidden">
+                    <div className="absolute inset-0 bg-indigo-500/5" />
+                    <Loader2 className="w-12 h-12 animate-spin text-indigo-500 mb-6 relative z-10" />
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-[10px] italic relative z-10">Recuperando registros contables...</p>
+                </div>
+            );
+        }
+
+        if (facturas.length === 0) {
+            return (
+                <div className="bg-[#161821] border border-white/5 rounded-4xl p-24 flex flex-col items-center justify-center text-center min-h-[400px] shadow-2xl">
+                    <div className="w-24 h-24 bg-white/2 rounded-full flex items-center justify-center mb-8 border border-white/5 shadow-inner">
+                        <PackageSearch className="w-12 h-12 text-gray-700" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter italic">Sin Facturación</h3>
+                    <p className="text-gray-500 max-w-sm mb-10 leading-relaxed font-bold uppercase text-[10px] tracking-widest opacity-60">
+                        No se detectaron recibos procesados bajo los criterios de búsqueda actuales.
+                    </p>
+                </div>
+            );
+        }
+
+        return (
+            <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                    {facturas.map((factura) => (
+                        <FacturaCard key={factura.id} factura={factura} />
+                    ))}
+                </div>
+
+                <Pagination 
+                    page={page}
+                    lastPage={paginationInfo.last_page}
+                    total={paginationInfo.total}
+                    perPage={perPage}
+                    onPageChange={setPage}
+                    label="facturas"
+                />
+            </div>
+        );
+    };
+
     return (
         <MainLayout>
             <Head title="Historial de Facturas" />
@@ -110,17 +156,6 @@ export default function FacturasIndex() {
                         ]}
                         className="space-y-0 min-w-[140px]"
                     />
-                    {/*
-                    <Select 
-                        placeholder="Tipo de Venta"
-                        value={tipoFiltro}
-                        onChange={(e) => setTipoFiltro(e.target.value)}
-                        options={[
-                            { value: 'primaria', label: 'Primaria' },
-                            { value: 'secundaria', label: 'Secundaria' },
-                        ]}
-                        className="space-y-0 min-w-[200px]"
-                    />*/}
                 </div>
                 <div className="flex gap-4">
                     <Select 
@@ -128,31 +163,18 @@ export default function FacturasIndex() {
                         value={perPage}
                         onChange={(e) => setPerPage(Number(e.target.value))}
                         options={[
-                            { value: 10, label: '10 Facturas' },
-                            { value: 25, label: '25 Facturas' },
-                            { value: 50, label: '50 Facturas' },
+                            { value: 12, label: '12 Facturas' },
+                            { value: 24, label: '24 Facturas' },
+                            { value: 60, label: '60 Facturas' },
                         ]}
                         className="space-y-0 min-w-[140px]"
                     />
                 </div>
             </div>
 
-            {/* Contenedor de la tabla */}
-            <div className="bg-[#161821] border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                <FacturasTable 
-                    facturas={facturas}
-                    loading={loading}
-                />
-
-                <Pagination 
-                    page={page}
-                    lastPage={paginationInfo.last_page}
-                    total={paginationInfo.total}
-                    perPage={perPage}
-                    onPageChange={setPage}
-                    label="facturas"
-                    className="border-t border-white/5 bg-transparent"
-                />
+            {/* Contenido Dinámico */}
+            <div className="mb-20">
+                {renderContent()}
             </div>
         </MainLayout>
     );

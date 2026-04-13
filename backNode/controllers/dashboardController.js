@@ -28,14 +28,13 @@ const obtenerDashboard = async (req, res) => {
                 f.id, 
                 f.fecha_venta::date as fecha, 
                 cl.nombre as cliente, 
-                COALESCE(
-                    f.juego_id::text, 
-                    (SELECT titulo FROM Juego WHERE id = f.juego_id)
-                ) as juego, 
+                j.titulo as juego, 
                 f.tipo, 
+                f.plataforma,
                 f.precio_venta::text as monto
             FROM Factura f
             LEFT JOIN Cliente cl ON f.Cliente_id = cl.id
+            LEFT JOIN Juego j ON f.juego_id = j.id
             ORDER BY f.fecha_venta DESC, f.id DESC
             LIMIT 5
         `;

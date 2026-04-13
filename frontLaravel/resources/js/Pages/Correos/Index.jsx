@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { 
-    Mail, Search, Plus, Eye, Database 
+    Mail, Search, Plus, Loader2, PackageSearch 
 } from 'lucide-react';
 import axios from 'axios';
 
@@ -11,20 +11,19 @@ import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
-import Badge from '@/Components/UI/Badge';
 import Pagination from '@/Components/UI/Pagination';
-import GenericTable from '@/Components/UI/GenericTable';
+import CorreoCard from '@/Components/Correos/CorreoCard';
 
 export default function CorreosIndex() {
     const [searchTerm, setSearchTerm] = useState('');
     const [correos, setCorreos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [perPage, setPerPage] = useState(10);
+    const [perPage, setPerPage] = useState(12);
     const [paginationInfo, setPaginationInfo] = useState({
         current_page: 1,
         last_page: 1,
-        per_page: 10,
+        per_page: 12,
         total: 0
     });
 
@@ -55,7 +54,11 @@ export default function CorreosIndex() {
             }
         };
 
-        fetchCorreos();
+        const debounceTimer = setTimeout(() => {
+            fetchCorreos();
+        }, 300);
+
+        return () => clearTimeout(debounceTimer);
     }, [page, perPage, searchTerm]);
 
     // Resetear a página 1 cuando cambian filtros o tamaño de página
@@ -63,62 +66,52 @@ export default function CorreosIndex() {
         setPage(1);
     }, [searchTerm, perPage]);
 
-
-
-    const getProviderIcon = (email) => {
-        const lowerEmail = email?.toLowerCase() || '';
-        if (lowerEmail.includes('outlook') || lowerEmail.includes('hotmail') || lowerEmail.includes('skiff')) {
-            return <div className="p-2 bg-blue-500/10 rounded-lg text-blue-400 border border-blue-500/20"><Mail className="w-4 h-4" /></div>;
+    const renderContent = () => {
+        if (loading) {
+            return (
+                <div className="bg-[#161821] border border-transparent rounded-4xl p-24 flex flex-col items-center justify-center min-h-[400px] shadow-2xl relative overflow-hidden">
+                    <div className="absolute inset-0 bg-indigo-500/5" />
+                    <Loader2 className="w-12 h-12 animate-spin text-indigo-500 mb-6 relative z-10" />
+                    <p className="text-gray-400 font-black uppercase tracking-widest text-[11px] italic relative z-10">Escaneando Directorio Electrónico...</p>
+                </div>
+            );
         }
-        if (lowerEmail.includes('gmail')) {
-            return <div className="p-2 bg-red-500/10 rounded-lg text-red-400 border border-red-500/20"><Mail className="w-4 h-4" /></div>;
+
+        if (correos.length === 0) {
+            return (
+                <div className="bg-[#161821] border border-white/5 rounded-4xl p-24 flex flex-col items-center justify-center text-center min-h-[400px] shadow-2xl">
+                    <div className="w-24 h-24 bg-white/2 rounded-full flex items-center justify-center mb-8 border border-white/5 shadow-inner">
+                        <PackageSearch className="w-12 h-12 text-gray-700" />
+                    </div>
+                    <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter italic">Directorio Vacío</h3>
+                    <p className="text-gray-500 max-w-sm mb-10 leading-relaxed font-bold uppercase text-[10px] tracking-widest opacity-60">
+                        No se detectaron cuentas registradas que coincidan con los criterios de búsqueda actuales.
+                    </p>
+                </div>
+            );
         }
-        return <div className="p-2 bg-gray-500/10 rounded-lg text-gray-400 border border-gray-500/20"><Mail className="w-4 h-4" /></div>;
+
+        return (
+            <div>
+                {/* Grid de Correos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+                    {correos.map((correo) => (
+                        <CorreoCard key={correo.id} correo={correo} />
+                    ))}
+                </div>
+
+                {/* Pagination */}
+                <Pagination 
+                    page={page}
+                    lastPage={paginationInfo.last_page}
+                    total={paginationInfo.total}
+                    perPage={perPage}
+                    onPageChange={setPage}
+                    label="correos"
+                />
+            </div>
+        );
     };
-
-    const columns = [
-        { header: 'ID' },
-        { header: 'Dirección (Unico)' },
-        { header: 'Facturas', className: 'text-center' },
-        { header: 'Acciones Rápidas', className: 'text-right' }
-    ];
-
-    const renderRow = (correo) => (
-        <tr 
-            key={correo.id} 
-            className="group border-b border-white/5 hover:bg-white/2 transition-all cursor-pointer"
-            onClick={() => router.visit(`/correos/${correo.id}`)}
-        >
-            <td className="px-6 py-4 text-sm font-mono text-gray-500">
-                #{String(correo.id).padStart(3, '0')}
-            </td>
-            <td className="px-6 py-4">
-                <div className="flex items-center gap-3">
-                    {getProviderIcon(correo.direccionCorreo)}
-                    <span className="text-sm font-bold text-white group-hover:text-indigo-400 transition-colors">
-                        {correo.direccionCorreo}
-                    </span>
-                </div>
-            </td>
-            <td className="px-6 py-4 text-center">
-                <Badge variant={correo.facturas > 0 ? 'primary' : 'secondary'}>
-                    {correo.facturas} {correo.facturas === 1 ? 'Factura' : 'Facturas'}
-                </Badge>
-            </td>
-            <td className="px-6 py-4 text-right">
-                <div className="flex items-center justify-end gap-2 text-right">
-                    <Link 
-                        onClick={(e) => e.stopPropagation()}
-                        href={`/correos/${correo.id}`}
-                        className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white transition-all border border-white/5"
-                        title="Ver detalles"
-                    >
-                        <Eye className="w-4 h-4" />
-                    </Link>
-                </div>
-            </td>
-        </tr>
-    );
 
     return (
         <MainLayout>
@@ -140,7 +133,7 @@ export default function CorreosIndex() {
             </PageHeader>
 
             {/* Filtros Container */}
-            <div className="flex flex-col md:flex-row gap-4 mb-8">
+            <div className="flex flex-col md:flex-row gap-4 mb-10">
                 <Input 
                     icon={Search}
                     placeholder="Buscar por dirección o dominio..." 
@@ -150,40 +143,22 @@ export default function CorreosIndex() {
                 />
                 <div className="flex gap-4">
                     <Select 
-                        placeholder="Filas"
+                        placeholder="Registros"
                         value={perPage}
                         onChange={(e) => setPerPage(Number(e.target.value))}
                         options={[
-                            { value: 10, label: '10 Filas' },
-                            { value: 25, label: '25 Filas' },
-                            { value: 50, label: '50 Filas' },
+                            { value: 12, label: '12 Correos' },
+                            { value: 24, label: '24 Correos' },
+                            { value: 60, label: '60 Correos' },
                         ]}
                         className="space-y-0 min-w-[140px]"
                     />
                 </div>
             </div>
 
-            {/* Main Content Genérico */}
-            <div className="bg-[#161821] border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
-                <GenericTable 
-                    columns={columns}
-                    data={correos}
-                    loading={loading}
-                    emptyMessage="Directorio Vacío"
-                    emptyIcon={<Database className="w-12 h-12 mb-4 opacity-20 text-gray-500" />}
-                    renderRow={renderRow}
-                />
-
-                {/* Pagination */}
-                <Pagination 
-                    page={page}
-                    lastPage={paginationInfo.last_page}
-                    total={paginationInfo.total}
-                    perPage={perPage}
-                    onPageChange={setPage}
-                    label="Correos"
-                    className="border-t border-white/5 bg-transparent"
-                />
+            {/* Contenido Dinámico */}
+            <div className="mb-20">
+                {renderContent()}
             </div>
 
         </MainLayout>

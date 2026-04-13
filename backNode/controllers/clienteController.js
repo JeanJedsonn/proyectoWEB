@@ -183,10 +183,17 @@ const createCliente = async (req, res) => {
     try {
         const { red, nombre, telefono, correo, notas } = req.body;
 
-        // Validación de campos obligatorios
-        if (!red || !nombre || !telefono || !correo) {
+        // Validación de campos obligatorios principales
+        if (!red || !nombre) {
             return res.status(400).json({
-                error: 'Los campos red, nombre, telefono y correo son obligatorios'
+                error: 'Los campos red y nombre son obligatorios'
+            });
+        }
+
+        // Validación condicional: Si es WhatsApp, el teléfono es obligatorio
+        if (red?.toLowerCase() === 'whatsapp' && (!telefono || telefono.trim() === '')) {
+            return res.status(400).json({
+                error: 'Para registros vía WhatsApp, el número de teléfono es estrictamente obligatorio'
             });
         }
 
@@ -218,6 +225,14 @@ const updateCliente = async (req, res) => {
         // Al menos un campo debe ser enviado para actualizar
         if (!red && !nombre && !telefono && !correo && !notas) {
             return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
+        }
+
+        // Validación condicional: Si se está estableciendo red como WhatsApp, el teléfono debe estar presente
+        // Se verifica si llega red=WhatsApp y si el teléfono está vacío (o no llega)
+        if (red?.toLowerCase() === 'whatsapp' && (!telefono || telefono.trim() === '')) {
+             return res.status(400).json({
+                 error: 'Para perfiles vinculados a WhatsApp, es imperativo contar con un número de contacto válido.'
+             });
         }
 
         const query = `
