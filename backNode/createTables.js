@@ -45,7 +45,7 @@ async function createTables() {
                 id SERIAL PRIMARY KEY,
                 correo VARCHAR(255) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
-                is_admin BOOLEAN DEFAULT FALSE,
+                level_admin INTEGER DEFAULT 0,
                 pregunta1 VARCHAR(255),
                 respuesta1 VARCHAR(255),
                 pregunta2 VARCHAR(255),

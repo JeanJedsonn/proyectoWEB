@@ -26,7 +26,7 @@ export default function Login() {
             const { token, usuario } = response.data;
             if (token) {
                 localStorage.setItem('token', token);
-                localStorage.setItem('is_admin', usuario.is_admin);
+                localStorage.setItem('level_admin', usuario.level_admin);
                 
                 // Redirigimos usando window.location para forzar recarga y asegurarnos 
                 // de que los nuevos interceptores atrapen el token para la primer consulta indexada

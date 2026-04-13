@@ -8,7 +8,7 @@ export default function CrearUsuario() {
     const [formData, setFormData] = useState({
         correo: '',
         password: '',
-        is_admin: false,
+        level_admin: 0,
         pregunta1: '¿Cuál era el nombre de tu primera mascota?',
         respuesta1: '',
         pregunta2: '¿En qué ciudad naciste?',
@@ -43,7 +43,7 @@ export default function CrearUsuario() {
                 ...formData,
                 correo: '',
                 password: '',
-                is_admin: false,
+                level_admin: 0,
                 respuesta1: '',
                 respuesta2: '',
                 respuesta3: ''
@@ -135,20 +135,19 @@ export default function CrearUsuario() {
 
                         <div className="bg-[#0b0d12]/50 border border-white/5 p-4 rounded-xl flex items-center justify-between">
                             <div>
-                                <h3 className="font-medium text-white text-sm">Privilegios de Administrador</h3>
-                                <p className="text-gray-400 text-xs mt-1">Si marcas esta opción, el usuario podrá editar, borrar y crear otros usuarios.</p>
+                                <h3 className="font-medium text-white text-sm">Nivel de Acceso</h3>
+                                <p className="text-gray-400 text-xs mt-1">Define los privilegios de este usuario en el sistema.</p>
                             </div>
-                            <label className="relative inline-flex items-center cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    id="is_admin" 
-                                    checked={formData.is_admin} 
-                                    onChange={handleChange} 
-                                    className="sr-only peer" 
-                                    aria-label="Asignar privilegios de administrador"
-                                />
-                                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-                            </label>
+                            <select
+                                id="level_admin"
+                                value={formData.level_admin}
+                                onChange={(e) => setFormData(prev => ({ ...prev, level_admin: Number.parseInt(e.target.value, 10) }))}
+                                className="bg-[#0b0d12] border border-white/10 rounded-xl py-2 px-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all cursor-pointer"
+                                aria-label="Nivel de Acceso"
+                            >
+                                <option value={0}>👤 Normal — Solo lectura</option>
+                                <option value={1}>🛡️ Admin — Editar y borrar</option>
+                            </select>
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-white/5">

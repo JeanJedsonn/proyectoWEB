@@ -30,7 +30,7 @@ const login = async (req, res) => {
 
             // Generar token JWT
             const token = jwt.sign(
-                { id: usuario.id, correo: usuario.correo, is_admin: usuario.is_admin },
+                { id: usuario.id, correo: usuario.correo, level_admin: usuario.level_admin },
                 JWT_SECRET,
                 { expiresIn: '1h' } // El token expira en 1 hora
             );
@@ -42,7 +42,7 @@ const login = async (req, res) => {
                 usuario: {
                     id: usuario.id,
                     correo: usuario.correo,
-                    is_admin: usuario.is_admin
+                    level_admin: usuario.level_admin
                 }
             });
 
@@ -148,10 +148,16 @@ const resetPassword = async (req, res) => {
 };
 
 const crearUsuario = async (req, res) => {
-    const { correo, password, is_admin, pregunta1, respuesta1, pregunta2, respuesta2, pregunta3, respuesta3 } = req.body;
+    const { correo, password, level_admin, pregunta1, respuesta1, pregunta2, respuesta2, pregunta3, respuesta3 } = req.body;
 
     if (!correo || !password || !pregunta1 || !respuesta1 || !pregunta2 || !respuesta2 || !pregunta3 || !respuesta3) {
         return res.status(400).json({ mensaje: 'Por favor, llene todos los campos requeridos.' });
+    }
+
+    // Validar que el nivel sea 0 (normal) o 1 (admin). Nunca 3 (maestro), ese solo se crea con la BD.
+    const nivelFinal = Number.parseInt(level_admin, 10);
+    if (Number.isNaN(nivelFinal) || nivelFinal < 0 || nivelFinal > 1) {
+        return res.status(400).json({ mensaje: 'Nivel de acceso inválido. Solo se permite 0 (Normal) o 1 (Admin).' });
     }
 
     try {
@@ -170,13 +176,13 @@ const crearUsuario = async (req, res) => {
             const ans3 = await bcrypt.hash(respuesta3.toString().toLowerCase().trim(), 10);
 
             const insertQuery = `
-                INSERT INTO Usuario (correo, password, is_admin, pregunta1, respuesta1, pregunta2, respuesta2, pregunta3, respuesta3)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, correo, is_admin
+                INSERT INTO Usuario (correo, password, level_admin, pregunta1, respuesta1, pregunta2, respuesta2, pregunta3, respuesta3)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id, correo, level_admin
             `;
             const newUser = await client.query(insertQuery, [
                 correo, 
                 passwordHash, 
-                is_admin || false, 
+                nivelFinal, 
                 pregunta1, ans1, 
                 pregunta2, ans2, 
                 pregunta3, ans3
@@ -195,10 +201,59 @@ const crearUsuario = async (req, res) => {
     }
 };
 
+const obtenerUsuarios = async (req, res) => {
+    try {
+        const client = await pool.connect();
+        try {
+            const { rows } = await client.query(
+                'SELECT id, correo, level_admin FROM Usuario ORDER BY level_admin DESC, id ASC'
+            );
+            res.json({ usuarios: rows });
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor.' });
+    }
+};
+
+const eliminarUsuario = async (req, res) => {
+    const { id } = req.params;
+    const idNum = Number.parseInt(id, 10);
+
+    if (Number.isNaN(idNum)) {
+        return res.status(400).json({ mensaje: 'ID de usuario inválido.' });
+    }
+
+    // El usuario maestro no puede eliminarse a sí mismo
+    if (idNum === req.usuario.id) {
+        return res.status(400).json({ mensaje: 'No puedes eliminar tu propia cuenta.' });
+    }
+
+    try {
+        const client = await pool.connect();
+        try {
+            const { rowCount } = await client.query('DELETE FROM Usuario WHERE id = $1', [idNum]);
+            if (rowCount === 0) {
+                return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+            }
+            res.json({ mensaje: 'Usuario eliminado correctamente.' });
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error al eliminar usuario:', error);
+        res.status(500).json({ mensaje: 'Error interno del servidor.' });
+    }
+};
+
 module.exports = {
     login,
     obtenerPreguntas,
     resetPassword,
     crearUsuario,
+    obtenerUsuarios,
+    eliminarUsuario,
     JWT_SECRET // Exportamos el secreto para reutilizarlo en el middleware si es necesario
 };

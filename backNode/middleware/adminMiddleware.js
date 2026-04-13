@@ -4,7 +4,7 @@ const adminMiddleware = (req, res, next) => {
         return res.status(401).json({ mensaje: 'No autenticado.' });
     }
 
-    if (req.usuario.is_admin !== true) {
+    if (req.usuario.level_admin === undefined || req.usuario.level_admin < 1) {
         return res.status(403).json({ mensaje: 'Acceso denegado. Se requieren permisos de administrador.' });
     }
 
