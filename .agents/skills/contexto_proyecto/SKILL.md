@@ -82,5 +82,35 @@ Ubicación: `frontLaravel/resources/js/Components/[Modulo]/`
 3. **Joins**: Preferir `LEFT JOIN` para obtener títulos y metadatos relacionados en lugar de subconsultas costosas.
 4. **Consistencia**: Los controladores de obtención por página deben retornar siempre el objeto con `data`, `current_page`, `last_page`, `per_page` y `total`.
 
+
+## ✅ 6. Sistema de Validación de Formularios
+
+### 📦 Módulo Centralizado
+Ubicación: `frontLaravel/resources/js/utils/validators.js`
+
+Contiene todas las reglas de validación reutilizables del sistema. **Cualquier nueva validación debe agregarse aquí primero.**
+
+| Función | Descripción |
+| :--- | :--- |
+| **`validatePrice(value)`** | Solo acepta floats positivos (`0.00`, `10.5`, `99.99`). Usa `Number.parseFloat`, `Number.isNaN` y `Number.isFinite`. |
+| **`validateEmail(value, required?)`** | Requiere `@`, sin espacios y dominio válido. Parámetro `required` controla si vacío es error. |
+| **`validatePhone(value, required?)`** | Acepta formatos internacionales: `+591 74047460`, `+58 416-1571491`, `+1 (703) 282-1084`. |
+
+### 📋 Formularios con Validación Activa
+
+| Formulario | Campos validados |
+| :--- | :--- |
+| **`Clientes/Form.jsx`** | `telefono` (formato internacional), `correo` (email opcional) |
+| **`Facturas/Form.jsx`** | `precioCompra`, `precioVenta` (float obligatorio) |
+| **`Correos/Form.jsx`** | `direccion` (email obligatorio), `recuperacion`, `redireccion` (email opcional) |
+
+### 🎯 Patrón de Implementación Estándar
+Todos los formularios siguen el mismo patrón:
+1. `const [fieldErrors, setFieldErrors] = useState({})` — estado de errores por campo.
+2. Validar en `handleSubmit` antes de la llamada a la API y retornar temprano si hay errores.
+3. Pasar `error={fieldErrors.campo}` al componente `<Input>`.
+4. En el `onChange` del input, limpiar el error del campo: `setFieldErrors(p => ({...p, campo: null}))`.
+5. El `hint` usa ternario positivo para evitar condiciones negadas: `hint={fieldErrors.campo ? undefined : 'texto de ayuda'}`.
+
 ---
-*Última actualización: Modernización completa del Frontend a arquitectura basada en Grids y Cards.*
+*Última actualización: Implementación del sistema de validación centralizado de inputs (precio, email y teléfono).*

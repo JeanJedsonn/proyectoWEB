@@ -7,6 +7,8 @@ import {
     FileText, Save, X, DollarSign, Calendar, Search,
     Gamepad2, ShieldCheck, Mail, Key
 } from 'lucide-react';
+import { validatePrice } from '@/utils/validators';
+
 
 // Componentes UI Atómicos
 import PageHeader from '@/Components/UI/PageHeader';
@@ -32,6 +34,8 @@ const FacturaForm = ({ id = null }) => {
     const [selectedCuentaId, setSelectedCuentaId] = useState('');
     const [errorMsg, setErrorMsg] = useState(null);
     const [successMsg, setSuccessMsg] = useState(null);
+    const [fieldErrors, setFieldErrors] = useState({});
+
     
     // Convert to local datetime-local format 'YYYY-MM-DDThh:mm'
     const formatDateTimeLocal = (isoString) => {
@@ -134,8 +138,23 @@ const FacturaForm = ({ id = null }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
+
+        // Validación de precios
+        const errors = {};
+        const compraError = validatePrice(formData.precioCompra);
+        const ventaError  = validatePrice(formData.precioVenta);
+        if (compraError) errors.precioCompra = compraError;
+        if (ventaError)  errors.precioVenta  = ventaError;
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
+            setErrorMsg('Los precios deben ser números decimales válidos (ej: 10.50).');
+            setSubmitting(false);
+            return;
+        }
+        setFieldErrors({});
+
         try {
-            // Adjust payload date to JSON strict formatting if needed
             let fechaIso = formData.fecha;
             if (fechaIso && !fechaIso.endsWith('Z')) {
                 fechaIso = new Date(fechaIso).toISOString();
@@ -157,6 +176,7 @@ const FacturaForm = ({ id = null }) => {
             setSubmitting(false);
         }
     };
+
     
     // Retorna el loading mientras carga los datos
     if (loading) {
@@ -239,21 +259,30 @@ const FacturaForm = ({ id = null }) => {
                                     type="number" step="0.01" required
                                     name="precioCompra"
                                     value={formData.precioCompra}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        if (fieldErrors.precioCompra) setFieldErrors(p => ({...p, precioCompra: null}));
+                                    }}
                                     placeholder="0.00"
                                     icon={DollarSign}
                                     variant="dark"
+                                    error={fieldErrors.precioCompra}
                                 />
                                 <Input
                                     label="Facturación al Cliente"
                                     type="number" step="0.01" required
                                     name="precioVenta"
                                     value={formData.precioVenta}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        if (fieldErrors.precioVenta) setFieldErrors(p => ({...p, precioVenta: null}));
+                                    }}
                                     placeholder="0.00"
                                     icon={DollarSign}
                                     variant="dark"
+                                    error={fieldErrors.precioVenta}
                                 />
+
                             </div>
 
                             <Input

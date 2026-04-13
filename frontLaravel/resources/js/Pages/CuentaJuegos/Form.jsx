@@ -35,7 +35,7 @@ const CuentaJuegosForm = ({ id = null }) => {
         clave: '',
         cumpleaños: '',
         fechadesactivacion: '',
-        saldo: '',
+        saldo: '0',
         nick: '',
         plataforma: 'PlayStation',
         region: 'US',
@@ -167,7 +167,7 @@ const CuentaJuegosForm = ({ id = null }) => {
                 // Limpiar si es nuevo
                 setFormData({
                     correoID: '', clave: '', cumpleaños: '', fechadesactivacion: '',
-                    saldo: '', nick: '', plataforma: 'PlayStation', region: 'US',
+                    saldo: '0', nick: '', plataforma: 'PlayStation', region: 'US',
                     semilla: '', codigos2FA: '', juegos: [], tieneFacturas: false,
                     direccion: { pais: '', ciudad: '', codigoPostal: '', calle: '' }
                 });
