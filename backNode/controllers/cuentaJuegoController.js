@@ -10,7 +10,7 @@ const obtenerCuentasPorPagina = async (req, res) => {
         // Validación de parámetros de paginación
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
-                error: 'Los parámetros de paginación deben ser números enteros positivos'
+                mensaje: 'Los parámetros de paginación deben ser números enteros positivos'
             });
         }
 
@@ -65,7 +65,7 @@ const obtenerCuentasPorPagina = async (req, res) => {
 
     } catch (error) {
         console.error('Error en obtenerCuentasPorPagina:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener la lista de cuentas de juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener la lista de cuentas de juego' });
     }
 };
 
@@ -77,7 +77,7 @@ const buscarCuentas = async (req, res) => {
         const per_page = Number.parseInt(rawPerPage);
 
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
-            return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
+            return res.status(400).json({ mensaje: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
         // Validación de campos para evitar SQL Injection
@@ -96,11 +96,11 @@ const buscarCuentas = async (req, res) => {
         } else if (columnasValidas.includes(campoReal)) {
             campoReal = `cj.${campoReal}`;
         } else {
-            return res.status(400).json({ error: 'Columna de búsqueda no válida' });
+            return res.status(400).json({ mensaje: 'Columna de búsqueda no válida' });
         }
 
         if (!buscar || buscar.trim() === '') {
-            return res.status(400).json({ error: 'El término de búsqueda no puede estar vacío' });
+            return res.status(400).json({ mensaje: 'El término de búsqueda no puede estar vacío' });
         }
 
         const paramBusqueda = `%${buscar}%`;
@@ -153,7 +153,7 @@ const buscarCuentas = async (req, res) => {
 
     } catch (error) {
         console.error('Error en buscarCuentas:', error);
-        res.status(500).json({ error: 'Hubo un error al buscar las cuentas de juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al buscar las cuentas de juego' });
     }
 };
 
@@ -163,7 +163,7 @@ const getFormCuentaJuego = async (req, res) => {
         const id_cuentajuego = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_cuentajuego) || id_cuentajuego <= 0) {
-            return res.status(400).json({ error: 'El ID de la cuenta de juego debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID de la cuenta de juego debe ser un número entero positivo' });
         }
 
         const query = `
@@ -194,14 +194,14 @@ const getFormCuentaJuego = async (req, res) => {
         const { rows } = await pool.query(query, [id_cuentajuego]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Cuenta de juego no encontrada' });
+            return res.status(404).json({ mensaje: 'Cuenta de juego no encontrada' });
         }
 
         res.json(rows[0]);
 
     } catch (error) {
         console.error('Error en getFormCuentaJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener los datos del formulario de la cuenta de juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener los datos del formulario de la cuenta de juego' });
     }
 };
 
@@ -227,7 +227,7 @@ const actualizarFormCuentaJuego = async (req, res) => {
         } = req.body;
 
         if (Number.isNaN(id_cuentajuego) || id_cuentajuego <= 0) {
-            return res.status(400).json({ error: 'El ID de la cuenta de juego debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID de la cuenta de juego debe ser un número entero positivo' });
         }
 
         await client.query('BEGIN');
@@ -276,7 +276,7 @@ const actualizarFormCuentaJuego = async (req, res) => {
 
         if (rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'Cuenta de juego no encontrada' });
+            return res.status(404).json({ mensaje: 'Cuenta de juego no encontrada' });
         }
 
         await client.query('COMMIT');
@@ -287,7 +287,7 @@ const actualizarFormCuentaJuego = async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Error en actualizarFormCuentaJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al actualizar los datos de la cuenta de juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al actualizar los datos de la cuenta de juego' });
     } finally {
         client.release();
     }
@@ -314,7 +314,7 @@ const crearCuentaJuego = async (req, res) => {
         // Validación de campos obligatorios
         if (!correoID || !clave || !cumpleanos || saldo === undefined || !nick || !plataforma || !region) {
             return res.status(400).json({ 
-                error: 'Los campos correoID, clave, cumpleaños, saldo, nick, plataforma y region son obligatorios' 
+                mensaje: 'Los campos correoID, clave, cumpleaños, saldo, nick, plataforma y region son obligatorios' 
             });
         }
 
@@ -348,9 +348,9 @@ const crearCuentaJuego = async (req, res) => {
         console.error('Error en crearCuentaJuego:', error);
         // Error de clave foránea (correoID no existe)
         if (error.code === '23503') {
-            return res.status(404).json({ error: 'El correoID proporcionado no existe en el sistema' });
+            return res.status(404).json({ mensaje: 'El correoID proporcionado no existe en el sistema' });
         }
-        res.status(500).json({ error: 'Hubo un error al crear la cuenta de juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al crear la cuenta de juego' });
     }
 };
 
@@ -360,7 +360,7 @@ const leerCuentaJuego = async (req, res) => {
         const id_cuenta = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_cuenta) || id_cuenta <= 0) {
-            return res.status(400).json({ error: 'El ID de la cuenta debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID de la cuenta debe ser un número entero positivo' });
         }
 
         const query = `
@@ -401,14 +401,14 @@ const leerCuentaJuego = async (req, res) => {
         const { rows } = await pool.query(query, [id_cuenta]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Cuenta de juego no encontrada' });
+            return res.status(404).json({ mensaje: 'Cuenta de juego no encontrada' });
         }
 
         res.json(rows[0]);
 
     } catch (error) {
         console.error('Error en leerCuentaJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener el detalle de la cuenta de juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener el detalle de la cuenta de juego' });
     }
 };
 

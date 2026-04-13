@@ -85,7 +85,8 @@ const CorreoForm = ({ id = null }) => {
             }
         } catch (err) {
             console.error("Error al guardar correo:", err);
-            setError(err.response?.data?.mensaje || "Error al procesar la solicitud. Es posible que la dirección ya exista.");
+            const serverMsg = err.response?.data?.mensaje || err.response?.data?.error;
+            setError(serverMsg || "Error al procesar la solicitud. Es posible que la dirección ya exista.");
         } finally {
             setSaving(false);
         }

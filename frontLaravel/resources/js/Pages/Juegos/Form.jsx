@@ -101,7 +101,8 @@ export default function JuegoForm({ id = null })
 
         } catch (err) {
             console.error("Error al guardar juego:", err);
-            setError(err.response?.data?.mensaje || "Error al procesar la solicitud. Verifica la conexión con el servidor.");
+            const serverMsg = err.response?.data?.mensaje || err.response?.data?.error;
+            setError(serverMsg || "Error al procesar la solicitud. Verifica la conexión con el servidor.");
         } finally {
             setSaving(false);
         }

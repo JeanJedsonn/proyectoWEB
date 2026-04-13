@@ -10,7 +10,7 @@ const obtenerClientesPorPagina = async (req, res) => {
         // Validación: Deben ser números enteros positivos
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
-                error: 'Los parámetros de paginación deben ser números enteros positivos'
+                mensaje: 'Los parámetros de paginación deben ser números enteros positivos'
             });
         }
 
@@ -49,7 +49,7 @@ const obtenerClientesPorPagina = async (req, res) => {
 
     } catch (error) {
         console.error('Error obteniendo clientes:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener la lista de clientes' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener la lista de clientes' });
     }
 };
 
@@ -60,7 +60,7 @@ const buscarClientes = async (req, res) => {
         const per_page = Number.parseInt(rawPerPage);
 
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
-            return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
+            return res.status(400).json({ mensaje: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
         // Validamos que el campo exista en la tabla para evitar inyección SQL (SQL Injection)
@@ -68,11 +68,11 @@ const buscarClientes = async (req, res) => {
         const campoReal = campo.toLowerCase() === 'telefono' ? 'tlf' : campo.toLowerCase();
 
         if (!columnasValidas.includes(campoReal)) {
-            return res.status(400).json({ error: 'Columna de búsqueda no válida' });
+            return res.status(400).json({ mensaje: 'Columna de búsqueda no válida' });
         }
 
         if (!buscar || buscar.trim() === '') {
-            return res.status(400).json({ error: 'El término de búsqueda no puede estar vacío' });
+            return res.status(400).json({ mensaje: 'El término de búsqueda no puede estar vacío' });
         }
 
 
@@ -108,7 +108,7 @@ const buscarClientes = async (req, res) => {
 
     } catch (error) {
         console.error('Error buscando clientes:', error);
-        res.status(500).json({ error: 'Hubo un error al buscar los clientes' });
+        res.status(500).json({ mensaje: 'Hubo un error al buscar los clientes' });
     }
 };
 
@@ -117,7 +117,7 @@ const leerCliente = async (req, res) => {
         const id = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id) || id <= 0) {
-            return res.status(400).json({ error: 'El ID del cliente debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del cliente debe ser un número entero positivo' });
         }
 
         // 1. Obtener los datos del cliente
@@ -130,7 +130,7 @@ const leerCliente = async (req, res) => {
         const clienteResult = await pool.query(clienteQuery, [id]);
 
         if (clienteResult.rows.length === 0) {
-            return res.status(404).json({ error: 'Cliente no encontrado' });
+            return res.status(404).json({ mensaje: 'Cliente no encontrado' });
         }
 
         const cliente = clienteResult.rows[0];
@@ -152,7 +152,7 @@ const leerCliente = async (req, res) => {
 
     } catch (error) {
         console.error('Error al leer el cliente:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener los detalles del cliente' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener los detalles del cliente' });
     }
 };
 
@@ -161,7 +161,7 @@ const getFormCliente = async (req, res) => {
         const id = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id) || id <= 0) {
-            return res.status(400).json({ error: 'El ID del cliente debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del cliente debe ser un número entero positivo' });
         }
 
         const query = `SELECT id, red, nombre, tlf AS telefono, correo, notas FROM Cliente WHERE id = $1`;
@@ -169,13 +169,13 @@ const getFormCliente = async (req, res) => {
         const { rows } = await pool.query(query, [id]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Cliente no encontrado' });
+            return res.status(404).json({ mensaje: 'Cliente no encontrado' });
         }
 
         res.json(rows[0]);
     } catch (error) {
         console.error('Error en getFormCliente:', error);
-        res.status(500).json({ error: 'Error al obtener el cliente' });
+        res.status(500).json({ mensaje: 'Error al obtener el cliente' });
     }
 };
 
@@ -186,7 +186,7 @@ const createCliente = async (req, res) => {
         // Validación de campos obligatorios
         if (!red || !nombre || !telefono || !correo) {
             return res.status(400).json({
-                error: 'Los campos red, nombre, telefono y correo son obligatorios'
+                mensaje: 'Los campos red, nombre, telefono y correo son obligatorios'
             });
         }
 
@@ -202,7 +202,7 @@ const createCliente = async (req, res) => {
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error('Error en createCliente:', error);
-        res.status(500).json({ error: 'Error al crear el cliente' });
+        res.status(500).json({ mensaje: 'Error al crear el cliente' });
     }
 };
 
@@ -212,12 +212,12 @@ const updateCliente = async (req, res) => {
         const { red, nombre, telefono, correo, notas } = req.body;
 
         if (Number.isNaN(id) || id <= 0) {
-            return res.status(400).json({ error: 'El ID del cliente debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del cliente debe ser un número entero positivo' });
         }
 
         // Al menos un campo debe ser enviado para actualizar
         if (!red && !nombre && !telefono && !correo && !notas) {
-            return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
+            return res.status(400).json({ mensaje: 'Debe proporcionar al menos un campo para actualizar' });
         }
 
         const query = `
@@ -231,13 +231,13 @@ const updateCliente = async (req, res) => {
         const { rows } = await pool.query(query, values);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Cliente no encontrado' });
+            return res.status(404).json({ mensaje: 'Cliente no encontrado' });
         }
 
         res.json(rows[0]);
     } catch (error) {
         console.error('Error en updateCliente:', error);
-        res.status(500).json({ error: 'Error al actualizar el cliente' });
+        res.status(500).json({ mensaje: 'Error al actualizar el cliente' });
     }
 };
 

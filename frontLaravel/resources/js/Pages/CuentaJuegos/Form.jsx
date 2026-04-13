@@ -173,7 +173,8 @@ const CuentaJuegosForm = ({ id = null }) => {
             }
         } catch (err) {
             console.error("Error guardando cuenta:", err);
-            setError(err.response?.data?.error || "Hubo un fallo en la sincronización. Verifica los datos e intenta nuevamente.");
+            const serverMsg = err.response?.data?.mensaje || err.response?.data?.error;
+            setError(serverMsg || "Hubo un fallo en la sincronización. Verifica los datos e intenta nuevamente.");
         } finally {
             setSubmitting(false);
         }

@@ -152,7 +152,8 @@ const FacturaForm = ({ id = null }) => {
             router.visit('/facturas');
         } catch (err) {
             console.error("Error guardando factura:", err);
-            setErrorMsg(err.response?.data?.mensaje || "No se pudo guardar la factura. Verifica los datos requeridos (Cliente, Juego, Precios).");
+            const serverMsg = err.response?.data?.mensaje || err.response?.data?.error;
+            setErrorMsg(serverMsg || "No se pudo guardar la factura. Verifica los datos requeridos (Cliente, Juego, Precios).");
         } finally {
             setSubmitting(false);
         }

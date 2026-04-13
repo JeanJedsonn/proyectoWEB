@@ -10,7 +10,7 @@ const obtenerCorreosPorPagina = async (req, res) => {
         // Validación de parámetros
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
-                error: 'Los parámetros de paginación deben ser números enteros positivos'
+                mensaje: 'Los parámetros de paginación deben ser números enteros positivos'
             });
         }
 
@@ -52,7 +52,7 @@ const obtenerCorreosPorPagina = async (req, res) => {
 
     } catch (error) {
         console.error('Error en obtenerCorreosPorPagina:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener la lista de correos' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener la lista de correos' });
     }
 };
 
@@ -63,7 +63,7 @@ const buscarCorreos = async (req, res) => {
         const per_page = Number.parseInt(rawPerPage);
 
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
-            return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
+            return res.status(400).json({ mensaje: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
         // Validamos que el campo exista en la tabla para evitar inyección SQL
@@ -73,11 +73,11 @@ const buscarCorreos = async (req, res) => {
         if (campoReal === 'direccioncorreo') campoReal = 'direccion';
 
         if (!columnasValidas.includes(campoReal)) {
-            return res.status(400).json({ error: 'Columna de búsqueda no válida' });
+            return res.status(400).json({ mensaje: 'Columna de búsqueda no válida' });
         }
 
         if (!buscar || buscar.trim() === '') {
-            return res.status(400).json({ error: 'El término de búsqueda no puede estar vacío' });
+            return res.status(400).json({ mensaje: 'El término de búsqueda no puede estar vacío' });
         }
 
         const paramBuqueda = `%${buscar}%`;
@@ -117,7 +117,7 @@ const buscarCorreos = async (req, res) => {
 
     } catch (error) {
         console.error('Error en buscarCorreos:', error);
-        res.status(500).json({ error: 'Hubo un error al buscar los correos' });
+        res.status(500).json({ mensaje: 'Hubo un error al buscar los correos' });
     }
 };
 
@@ -126,7 +126,7 @@ const leerCorreo = async (req, res) => {
         const id_correo = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_correo) || id_correo <= 0) {
-            return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del correo debe ser un número entero positivo' });
         }
 
         const query = `
@@ -148,7 +148,7 @@ const leerCorreo = async (req, res) => {
         const { rows } = await pool.query(query, [id_correo]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Correo no encontrado' });
+            return res.status(404).json({ mensaje: 'Correo no encontrado' });
         }
 
         const row = rows[0];
@@ -173,7 +173,7 @@ const leerCorreo = async (req, res) => {
 
     } catch (error) {
         console.error('Error en leerCorreo:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener el detalle del correo' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener el detalle del correo' });
     }
 };
 
@@ -183,7 +183,7 @@ const obtenerFormCorreo = async (req, res) => {
         const id_correo = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_correo) || id_correo <= 0) {
-            return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del correo debe ser un número entero positivo' });
         }
 
         const query = `
@@ -204,14 +204,14 @@ const obtenerFormCorreo = async (req, res) => {
         const { rows } = await pool.query(query, [id_correo]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Correo no encontrado' });
+            return res.status(404).json({ mensaje: 'Correo no encontrado' });
         }
 
         res.json(rows[0]);
 
     } catch (error) {
         console.error('Error en obtenerFormCorreo:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener los datos del formulario de correo' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener los datos del formulario de correo' });
     }
 };
 
@@ -221,7 +221,7 @@ const actualizarFormCorreo = async (req, res) => {
         const { direccion, clave, nombres, cumpleanos, recuperacion, redireccion } = req.body;
 
         if (Number.isNaN(id_correo) || id_correo <= 0) {
-            return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del correo debe ser un número entero positivo' });
         }
 
         const query = `
@@ -248,14 +248,14 @@ const actualizarFormCorreo = async (req, res) => {
         ]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Correo no encontrado' });
+            return res.status(404).json({ mensaje: 'Correo no encontrado' });
         }
 
         res.json(rows[0]);
 
     } catch (error) {
         console.error('Error en actualizarFormCorreo:', error);
-        res.status(500).json({ error: 'Hubo un error al actualizar el correo' });
+        res.status(500).json({ mensaje: 'Hubo un error al actualizar el correo' });
     }
 };
 
@@ -267,7 +267,7 @@ const crearCorreo = async (req, res) => {
         // Validación de campos obligatorios
         if (!direccion || !clave || !nombres || !cumpleanos) {
             return res.status(400).json({ 
-                error: 'Los campos direccion, clave, nombres y cumpleanos son obligatorios' 
+                mensaje: 'Los campos direccion, clave, nombres y cumpleanos son obligatorios' 
             });
         }
 
@@ -292,9 +292,9 @@ const crearCorreo = async (req, res) => {
         console.error('Error en crearCorreo:', error);
         // Manejo de error si el correo ya existe (llave única en direccion)
         if (error.code === '23505') {
-            return res.status(409).json({ error: 'La dirección de correo ya está registrada' });
+            return res.status(409).json({ mensaje: 'La dirección de correo ya está registrada' });
         }
-        res.status(500).json({ error: 'Hubo un error al crear el correo' });
+        res.status(500).json({ mensaje: 'Hubo un error al crear el correo' });
     }
 };
 
@@ -304,14 +304,14 @@ const eliminarCorreo = async (req, res) => {
         const id_correo = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_correo) || id_correo <= 0) {
-            return res.status(400).json({ error: 'El ID del correo debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del correo debe ser un número entero positivo' });
         }
 
         const query = 'DELETE FROM Correo WHERE id = $1 RETURNING id';
         const { rows } = await pool.query(query, [id_correo]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Correo no encontrado' });
+            return res.status(404).json({ mensaje: 'Correo no encontrado' });
         }
 
         res.json({ mensaje: 'Correo eliminado correctamente', id: rows[0].id });
@@ -321,10 +321,10 @@ const eliminarCorreo = async (req, res) => {
         // Manejo de error si el correo tiene dependencias (Foreign Keys)
         if (error.code === '23503') {
             return res.status(400).json({ 
-                error: 'No se puede eliminar el correo porque tiene registros asociados (ej: cuentas de juego o facturas)' 
+                mensaje: 'No se puede eliminar el correo porque tiene registros asociados (ej: cuentas de juego o facturas)' 
             });
         }
-        res.status(500).json({ error: 'Hubo un error al eliminar el correo' });
+        res.status(500).json({ mensaje: 'Hubo un error al eliminar el correo' });
     }
 };
 

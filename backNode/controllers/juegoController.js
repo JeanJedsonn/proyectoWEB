@@ -10,7 +10,7 @@ const obtenerJuegosPorPagina = async (req, res) => {
         // Validación de parámetros
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
-                error: 'Los parámetros de paginación deben ser números enteros positivos'
+                mensaje: 'Los parámetros de paginación deben ser números enteros positivos'
             });
         }
 
@@ -47,7 +47,7 @@ const obtenerJuegosPorPagina = async (req, res) => {
 
     } catch (error) {
         console.error('Error en obtenerJuegosPorPagina:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener la lista de juegos' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener la lista de juegos' });
     }
 };
 
@@ -58,7 +58,7 @@ const buscarJuegos = async (req, res) => {
         const per_page = Number.parseInt(rawPerPage);
 
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
-            return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
+            return res.status(400).json({ mensaje: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
         // Validamos que el campo exista en la tabla para evitar inyección SQL (SQL Injection)
@@ -66,11 +66,11 @@ const buscarJuegos = async (req, res) => {
         const campoReal = campo.toLowerCase();
 
         if (!columnasValidas.includes(campoReal)) {
-            return res.status(400).json({ error: 'Columna de búsqueda no válida' });
+            return res.status(400).json({ mensaje: 'Columna de búsqueda no válida' });
         }
 
         if (!buscar || buscar.trim() === '') {
-            return res.status(400).json({ error: 'El término de búsqueda no puede estar vacío' });
+            return res.status(400).json({ mensaje: 'El término de búsqueda no puede estar vacío' });
         }
 
         const paramBuqueda = `%${buscar}%`;
@@ -105,7 +105,7 @@ const buscarJuegos = async (req, res) => {
 
     } catch (error) {
         console.error('Error en buscarJuegos:', error);
-        res.status(500).json({ error: 'Hubo un error al buscar los juegos' });
+        res.status(500).json({ mensaje: 'Hubo un error al buscar los juegos' });
     }
 };
 
@@ -114,7 +114,7 @@ const leerJuego = async (req, res) => {
         const id_juego = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_juego) || id_juego <= 0) {
-            return res.status(400).json({ error: 'El ID proporcionado debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID proporcionado debe ser un número entero positivo' });
         }
 
         // 1. Obtener datos del juego desde la tabla Juego
@@ -122,7 +122,7 @@ const leerJuego = async (req, res) => {
         const { rows: juegos } = await pool.query(juegoQuery, [id_juego]);
 
         if (juegos.length === 0) {
-            return res.status(404).json({ error: 'Juego no encontrado' });
+            return res.status(404).json({ mensaje: 'Juego no encontrado' });
         }
 
         const juegoInfo = juegos[0];
@@ -162,7 +162,7 @@ const leerJuego = async (req, res) => {
 
     } catch (error) {
         console.error('Error en leerJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al procesar la solicitud' });
+        res.status(500).json({ mensaje: 'Hubo un error al procesar la solicitud' });
     }
 };
 
@@ -170,7 +170,7 @@ const getFormJuego = async (req, res) => {
     try {
         const id_juego = Number.parseInt(req.params.id);
         if (Number.isNaN(id_juego) || id_juego <= 0) {
-            return res.status(400).json({ error: 'El ID del juego debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del juego debe ser un número entero positivo' });
         }
 
         const query = `
@@ -189,13 +189,13 @@ const getFormJuego = async (req, res) => {
         const { rows } = await pool.query(query, [id_juego]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Juego no encontrado' });
+            return res.status(404).json({ mensaje: 'Juego no encontrado' });
         }
 
         res.json(rows[0]);
     } catch (error) {
         console.error('Error en getFormJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener el juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener el juego' });
     }
 };
 
@@ -204,7 +204,7 @@ const createJuego = async (req, res) => {
         const { nombre, url } = req.body;
 
         if (!nombre) {
-            return res.status(400).json({ error: 'El campo nombre es obligatorio' });
+            return res.status(400).json({ mensaje: 'El campo nombre es obligatorio' });
         }
 
         const query = `
@@ -218,7 +218,7 @@ const createJuego = async (req, res) => {
         console.log(rows[0]);
     } catch (error) {
         console.error('Error en createJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al crear el juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al crear el juego' });
     }
 };
 
@@ -228,12 +228,12 @@ const updateJuego = async (req, res) => {
         const { nombre, url } = req.body;
 
         if (Number.isNaN(id_url) || id_url <= 0) {
-            return res.status(400).json({ error: 'El ID en la URL debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID en la URL debe ser un número entero positivo' });
         }
 
         // Validación: Al menos un campo debe ser enviado
         if (!nombre && !url) {
-            return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar (nombre o url)' });
+            return res.status(400).json({ mensaje: 'Debe proporcionar al menos un campo para actualizar (nombre o url)' });
         }
 
         // Construcción dinámica de la query
@@ -261,13 +261,13 @@ const updateJuego = async (req, res) => {
         const { rows } = await pool.query(query, valores);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Juego no encontrado para actualizar' });
+            return res.status(404).json({ mensaje: 'Juego no encontrado para actualizar' });
         }
 
         res.json(rows[0]);
     } catch (error) {
         console.error('Error en updateJuego:', error);
-        res.status(500).json({ error: 'Hubo un error al actualizar el juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al actualizar el juego' });
     }
 };
 
@@ -277,14 +277,14 @@ const eliminarJuego = async (req, res) => {
         const id_juego = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_juego) || id_juego <= 0) {
-            return res.status(400).json({ error: 'El ID del juego debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID del juego debe ser un número entero positivo' });
         }
 
         const query = 'DELETE FROM Juego WHERE id = $1 RETURNING id';
         const { rows } = await pool.query(query, [id_juego]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Juego no encontrado' });
+            return res.status(404).json({ mensaje: 'Juego no encontrado' });
         }
 
         res.json({ mensaje: 'Juego eliminado correctamente', id: rows[0].id });
@@ -294,10 +294,10 @@ const eliminarJuego = async (req, res) => {
         // Manejo de error si el juego tiene dependencias
         if (error.code === '23503') {
             return res.status(400).json({ 
-                error: 'No se puede eliminar el juego porque está asociado a cuentas de juego o facturas' 
+                mensaje: 'No se puede eliminar el juego porque está asociado a cuentas de juego o facturas' 
             });
         }
-        res.status(500).json({ error: 'Hubo un error al eliminar el juego' });
+        res.status(500).json({ mensaje: 'Hubo un error al eliminar el juego' });
     }
 };
 

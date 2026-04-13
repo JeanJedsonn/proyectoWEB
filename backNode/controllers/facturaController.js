@@ -10,7 +10,7 @@ const obtenerFacturasPorPagina = async (req, res) => {
         // Validación de parámetros de paginación
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
             return res.status(400).json({
-                error: 'Los parámetros de paginación deben ser números enteros positivos'
+                mensaje: 'Los parámetros de paginación deben ser números enteros positivos'
             });
         }
 
@@ -51,7 +51,7 @@ const obtenerFacturasPorPagina = async (req, res) => {
 
     } catch (error) {
         console.error('Error en obtenerFacturasPorPagina:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener la lista de facturas' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener la lista de facturas' });
     }
 };
 
@@ -62,7 +62,7 @@ const buscarFacturas = async (req, res) => {
         const per_page = Number.parseInt(rawPerPage);
 
         if (Number.isNaN(num_pagina) || num_pagina <= 0 || Number.isNaN(per_page) || per_page <= 0) {
-            return res.status(400).json({ error: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
+            return res.status(400).json({ mensaje: 'Los parámetros de página y cantidad por página deben ser enteros positivos' });
         }
 
         // Validación y mapeo de campos de búsqueda
@@ -81,11 +81,11 @@ const buscarFacturas = async (req, res) => {
         } else if (columnasValidas.includes(campoReal)) {
             campoReal = `f.${campoReal}`;
         } else {
-            return res.status(400).json({ error: 'Columna de búsqueda no válida' });
+            return res.status(400).json({ mensaje: 'Columna de búsqueda no válida' });
         }
 
         if (!buscar || buscar.trim() === '') {
-            return res.status(400).json({ error: 'El término de búsqueda no puede estar vacío' });
+            return res.status(400).json({ mensaje: 'El término de búsqueda no puede estar vacío' });
         }
 
         const paramBusqueda = `%${buscar}%`;
@@ -135,7 +135,7 @@ const buscarFacturas = async (req, res) => {
 
     } catch (error) {
         console.error('Error en buscarFacturas:', error);
-        res.status(500).json({ error: 'Hubo un error al buscar las facturas' });
+        res.status(500).json({ mensaje: 'Hubo un error al buscar las facturas' });
     }
 };
 
@@ -144,7 +144,7 @@ const leerFactura = async (req, res) => {
         const id_factura = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_factura) || id_factura <= 0) {
-            return res.status(400).json({ error: 'El ID de la factura debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID de la factura debe ser un número entero positivo' });
         }
 
         const query = `
@@ -176,14 +176,14 @@ const leerFactura = async (req, res) => {
         const { rows } = await pool.query(query, [id_factura]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Factura no encontrada' });
+            return res.status(404).json({ mensaje: 'Factura no encontrada' });
         }
 
         res.json(rows[0]);
 
     } catch (error) {
         console.error('Error en leerFactura:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener el detalle de la factura' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener el detalle de la factura' });
     }
 };
 
@@ -192,7 +192,7 @@ const obtenerFormFactura = async (req, res) => {
         const id_factura = Number.parseInt(req.params.id);
 
         if (Number.isNaN(id_factura) || id_factura <= 0) {
-            return res.status(400).json({ error: 'El ID de la factura debe ser un número entero positivo' });
+            return res.status(400).json({ mensaje: 'El ID de la factura debe ser un número entero positivo' });
         }
 
         const query = `
@@ -217,13 +217,13 @@ const obtenerFormFactura = async (req, res) => {
         const { rows } = await pool.query(query, [id_factura]);
 
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Factura no encontrada' });
+            return res.status(404).json({ mensaje: 'Factura no encontrada' });
         }
 
         res.json(rows[0]);
     } catch (error) {
         console.error('Error en obtenerFormFactura:', error);
-        res.status(500).json({ error: 'Hubo un error al obtener los datos del formulario de la factura' });
+        res.status(500).json({ mensaje: 'Hubo un error al obtener los datos del formulario de la factura' });
     }
 };
 
@@ -247,7 +247,7 @@ const actualizarFormFactura = async (req, res) => {
         const juegoID = Number.parseInt(rawJuegoID);
 
         if (Number.isNaN(id_factura) || id_factura <= 0 || Number.isNaN(clienteID) || Number.isNaN(juegoID) || !fecha || precioVenta === undefined || precioCompra === undefined || !tipo || !clave || !correo || !plataforma) {
-            return res.status(400).json({ error: 'Todos los campos (incluyendo correo y clave) son obligatorios y válidos' });
+            return res.status(400).json({ mensaje: 'Todos los campos (incluyendo correo y clave) son obligatorios y válidos' });
         }
 
         await client.query('BEGIN');
@@ -256,21 +256,21 @@ const actualizarFormFactura = async (req, res) => {
         const clienteExists = await client.query('SELECT id FROM Cliente WHERE id = $1', [clienteID]);
         if (clienteExists.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'El clienteID proporcionado no existe en el sistema' });
+            return res.status(404).json({ mensaje: 'El clienteID proporcionado no existe en el sistema' });
         }
 
         // 2. Validar que el juego_id exista
         const juegoExists = await client.query('SELECT id FROM Juego WHERE id = $1', [juegoID]);
         if (juegoExists.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'El juego_id proporcionado no existe en el sistema' });
+            return res.status(404).json({ mensaje: 'El juego_id proporcionado no existe en el sistema' });
         }
 
         // 3. Validar correo
         const correoExists = await client.query('SELECT direccion FROM Correo WHERE direccion = $1', [correo]);
         if (correoExists.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'El correo proporcionado no se encuentra registrado en el ecosistema' });
+            return res.status(404).json({ mensaje: 'El correo proporcionado no se encuentra registrado en el ecosistema' });
         }
         const correoFinal = correo;
 
@@ -305,7 +305,7 @@ const actualizarFormFactura = async (req, res) => {
 
         if (rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'Factura no encontrada' });
+            return res.status(404).json({ mensaje: 'Factura no encontrada' });
         }
 
         await client.query('COMMIT');
@@ -314,7 +314,7 @@ const actualizarFormFactura = async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Error en actualizarFormFactura:', error);
-        res.status(500).json({ error: 'Hubo un error al actualizar la factura' });
+        res.status(500).json({ mensaje: 'Hubo un error al actualizar la factura' });
     } finally {
         client.release();
     }
@@ -341,7 +341,7 @@ const crearFactura = async (req, res) => {
         // Validación de campos obligatorios
         if (!fecha || precioVenta === undefined || precioCompra === undefined || Number.isNaN(clienteID) || !tipo || !plataforma || Number.isNaN(juegoID) || !correo || !clave) {
             return res.status(400).json({
-                error: 'Todos los campos de la factura, incluyendo Snapshot Histórico (correo, clave), son obligatorios'
+                mensaje: 'Todos los campos de la factura, incluyendo Snapshot Histórico (correo, clave), son obligatorios'
             });
         }
 
@@ -351,21 +351,21 @@ const crearFactura = async (req, res) => {
         const clienteExists = await client.query('SELECT id FROM Cliente WHERE id = $1', [clienteID]);
         if (clienteExists.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'El clienteID proporcionado no existe en el sistema' });
+            return res.status(404).json({ mensaje: 'El clienteID proporcionado no existe en el sistema' });
         }
 
         // 2. Validar que el juego_id exista
         const juegoExists = await client.query('SELECT id FROM Juego WHERE id = $1', [juegoID]);
         if (juegoExists.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'El juego_id proporcionado no existe en el sistema' });
+            return res.status(404).json({ mensaje: 'El juego_id proporcionado no existe en el sistema' });
         }
 
         // 3. Validar correo
         const correoExists = await client.query('SELECT direccion FROM Correo WHERE direccion = $1', [correo]);
         if (correoExists.rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(404).json({ error: 'El correo proporcionado no se encuentra registrado en el ecosistema' });
+            return res.status(404).json({ mensaje: 'El correo proporcionado no se encuentra registrado en el ecosistema' });
         }
         const correoFinal = correo;
 
@@ -397,10 +397,10 @@ const crearFactura = async (req, res) => {
         console.error('Error en crearFactura:', error);
         
         if (error.code === '23503') {
-            return res.status(404).json({ error: 'Error de integridad: falta una referencia (Cliente, Juego o Correo)' });
+            return res.status(404).json({ mensaje: 'Error de integridad: falta una referencia (Cliente, Juego o Correo)' });
         }
         
-        res.status(500).json({ error: 'Hubo un error al crear la factura' });
+        res.status(500).json({ mensaje: 'Hubo un error al crear la factura' });
     } finally {
         client.release();
     }
