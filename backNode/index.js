@@ -51,3 +51,4 @@ createTables().then(() => {
 //TODO: Verificar si la creacion de juegos valida que no exista el titulo (tolerancia del 95%)
 //FIX: Los vendedores pueden crear juegos
 //TODO: La eliminacion de un juego depende de si tiene cuentas asociadas (verificar si existe o no)
+//TODO: Multifiltro para facturas (expandir a otros modulos de ser posible)

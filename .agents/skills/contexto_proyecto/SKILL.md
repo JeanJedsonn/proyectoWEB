@@ -31,9 +31,9 @@ El proyecto es un sistema de administración / dashboard (CRM de ventas para jue
 - `Form.jsx`: Creación/Edición con validaciones.
 
 ### 📧 Módulo de Correos (Refactorizado con UI Components)
-- `Index.jsx`: Bóveda de correos base con iconos por proveedor. (100% Componentes Atómicos)
-- `Show.jsx`: Visualización de credenciales.
-- `Form.jsx`: Gestión de claves y recuperación.
+- `Index.jsx`: Bóveda de correos base con iconos por proveedor y selector de densidad de datos (10, 25, 50 registros).
+- `Show.jsx`: Visualización técnica de credenciales sin botones de copiado innecesarios para mantener la limpieza visual.
+- `Form.jsx`: Gestión de claves con validación de dependencias (bloquea la eliminación si existen cuentas vinculadas) y migración completa a componentes atómicos.
 
 ### 🔑 Módulo de Cuenta Juegos (Refactorizado con UI Components)
 - `Index.jsx`: Inventario de cuentas por plataforma. (100% Componentes Atómicos)
@@ -61,6 +61,9 @@ Se ha establecido un sistema de componentes atómicos para garantizar la consist
 | **`PageHeader.jsx`** | Encabezado de página unificado (Breadcrumbs + Título + Acciones) | Todas las vistas principales |
 | **`Pagination.jsx`** | Control de navegación de datos | Listados paginados (Index) |
 
+> [!TIP]
+> **Campos Obligatorios:** Los componentes `Input` y `Select` incluyen automáticamente un punto rojo (`●`) junto al label cuando el atributo `required` está presente, mejorando la usabilidad sin recargar el diseño.
+
 ## 🎨 4. Paleta de Colores y Estética UI
 
 Basado en un esquema **Ultra-Dark Premium**, la paleta se rige por transparencias y bordes definidos:
@@ -85,6 +88,7 @@ Basado en un esquema **Ultra-Dark Premium**, la paleta se rige por transparencia
 2. **Redondez (Borders):** El radio predeterminado para componentes atómicos e inputs es **`2xl`**. Las tarjetas de información de gran tamaño pueden escalar a **`4xl`**.
 3. **Navegación:** Uso de `Link` y `router` de `@inertiajs/react` para mantener el estado de SPA.
 4. **Componentización:** Al crear o modificar vistas, se DEBEN utilizar los componentes de `Components/UI/` en lugar de clases ad-hoc de Tailwind.
+5. **Modern JS:** Preferir el uso de `globalThis`, `Number.parseInt` y `Number.isNaN` para compatibilidad y consistencia técnica en Backend y Frontend.
 
 ## 🔒 6. Seguridad y Autenticación
 
@@ -104,7 +108,7 @@ El sistema implementa una arquitectura moderna de seguridad separada entre Node.
    - En lugar de redirigir la ventana del explorador nativo para leer archivos, el frontend utiliza `Axios` para descargar Blobs y generar un `URL.createObjectURL(blob)`, manteniendo los tokens 100% ocultos en los headers y garantizando cero fugas en el historial.
 
 ---
-*Última actualización: Estandarización de Componentes Atómicos y Protocolo de Notificaciones.*
+*Última actualización: Estandarización de Zona de Peligro y Revisión Final del Módulo Correos.*
 
 ## 🔔 7. Sistema de Notificaciones y Feedback Visual
 
@@ -113,5 +117,6 @@ El proyecto ha desautorizado el uso de componentes de tipo "Toast" emergentes gl
 1. **Acciones Rápidas (Ej: Copiar al portapapeles):** Se utiliza una notificación minimalista estandarizada que aparece en la parte inferior derecha (`fixed bottom-10 right-10`). Debe ser una caja con fondo blanco, texto negro (`bg-white text-black`), bordes muy redondeados (`rounded-2xl`), tipografía técnica (`font-black uppercase text-[10px]`) y una sombra intensa (`shadow-[0_20px_50px_rgba(255,255,255,0.2)]`). 
     - **Contenido:** Icono `Check` + texto "Copiado al Portapapeles".
     - **Regla técnica:** Toda interacción con el portapapeles debe incorporar un mecanismo de respaldo (*fallback*) usando `document.execCommand('copy')` sobre un `textarea` invisible para garantizar funcionalidad en contextos HTTP o locales.
-2. **Alertas y Errores (Formularios/Listados):** Se renderizan de forma **inline** e incrustadas directamente dentro de la interfaz (ej. parte superior del contenedor) usando, por ejemplo, fondos atenuados `bg-emerald-500/10 border-emerald-500/20` o `bg-red-500/10` con animaciones de Tailwind CSS como `animate-in slide-in-from-top-2`. 
-3. **Funciones Restringidas:** En lugar de eliminar o desaparecer un botón o caja (ej. Botón de Eliminar una cuenta cuando tiene dependencias), ésta NO se oculta. Se debe renderizar oscurecida/deshabilitada (con `cursor-not-allowed` y colores pasivos `bg-[#161821] text-gray-500`) indicando de forma explícita al usuario moderno la razón lógica del bloqueo mediante un texto de advertencia (Ej. *"Acción bloqueada: Existen registros dependientes..."*).
+2. **Alertas y Errores (Formularios/Listados):** Se renderizan de forma **inline** e incrustadas directamente dentro de la interfaz mediante el componente `Alert`, usando fondos atenuados y animaciones suaves. 
+3. **Zona de Peligro (Operaciones Críticas):** Se ha unificado el diseño bajo el componente `Card variant="danger"`. 
+    - **Comportamiento:** Si un registro no puede eliminarse (por dependencias en BBDD), el botón de acción se renderiza en estilo `secondary`, con el icono `Shield`, deshabilitado, y un mensaje explicativo sobre la razón del bloqueo técnico (Ej. *"No se puede eliminar: Existen cuentas vinculadas..."*). Esto previene errores de integridad referencial y mejora el UX.

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Search } from 'lucide-react';
 
 /**
  * FormInput component for all text, password, and number inputs.
@@ -30,7 +29,7 @@ export default function Input({
             
             <div className="relative group/input">
                 {Icon && (
-                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-600 group-focus-within/input:text-indigo-400 transition-colors">
+                    <div className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within/input:text-indigo-400 transition-colors">
                         <Icon className="w-5 h-4.5" />
                     </div>
                 )}

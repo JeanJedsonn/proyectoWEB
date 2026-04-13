@@ -20,7 +20,7 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight text-gray-900 m-0">FACTURA COMERCIAL</h2>
                     <div className="text-gray-500 text-sm mt-2 font-medium">
-                        Tienda GestVentas Digitales
+                        PS VirtualStore
                     </div>
                 </div>
                 <div className="text-right text-gray-500 text-sm">
@@ -88,7 +88,7 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
                             <td className="p-4 border-b border-gray-200 text-gray-900 text-base">
                                 <strong>{factura.titulo_juego || 'N/A'}</strong>
                                 {viewMode === 'admin' && (
-                                    <div className="text-xs text-gray-500 mt-1">*Incluido en Array Histórico*</div>
+                                    <div className="text-xs text-gray-500 mt-1">*Incluido en la lista de juegos de la cuenta*</div>
                                 )}
                             </td>
                             <td className="p-4 border-b border-gray-200 text-gray-900 text-base">{factura.plataforma || 'N/A'}</td>
@@ -138,7 +138,7 @@ export default function FacturaReceipt({ factura, viewMode = 'admin', onCopy }) 
                 </div>
                 {viewMode === 'admin' && (
                     <p className="text-red-900 text-sm mb-4">
-                        Estos datos `correo` y `clave` representan una copia estática del momento en que se generó la venta. Los cambios actuales en la tabla `CuentaJuegos` no modificarán estos datos históricos.
+                        Estos datos `correo` y `clave` representan una copia estática del momento en que se generó la venta. Los cambios no modificarán estos datos históricos.
                     </p>
                 )}
                 
