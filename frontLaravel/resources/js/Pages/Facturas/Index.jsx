@@ -28,6 +28,16 @@ export default function FacturasIndex() {
     const [searchField, setSearchField] = useState('titulo_juego');
     const [tipoFiltro, setTipoFiltro] = useState('');
 
+    // Sincronizar con parámetros de URL al montar
+    useEffect(() => {
+        const params = new URLSearchParams(globalThis.location.search);
+        const search = params.get('search');
+        const field = params.get('field');
+        
+        if (search) setSearchTerm(search);
+        if (field) setSearchField(field);
+    }, []);
+
     useEffect(() => {
         const fetchFacturas = async () => {
             setLoading(true);

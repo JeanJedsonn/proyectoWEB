@@ -3,7 +3,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
-    Mail, User, RefreshCcw, ArrowLeft, Pencil, 
+    Mail, RefreshCcw, ArrowLeft, Pencil, 
     Key, Info, Loader2, ExternalLink,
     ShieldAlert, Database, ShieldCheck
 } from 'lucide-react';
@@ -12,11 +12,14 @@ import {
 import PageHeader from '@/Components/UI/PageHeader';
 import Button from '@/Components/UI/Button';
 import Card from '@/Components/UI/Card';
+import Alert from '@/Components/UI/Alert';
+import DataCopyBox from '@/Components/UI/DataCopyBox';
 
 export default function CorreoShow({ id }) {
     const [correo, setCorreo] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [copiedAlert, setCopiedAlert] = useState(false);
 
     useEffect(() => {
         const fetchCorreo = async () => {
@@ -36,6 +39,16 @@ export default function CorreoShow({ id }) {
     }, [id]);
 
 
+
+    const handleCopy = (text) => {
+        if (!text) return;
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                setCopiedAlert(true);
+                setTimeout(() => setCopiedAlert(false), 2000);
+            });
+        }
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'No especificada';
@@ -104,63 +117,69 @@ export default function CorreoShow({ id }) {
                     <div className="lg:col-span-8 space-y-8">
                         {/* Card Credenciales */}
                         <Card 
-                            title="Especificaciones del Correo Matriz"
-                            icon={Info}
-                            className="p-10 relative overflow-hidden group"
+                            title="Credenciales de Correo Matriz"
+                            icon={ShieldCheck}
+                            className="p-10 relative overflow-hidden"
+                            variant="premium"
                         >
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-16 relative z-10">
-                                <div className="space-y-1">
-                                    <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">Nombres Registrados</span>
-                                    <span className="text-base font-bold text-white block">{correo.nombres || 'No disponible'}</span>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="space-y-6">
+                                    <div className="space-y-1 px-1">
+                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">Propietario / Nombres</span>
+                                        <span className="text-base font-bold text-white block italic">{correo.nombres || 'No disponible'}</span>
+                                    </div>
+
+                                    <DataCopyBox
+                                        label="Dirección de Correo"
+                                        value={correo.direccionCorreo}
+                                        icon={Mail}
+                                        onCopy={handleCopy}
+                                        variant="emerald"
+                                    />
                                 </div>
 
-                                <div className="space-y-1">
-                                    <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">Fecha Cumpleaños</span>
-                                    <span className="text-base font-bold text-white block">{formatDate(correo.cumpleaños)}</span>
-                                </div>
+                                <div className="space-y-6">
+                                    <div className="space-y-1 px-1 text-right md:text-left">
+                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">Fecha Cumpleaños</span>
+                                        <span className="text-base font-bold text-white block">{formatDate(correo.cumpleaños)}</span>
+                                    </div>
 
-                                <div className="space-y-1">
-                                    <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">Dirección de Correo</span>
-                                    <span className="text-base font-bold text-white block break-all">{correo.direccionCorreo}</span>
-                                </div>
-
-                                <div className="space-y-1">
-                                    <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block">Contraseña</span>
-                                    <span className="text-base font-mono font-bold text-indigo-400 bg-indigo-500/5 px-2 rounded-lg border border-indigo-500/10 shadow-inner inline-block">
-                                        {correo.clave}
-                                    </span>
+                                    <DataCopyBox
+                                        label="Contraseña Base"
+                                        value={correo.clave}
+                                        icon={ShieldCheck}
+                                        onCopy={handleCopy}
+                                        variant="indigo"
+                                        mono={true}
+                                    />
                                 </div>
                             </div>
                         </Card>
 
                         {/* Seguridad y Recuperación */}
                         <Card 
-                            title="Redirección y Recuperación"
-                            icon={ShieldCheck}
-                            className="p-10 relative border-l-4 border-l-emerald-500/50"
+                            title="Protocolos de Recuperación"
+                            icon={Info}
+                            className="p-10"
                         >
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-6 p-6 bg-black/20 rounded-3xl border border-white/5">
-                                    <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500">
-                                        <RefreshCcw className="w-6 h-6" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block mb-1">Correo de Recuperación</span>
-                                        <span className="text-lg font-bold text-white">{correo.recuperacion || 'Sin método configurado'}</span>
-                                    </div>
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <DataCopyBox
+                                    label="Correo de Recuperación"
+                                    value={correo.recuperacion}
+                                    icon={RefreshCcw}
+                                    onCopy={handleCopy}
+                                    variant="gray"
+                                    placeholder="Sin método configurado"
+                                />
 
-                                <div className="flex items-center gap-6 p-6 bg-black/20 rounded-3xl border border-white/5">
-                                    <div className="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-400">
-                                        <ExternalLink className="w-6 h-6" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest block mb-1">Redireccionamiento</span>
-                                        <span className={`text-lg font-bold ${correo.redireccion ? 'text-white' : 'text-gray-700'}`}>
-                                            {correo.redireccion || 'No configurado'}
-                                        </span>
-                                    </div>
-                                </div>
+                                <DataCopyBox
+                                    label="Redireccionamiento"
+                                    value={correo.redireccion}
+                                    icon={ExternalLink}
+                                    onCopy={handleCopy}
+                                    variant="gray"
+                                    placeholder="No configurado"
+                                />
                             </div>
                         </Card>
                     </div>
@@ -211,6 +230,16 @@ export default function CorreoShow({ id }) {
                         </Card>
                     </div>
                 </div>
+
+                {/* Feedback de Copiado */}
+                {copiedAlert && (
+                    <Alert 
+                        variant="success"
+                        message="Credencial de correo copiada al portapapeles."
+                        className="fixed bottom-10 right-10 z-50 shadow-2xl max-w-xs border-white/10"
+                        onClose={() => setCopiedAlert(false)}
+                    />
+                )}
             </div>
         );
     };

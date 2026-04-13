@@ -4,7 +4,7 @@ import { Head, Link, router } from '@inertiajs/react';
 import axios from 'axios';
 import { 
     FileText, Save, X, DollarSign, Calendar, Search,
-    Gamepad2, ShieldCheck, Mail, KeyRound
+    Gamepad2, ShieldCheck, Mail, KeyRound, Key
 } from 'lucide-react';
 
 // Componentes UI Atómicos
@@ -14,6 +14,7 @@ import Card from '@/Components/UI/Card';
 import Alert from '@/Components/UI/Alert';
 import Input from '@/Components/UI/Input';
 import Select from '@/Components/UI/Select';
+import DataCopyBox from '@/Components/UI/DataCopyBox';
 import QuickSelectList from '@/Components/UI/QuickSelectList';
 
 export default function FacturaForm({ id = null }) {
@@ -393,34 +394,24 @@ export default function FacturaForm({ id = null }) {
                                 </div>
                                 
                                 {/* Datos Extraídos */}
-                                <div className="grid grid-cols-1 gap-3">
-                                    
-                                    {/* Email Extraído */}
-                                    <div className="flex items-center gap-4 bg-black/40 border border-white/5 rounded-2xl p-5 shadow-2xl group transition-all hover:border-indigo-500/30">
-                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-700 group-hover:text-indigo-400 transition-colors">
-                                            <Mail className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex-1 overflow-hidden">
-                                            <span className="text-[9px] uppercase tracking-[0.2em] text-gray-600 font-black block mb-1">Email Extraído</span>
-                                            <div className="text-sm font-bold text-white break-all truncate">
-                                                {formData.correo || <span className="text-gray-800 opacity-50 uppercase tracking-widest text-[10px]">Sin Vínculo</span>}
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="grid grid-cols-1 gap-4 pt-4">
+                                    <DataCopyBox
+                                        label="Correo Extraído"
+                                        value={formData.correo}
+                                        icon={Mail}
+                                        onCopy={(val) => handleCopy(val, 'Correo copiado')}
+                                        placeholder="Esperando selección de cuenta..."
+                                        variant="emerald"
+                                    />
 
-                                    {/* Clave Extraída */}
-                                    <div className="flex items-center gap-4 bg-black/40 border border-white/5 rounded-2xl p-5 shadow-2xl group transition-all hover:border-indigo-500/30">
-                                        <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-700 group-hover:text-indigo-400 transition-colors">
-                                            <KeyRound className="w-5 h-5" />
-                                        </div>
-                                        <div className="flex-1 overflow-hidden">
-                                            <span className="text-[9px] uppercase tracking-[0.2em] text-gray-600 font-black block mb-1">Pass Extraída</span>
-                                            <div className="text-sm font-bold text-white break-all truncate">
-                                                {formData.clave || <span className="text-gray-800 opacity-50 uppercase tracking-widest text-[10px]">Sin Vínculo</span>}
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                    <DataCopyBox
+                                        label="Contraseña Extraída"
+                                        value={formData.clave}
+                                        icon={Key}
+                                        onCopy={(val) => handleCopy(val, 'Clave copiada')}
+                                        placeholder="Esperando selección de cuenta..."
+                                        variant="indigo"
+                                    />
                                 </div>
 
                             </div>
