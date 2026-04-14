@@ -130,23 +130,23 @@ Si las conexiones del front son rechazadas, debe configurarse el back:
 ### Instrucciones extra
 
 **Comando para entrar en psql:**
-sudo -iu postgres psql
+* sudo -iu postgres psql
 
 **Comandos para crear db en psql:**
-CREATE DATABASE nombre_db;
+* CREATE DATABASE nombre_db;
 
 **Comandos opcionales en psql(si se va a usar un usuario distinto al súper usuario):**
-CREATE USER nombre_usuario WITH PASSWORD 'contraseña';
-GRANT ALL PRIVILEGES ON DATABASE nombre_db TO nombre_usuario;
-GRANT CREATE, USAGE ON SCHEMA public TO nombre_usuario;
+* CREATE USER nombre_usuario WITH PASSWORD 'contraseña';
+* GRANT ALL PRIVILEGES ON DATABASE nombre_db TO nombre_usuario;
+* GRANT CREATE, USAGE ON SCHEMA public TO nombre_usuario;
 
 **Comando para entrar en psql:**
-sudo -iu postgres psql
+* sudo -iu postgres psql
 
 **Comandos para crear db en psql:**
-CREATE DATABASE nombre_db;
+* CREATE DATABASE nombre_db;
 
 **Comandos opcionales en psql(si se va a usar un usuario distinto al súper usuario):**
-CREATE USER nombre_usuario WITH PASSWORD 'contraseña';
-GRANT ALL PRIVILEGES ON DATABASE nombre_db TO nombre_usuario;
-GRANT CREATE, USAGE ON SCHEMA public TO nombre_usuario;
+* CREATE USER nombre_usuario WITH PASSWORD 'contraseña';
+* GRANT ALL PRIVILEGES ON DATABASE nombre_db TO nombre_usuario;
+* GRANT CREATE, USAGE ON SCHEMA public TO nombre_usuario;
