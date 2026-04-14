@@ -2,7 +2,7 @@
 
 ## 👥 Equipo de Desarrollo
 
-| Nombre | DNI |
+| Nombre | C.I |
 |--------|-----|
 | Jeanmarco Alarcon | 27.117.926 |
 | Luigi Quero | 30.009.785 |
